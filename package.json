@@ -1,0 +1,32 @@
+{
+  "name": "nuts",
+  "version": "0.0.1",
+  "description": "New Universal Template System",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jacoborus/nuts.git"
+  },
+  "keywords": [
+    "html",
+    "templates",
+    "engine"
+  ],
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "mocha": "^2.0.1"
+  },
+  "dependencies": {
+    "htmlparser2": "^3.8.2",
+    "recursive-readdir": "^1.2.0"
+  },
+  "author": "Jacobo Tabernero - jacobo@xarope.eu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jacoborus/nuts/issues"
+  },
+  "homepage": "https://github.com/jacoborus/nuts"
+}
