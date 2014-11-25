@@ -27,8 +27,16 @@ var newCompiledComment = function (tmpl) {
 	};
 };
 
-var newCompiledDirective = function () {
-	return function () {};
+var newCompiledDirective = function (tmpl) {
+	var out;
+	if (tmpl.name === '!doctype') {
+		out = '<!DOCTYPE html>';
+	} else {
+		out = '<' + tmpl.name + '>';
+	}
+	return function () {
+		return out;
+	};
 };
 
 var newCompiledTag = function () {
