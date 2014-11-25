@@ -3,6 +3,7 @@ NUTS
 
 New universal template system
 
+**IN EARLY DEVELOPMENT**
 
 Installation
 ------------
@@ -12,7 +13,7 @@ npm install nuts
 ```
 
 
-Api
+API
 ---
 
 ### nuts.addTemplate

@@ -24,7 +24,7 @@ var newTemplate = function (src, callback) {
 	}, {
 		normalizeWhitespace: true
 	});
-	var parser = new htmlparser.Parser(handler);
+	var parser = new htmlparser.Parser( handler );
 	parser.write( src );
 	parser.done();
 };
