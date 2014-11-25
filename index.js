@@ -41,22 +41,33 @@ var newCompiledDirective = function (tmp) {
 
 var newCompiledTag = function (tmp) {
 	var i;
-	// open tag
-	var preTag = '<' + tmp.name + '>',
-		postTag = '</' + tmp.name +'>';
-	// shortnames
-	var	children = tmp.children;
 
+	// open and close tag strings
+	var preTag = '<' + tmp.name,
+		postTag = '</' + tmp.name +'>',
+		classAtt = 'class="',
+		atts = tmp.attribs;
+
+	// render regular attributes
+	if (tmp.class) {
+		preTag += ' ' + classAtt + tmp.class + '"';
+	}
+	for (i in atts) {
+		preTag += ' ' + i + '="' + atts[i] + '"';
+	}
+	preTag += '>';
+
+	var	children = tmp.children;
 	for (i in children) {
 		children[i].render = compile( children[i] );
 	}
 
-	return function (it) {
+	return function (x) {
 		var out = preTag;
 
 		// compile content
 		for (i in children) {
-			out += children[i].render( it );
+			out += children[i].render( x );
 		}
 
 		// close tag
