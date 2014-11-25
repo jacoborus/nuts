@@ -32,4 +32,13 @@ describe( 'nuts.render', function () {
 			done();
 		});
 	});
+
+	it('render simple tag nodes', function (done) {
+		var tmpl = '<span>hola</span>';
+		nuts.addTemplate( 'simpleTag', tmpl, function (err, tmpls) {
+			expect( err ).to.equal( null );
+			expect( nuts.render( 'simpleTag', {} )).to.equal( '<span>hola</span>' );
+			done();
+		});
+	});
 });

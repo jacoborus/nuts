@@ -13,34 +13,56 @@ var archive = {},
 
 /* - Generate compiled tags - */
 
-var newCompiledText = function (tmpl) {
-	var out = tmpl.data;
+var newCompiledText = function (tmp) {
+	var out = tmp.data;
 	return function () {
 		return out;
 	};
 };
 
-var newCompiledComment = function (tmpl) {
-	var out = '<!--' + tmpl.data + '-->';
+var newCompiledComment = function (tmp) {
+	var out = '<!--' + tmp.data + '-->';
 	return function () {
 		return out;
 	};
 };
 
-var newCompiledDirective = function (tmpl) {
+var newCompiledDirective = function (tmp) {
 	var out;
-	if (tmpl.name === '!doctype') {
+	if (tmp.name === '!doctype') {
 		out = '<!DOCTYPE html>';
 	} else {
-		out = '<' + tmpl.name + '>';
+		out = '<' + tmp.name + '>';
 	}
 	return function () {
 		return out;
 	};
 };
 
-var newCompiledTag = function () {
-	return function () {};
+var newCompiledTag = function (tmp) {
+	var i;
+	// open tag
+	var preTag = '<' + tmp.name + '>',
+		postTag = '</' + tmp.name +'>';
+	// shortnames
+	var	children = tmp.children;
+
+	for (i in children) {
+		children[i].render = compile( children[i] );
+	}
+
+	return function (it) {
+		var out = preTag;
+
+		// compile content
+		for (i in children) {
+			out += children[i].render( it );
+		}
+
+		// close tag
+		out += postTag;
+		return out;
+	};
 };
 
 /*!
