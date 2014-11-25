@@ -32,57 +32,48 @@ var separateNuAtts = function () {
 	this.nuAtts = nuAtts;
 };
 
-// get nuts formatted dom object info from parsed html
-var NuSchema = function (dom, parent) {
-	var domAtts = dom.attribs,
+
+/*!
+ * nuts schema constructor
+ * Get nuts formatted dom object info from parsed html
+ * @param {Object} dom    parsed HTML
+ * @param {Object} parent [description]
+ */
+var NuSchema = function (dom) {
+	var atts = dom.attribs,
 		domChildren, nuChildren, i;
 
-	this.parent = parent || null;
 	this.type = dom.type;
 	this.data = dom.data;
 	this.name = dom.name;
-	this.nuAtts = {};
 
 	// assign attributes
-	if (domAtts) {
+	if (atts) {
 		this.atts = {};
 		// separate special attributes
-		// class
-		if (domAtts.class) {
-			this.class = domAtts.class;
-			delete domAtts.class;
+		if (atts.class) {
+			this.class = atts.class;
+			delete atts.class;
 		}
-		// nuClass
-		if (domAtts['nu-class']) {
-			this.nuClass = domAtts['nu-class'];
-			delete domAtts['nu-class'];
+		if (atts['nu-class']) {
+			this.nuClass = atts['nu-class'];
+			delete atts['nu-class'];
 		}
-		// scope
-		if (domAtts['nu-scope']) {
-			this.scope = domAtts['nu-scope'];
-			delete domAtts['nu-scope'];
+		if (atts['nu-scope']) {
+			this.scope = atts['nu-scope'];
+			delete atts['nu-scope'];
 		}
-		// model
-		if (domAtts['nu-model']) {
-			this.model = domAtts['nu-model'];
-			delete domAtts['nu-model'];
+		if (atts['nu-model'] || atts['nu-model'] === '') {
+			this.model = atts['nu-model'];
+			delete atts['nu-model'];
 		}
-		if (domAtts['nu-model'] === '') {
-			this.model = '';
-			delete domAtts['nu-model'];
+		if (atts['nu-repeat'] || atts['nu-repeat'] === '') {
+			this.repeat = atts['nu-repeat'];
+			delete atts['nu-repeat'];
 		}
-		// repeat
-		if (domAtts['nu-repeat'] === '') {
-			this.repeat = '';
-			delete domAtts['nu-repeat'];
-		} else if (domAtts['nu-repeat']) {
-			this.repeat = domAtts['nu-repeat'];
-			delete domAtts['nu-repeat'];
-		}
-		// key
-		if (domAtts['nu-key'] || domAtts['nu-key'] === '') {
+		if (atts['nu-key'] || atts['nu-key'] === '') {
 			this.key = '';
-			delete domAtts['nu-key'];
+			delete atts['nu-key'];
 		}
 
 		// separate nuAttributes from the regular ones
@@ -101,7 +92,9 @@ var NuSchema = function (dom, parent) {
 			};
 		}
 	}
-	this.attribs = dom.attribs || {};
+
+	// assign attributes
+	this.attribs = atts || {};
 	this.nuAtts = dom.nuAtts || {};
 };
 
