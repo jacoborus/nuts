@@ -65,6 +65,14 @@ var newCompiledTag = function (tmp) {
 	return function (x) {
 		var out = preTag;
 
+		if (tmp.scope) {
+			if (x[tmp.scope]) {
+				x = x[tmp.scope];
+			} else {
+				x = {};
+			}
+		}
+
 		// compile content
 		if (tmp.model && x[tmp.model]) {
 			out += x[tmp.model];
