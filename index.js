@@ -20,8 +20,11 @@ var newCompiledText = function (tmpl) {
 	};
 };
 
-var newCompiledComment = function () {
-	return function () {};
+var newCompiledComment = function (tmpl) {
+	var out = '<!--' + tmpl.data + '-->';
+	return function () {
+		return out;
+	};
 };
 
 var newCompiledDirective = function () {
