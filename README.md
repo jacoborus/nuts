@@ -38,6 +38,18 @@ Params:
 - **`callback`** *Function*: Signature: error, addedTemplate
 
 
+
+### nuts.addFolder
+
+Add all templates in a folder using its filenames as template keynames
+
+Params:
+
+- **`folderPath`** *String*: route to folder
+- **`callback`** *Function*: Signature: error
+
+
+
 ### nuts.getTemplate
 
 Get a template object from nuts templates archive
