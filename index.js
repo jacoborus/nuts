@@ -9,6 +9,63 @@ var archive = {},
 	allCompiled = false;
 
 
+// detect if an attribute name is prefixed with nu-
+var startsWithNu = function (str) {
+    return str.indexOf( 'nu-' ) === 0;
+};
+// remove nu- prefix from attribute
+var getNuProp = function (prop) {
+    return prop.substr(3, prop.length);
+};
+// move attributes with nu- prefix to nuAtts property
+var separateNuAtts = function () {
+	var nuAtts = {},
+		atts = this.attribs,
+		i;
+
+	for (i in atts) {
+		if (startsWithNu( i )) {
+			nuAtts[ getNuProp( i )] = atts[i];
+			delete atts[i];
+		}
+	}
+	this.nuAtts = nuAtts;
+};
+
+// get nuts formatted dom object info from parsed html
+var NuSchema = function (dom, parent) {
+	var domAtts, domChildren, nuChildren, i;
+	this.parent = parent || null;
+	this.type = dom.type;
+	this.data = dom.data;
+	this.name = dom.name;
+	this.nuAtts = {};
+
+	// assign attributes
+	if (dom.attribs) {
+		this.atts = {};
+		// separate nuAttributes from the regular ones
+		separateNuAtts.call( dom );
+	}
+
+	// assign children dom elements
+	if (dom.children) {
+		this.children = [];
+		nuChildren = this.children;
+		domChildren = dom.children;
+		for (i in domChildren) {
+			nuChildren[i] = {
+				src : null,
+				schema: new NuSchema( domChildren[i] )
+			};
+		}
+	}
+	this.attribs = dom.attribs;
+	this.nuAtts = dom.nuAtts;
+};
+
+
+
 /*!
  * generate a template object with its source and model as properties
  * @param  {String}   src      html template
@@ -19,7 +76,7 @@ var newTemplate = function (src, callback) {
 		if (error) { return callback( error );}
 		callback( null, {
 			src : src,
-			schema: dom[0]
+			schema: new NuSchema( dom[0] )
 		});
 	}, {
 		normalizeWhitespace: true
@@ -28,6 +85,7 @@ var newTemplate = function (src, callback) {
 	parser.write( src );
 	parser.done();
 };
+
 
 
 /*!
@@ -85,27 +143,24 @@ Nuts.prototype.addFile = function (name, route, callback) {
  */
 Nuts.prototype.addFolder = function (folderPath, callback) {
 	callback = callback || function () {};
-	var self = this;
+	var self = this,
+		count = 0;
 
-	var newCounter = function (limit) {
-		var count = 0;
-		return function (err) {
+	// get all files inside folderPath
+	recursive( folderPath, function (error, files) {
+		var limit = files.length;
+		if (error) { return callback( error );}
+		if (!limit) { return callback();}
+
+		var counter = function (err) {
 			if (err) { callback( err );}
 			if (++count === limit) {
 				callback( null );
 			}
 		};
-	};
-
-	// fill files and folders objects with paths
-	recursive( folderPath, function (error, files) {
-
-		if (error) { return callback( error );}
-		if (!files.length) { return callback();}
-
-		var counter = newCounter( files.length );
-
+		// read files
 		files.forEach( function (filePath) {
+			// exclude no .html files
 			if (path.extname(filePath) !== '.html') {
 				return counter();
 			}
