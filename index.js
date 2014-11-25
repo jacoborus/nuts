@@ -56,4 +56,20 @@ Nuts.prototype.getTemplate = function (name) {
 	return archive[name];
 };
 
+
+/**
+ * Add a template from file
+ * @param {String}   name         template keyname
+ * @param {String}   route template path
+ * @param {Function} callback     Signature: error, addedTemplate
+ */
+Nuts.prototype.addFile = function (name, route, callback) {
+	var self = this;
+	fs.readFile( path.resolve(route), 'utf8', function (err, data) {
+		if (err) {return callback( err );}
+		self.addTemplate( name, data, callback );
+	});
+};
+
+
 module.exports = new Nuts();
