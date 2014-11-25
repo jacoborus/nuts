@@ -9,6 +9,52 @@ var archive = {},
 	allCompiled = false;
 
 
+
+
+/* - Generate compiled tags - */
+
+var newCompiledText = function (tmpl) {
+	var out = tmpl.data;
+	return function () {
+		return out;
+	};
+};
+
+var newCompiledComment = function () {
+	return function () {};
+};
+
+var newCompiledDirective = function () {
+	return function () {};
+};
+
+var newCompiledTag = function () {
+	return function () {};
+};
+
+/*!
+ * get a compiled template
+ * @param  {Object} template template model
+ * @return {Function}          compiled template
+ */
+var compile = function (template) {
+	var schema = template.schema;
+	switch (schema.type) {
+		case 'tag':
+			return newCompiledTag( schema );
+		case 'text':
+			return newCompiledText( schema );
+		case 'comment':
+			return newCompiledComment( schema );
+		case 'directive':
+			return newCompiledDirective( schema );
+	}
+};
+
+
+
+
+
 // detect if an attribute name is prefixed with nu-
 var startsWithNu = function (str) {
     return str.indexOf( 'nu-' ) === 0;
@@ -207,6 +253,25 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 			});
 		});
 	});
+};
+
+
+/**
+ * Get a rendered template
+ * @param  {String} tmplName template keyname
+ * @param  {Object} data     locals
+ * @return {String}          rendered html
+ */
+Nuts.prototype.render = function (tmplName, data) {
+	var i;
+	data = data || {};
+	if (!allCompiled) {
+		for (i in archive) {
+			archive[i].render = compile( archive[i] );
+		}
+		allCompiled = true;
+	}
+	return archive[tmplName].render( data );
 };
 
 
