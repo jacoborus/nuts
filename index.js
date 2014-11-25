@@ -66,8 +66,12 @@ var newCompiledTag = function (tmp) {
 		var out = preTag;
 
 		// compile content
-		for (i in children) {
-			out += children[i].render( x );
+		if (tmp.model && x[tmp.model]) {
+			out += x[tmp.model];
+		} else {
+			for (i in children) {
+				out += children[i].render( x );
+			}
 		}
 
 		// close tag
