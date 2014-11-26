@@ -8,6 +8,24 @@ var fs = require('fs'),
 var archive = {},
 	allCompiled = false;
 
+/* - Utils */
+// detect if an attribute name is prefixed with nu-
+var startsWithNu = function (str) {
+    return str.indexOf( 'nu-' ) === 0;
+};
+// remove nu- prefix from attribute
+var getNuProp = function (prop) {
+    return prop.substr(3, prop.length);
+};
+var hasProp = function (name, list) {
+	var i;
+	for (i in list) {
+		if (i === name) {
+			return true;
+		}
+	}
+	return false;
+};
 
 
 
@@ -77,6 +95,12 @@ var newCompiledTag = function (tmp) {
 
 	var render = function (x, key) {
 		var out = preTag;
+		var preX = {};
+		if (tmp.extend === '') {
+			for (i in x) {
+				preX[i] = x[i];
+			}
+		}
 		// set scope
 		if (tmp.scope) {
 			if (x[tmp.scope]) {
@@ -85,7 +109,12 @@ var newCompiledTag = function (tmp) {
 				x = {};
 			}
 		}
-
+		// extend data with parents
+		if (tmp.extend === '') {
+			for (i in preX) {
+				x[i] = preX[i];
+			}
+		}
 		// render nuClass
 		if (nuClass) {
 			out += classAtt;
@@ -176,13 +205,23 @@ compile = function (template) {
 
 
 
-// detect if an attribute name is prefixed with nu-
-var startsWithNu = function (str) {
-    return str.indexOf( 'nu-' ) === 0;
-};
-// remove nu- prefix from attribute
-var getNuProp = function (prop) {
-    return prop.substr(3, prop.length);
+// move attributes with nu- prefix to nuAtts property
+var separateNamesakes = function () {
+	var names = {},
+		sakes = {},
+		atts = this.attribs,
+		i;
+
+	for (i in atts) {
+		if (hasProp( i, this.nuAtts )) {
+			names[i] = atts[i];
+			sakes[i] = this.nuAtts[i];
+			delete atts[i];
+			delete this.nuAtts[i];
+		}
+	}
+	this.namesakes = names;
+	this.nuSakes = sakes;
 };
 // move attributes with nu- prefix to nuAtts property
 var separateNuAtts = function () {
@@ -199,34 +238,6 @@ var separateNuAtts = function () {
 	this.nuAtts = nuAtts;
 };
 
-var hasNamesake = function (name, list) {
-	var i;
-	for (i in list) {
-		if (i === name) {
-			return true;
-		}
-	}
-	return false;
-};
-
-// move attributes with nu- prefix to nuAtts property
-var separateNamesakes = function () {
-	var names = {},
-		sakes = {},
-		atts = this.attribs,
-		i;
-
-	for (i in atts) {
-		if (hasNamesake( i, this.nuAtts )) {
-			names[i] = atts[i];
-			sakes[i] = this.nuAtts[i];
-			delete atts[i];
-			delete this.nuAtts[i];
-		}
-	}
-	this.namesakes = names;
-	this.nuSakes = sakes;
-};
 
 
 /*!
@@ -270,6 +281,10 @@ var Schema = function (dom) {
 		if (atts['nu-key'] || atts['nu-key'] === '') {
 			this.key = '';
 			delete atts['nu-key'];
+		}
+		if (atts['nu-extend'] || atts['nu-extend'] === '') {
+			this.extend = atts['nu-extend'];
+			delete atts['nu-extend'];
 		}
 
 		// separate nuAttributes from the regular ones
