@@ -12,6 +12,7 @@ var archive = {},
 
 
 /* - Generate compiled tags - */
+var compile;
 
 var newCompiledText = function (tmp) {
 	var out = tmp.data;
@@ -74,7 +75,7 @@ var newCompiledTag = function (tmp) {
 		children[i].render = compile( children[i] );
 	}
 
-	return function (x) {
+	var render = function (x) {
 		var out = preTag;
 		// set scope
 		if (tmp.scope) {
@@ -96,7 +97,7 @@ var newCompiledTag = function (tmp) {
 
 		// render namesakes
 		for (i in namesakes) {
-			out += ' ' + i + '="' + (nuSakes[i] || namesakes[i]) + '"'
+			out += ' ' + i + '="' + (nuSakes[i] || namesakes[i]) + '"';
 		}
 
 		// render nuAttributes
@@ -110,6 +111,8 @@ var newCompiledTag = function (tmp) {
 		// compile content
 		if (tmp.model && x[tmp.model]) {
 			out += x[tmp.model];
+		} else if (tmp.model === '') {
+			out += x;
 		} else {
 			for (i in children) {
 				out += children[i].render( x );
@@ -120,6 +123,30 @@ var newCompiledTag = function (tmp) {
 		out += postTag;
 		return out;
 	};
+
+	// return compiled function
+	if (!tmp.repeat && tmp.repeat !== '') {
+		return render;
+	}
+
+	if (tmp.repeat) {
+		return function (x) {
+			var out = '';
+			var rep = x[tmp.repeat];
+			for (i in rep) {
+				out += render( rep[i] );
+			}
+			return out;
+		};
+	}
+
+	return function (x) {
+		var out = '';
+		for (i in x) {
+			out += render( x[i] );
+		}
+		return out;
+	};
 };
 
 
@@ -128,7 +155,7 @@ var newCompiledTag = function (tmp) {
  * @param  {Object} template template model
  * @return {Function}          compiled template
  */
-var compile = function (template) {
+compile = function (template) {
 	var schema = template.schema;
 	switch (schema.type) {
 		case 'tag':
