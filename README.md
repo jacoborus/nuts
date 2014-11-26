@@ -1,7 +1,7 @@
 NUTS
 ====
 
-New universal template system
+New unique templates system
 
 **IN EARLY DEVELOPMENT**
 

@@ -333,9 +333,8 @@ var newTemplate = function (src, callback) {
 			src : src,
 			schema: new Schema( dom[0] )
 		});
-	}, {
-		normalizeWhitespace: true
-	});
+	}, {normalizeWhitespace: true});
+
 	var parser = new htmlparser.Parser( handler );
 	parser.write( src );
 	parser.done();
