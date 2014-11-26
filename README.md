@@ -5,6 +5,8 @@ New unique templates system
 
 **IN EARLY DEVELOPMENT**
 
+[![Build Status](https://travis-ci.org/jacoborus/nuts.svg?branch=master)](https://travis-ci.org/jacoborus/nuts)
+
 Installation
 ------------
 
