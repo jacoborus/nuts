@@ -95,10 +95,17 @@ var newCompiledTag = function (tmp) {
 
 	var render = function (x, key) {
 		var out = preTag;
-		var preX = {};
+		var preX = {},
+			props = [];
 		if (tmp.extend === '') {
 			for (i in x) {
 				preX[i] = x[i];
+			}
+		}
+		if (tmp.extend) {
+			props = tmp.extend.split(' ');
+			for (i in props) {
+				preX[props[i]] = x[props[i]];
 			}
 		}
 		// set scope
@@ -110,7 +117,7 @@ var newCompiledTag = function (tmp) {
 			}
 		}
 		// extend data with parents
-		if (tmp.extend === '') {
+		if (tmp.extend || tmp.extend === '') {
 			for (i in preX) {
 				x[i] = preX[i];
 			}
