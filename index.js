@@ -40,22 +40,34 @@ var newCompiledDirective = function (tmp) {
 };
 
 var newCompiledTag = function (tmp) {
-	var i;
+	var i, className, nuClass, classAtt;
 
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
 		postTag = '</' + tmp.name +'>',
-		classAtt = 'class="',
+		namesakes = tmp.namesakes,
+		nuSakes = tmp.nuSakes,
+		nuAtts = tmp.nuAtts,
 		atts = tmp.attribs;
 
 	// render regular attributes
-	if (tmp.class) {
-		preTag += ' ' + classAtt + tmp.class + '"';
-	}
 	for (i in atts) {
 		preTag += ' ' + i + '="' + atts[i] + '"';
 	}
-	preTag += '>';
+
+	// prepare className tag
+	nuClass = tmp.nuClass;
+	if (tmp.class || nuClass) {
+		classAtt = ' class="';
+	}
+	if (tmp.class) {
+		className = tmp.class;
+		classAtt += className;
+		if (!nuClass) {
+			classAtt += '"';
+			preTag += classAtt;
+		}
+	}
 
 	var	children = tmp.children;
 	for (i in children) {
@@ -64,7 +76,7 @@ var newCompiledTag = function (tmp) {
 
 	return function (x) {
 		var out = preTag;
-
+		// set scope
 		if (tmp.scope) {
 			if (x[tmp.scope]) {
 				x = x[tmp.scope];
@@ -72,6 +84,28 @@ var newCompiledTag = function (tmp) {
 				x = {};
 			}
 		}
+
+		// render nuClass
+		if (nuClass) {
+			out += classAtt;
+			if (nuClass && x[nuClass]) {
+				out += className ? ' ' + x[nuClass] : x[nuClass];
+			}
+			out += '"';
+		}
+
+		// render namesakes
+		for (i in namesakes) {
+			out += ' ' + i + '="' + (nuSakes[i] || namesakes[i]) + '"'
+		}
+
+		// render nuAttributes
+		for (i in nuAtts) {
+			out += ' ' + i + '="' + (x[nuAtts[i]] || '') + '"';
+		}
+
+		// close open tag
+		out += '>';
 
 		// compile content
 		if (tmp.model && x[tmp.model]) {
@@ -87,6 +121,7 @@ var newCompiledTag = function (tmp) {
 		return out;
 	};
 };
+
 
 /*!
  * get a compiled template
@@ -106,8 +141,6 @@ var compile = function (template) {
 			return newCompiledDirective( schema );
 	}
 };
-
-
 
 
 
@@ -134,6 +167,35 @@ var separateNuAtts = function () {
 	this.nuAtts = nuAtts;
 };
 
+var hasNamesake = function (name, list) {
+	var i;
+	for (i in list) {
+		if (i === name) {
+			return true;
+		}
+	}
+	return false;
+};
+
+// move attributes with nu- prefix to nuAtts property
+var separateNamesakes = function () {
+	var names = {},
+		sakes = {},
+		atts = this.attribs,
+		i;
+
+	for (i in atts) {
+		if (hasNamesake( i, this.nuAtts )) {
+			names[i] = atts[i];
+			sakes[i] = this.nuAtts[i];
+			delete atts[i];
+			delete this.nuAtts[i];
+		}
+	}
+	this.namesakes = names;
+	this.nuSakes = sakes;
+};
+
 
 /*!
  * nuts schema constructor
@@ -141,7 +203,7 @@ var separateNuAtts = function () {
  * @param {Object} dom    parsed HTML
  * @param {Object} parent [description]
  */
-var NuSchema = function (dom) {
+var Schema = function (dom) {
 	var atts = dom.attribs,
 		domChildren, nuChildren, i;
 
@@ -180,6 +242,7 @@ var NuSchema = function (dom) {
 
 		// separate nuAttributes from the regular ones
 		separateNuAtts.call( dom );
+		separateNamesakes.call( dom );
 	}
 
 	// assign children dom elements
@@ -190,7 +253,7 @@ var NuSchema = function (dom) {
 		for (i in domChildren) {
 			nuChildren[i] = {
 				src : null,
-				schema: new NuSchema( domChildren[i] )
+				schema: new Schema( domChildren[i] )
 			};
 		}
 	}
@@ -198,6 +261,8 @@ var NuSchema = function (dom) {
 	// assign attributes
 	this.attribs = atts || {};
 	this.nuAtts = dom.nuAtts || {};
+	this.namesakes = dom.namesakes || {};
+	this.nuSakes = dom.nuSakes || {};
 };
 
 
@@ -212,7 +277,7 @@ var newTemplate = function (src, callback) {
 		if (error) { return callback( error );}
 		callback( null, {
 			src : src,
-			schema: new NuSchema( dom[0] )
+			schema: new Schema( dom[0] )
 		});
 	}, {
 		normalizeWhitespace: true

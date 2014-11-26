@@ -32,4 +32,47 @@ describe( 'Scope', function () {
 			).to.equal( '<ul><li>Name</li></ul>' );
 		});
 	});
+
+	it('use children dom elem if there is no model in data', function () {
+		expect(
+			nuts.render( 'basicScope', { card: { }})
+		).to.equal( '<ul><li>no name</li></ul>' );
+	});
+
+	it('render data passed through multiple scopes', function () {
+		var tmpl = '<div><ul nu-scope="card"><li nu-model="name">no name</li></ul></div>';
+		nuts.addTemplate( 'doubleScope', tmpl, function () {
+			expect(
+				nuts.render( 'doubleScope', { card: { name: 'Name' }})
+			).to.equal( '<div><ul><li>Name</li></ul></div>' );
+		});
+	});
+
+	it('render className from data', function () {
+		var tmpl = '<span class="featured" nu-class="nuclass">bye</span>';
+		nuts.addTemplate( 'classData', tmpl, function () {
+			expect(
+				nuts.render('classData', {nuclass: 'white'})
+			).to.equal( '<span class="featured white">bye</span>' );
+		});
+	});
+
+	it('render attributes with namesake', function () {
+		var tmpl = '<span id="id" nu-id="nuid"></span>';
+		nuts.addTemplate( 'nuSakes', tmpl, function () {
+			expect(
+				nuts.render('nuSakes', {nuclass: 'white'})
+			).to.equal( '<span id="nuid"></span>' );
+		});
+	});
+
+	it('render attributes from data', function () {
+		var tmpl = '<span nu-id="color"></span>';
+		nuts.addTemplate( 'nuAtts', tmpl, function () {
+			expect(
+				nuts.render('nuAtts', {color: 'white'})
+			).to.equal( '<span id="white"></span>' );
+		});
+	});
+
 });

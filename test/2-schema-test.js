@@ -17,11 +17,11 @@ describe( 'Template schema', function () {
 	});
 
 	it('separate nuts attributes from regular ones', function (done) {
-		var tmpl = '<span id="id" nu-id="nuid">hello</span>';
+		var tmpl = '<span id="id" nu-att="nuid">hello</span>';
 		nuts.addTemplate( 'separateAtts', tmpl, function (err) {
 			expect( err ).to.equal( null );
 			expect( nuts.getTemplate('separateAtts').schema.attribs.id ).to.equal( 'id' );
-			expect( nuts.getTemplate('separateAtts').schema.nuAtts.id ).to.equal( 'nuid' );
+			expect( nuts.getTemplate('separateAtts').schema.nuAtts.att ).to.equal( 'nuid' );
 			done();
 		});
 	});
@@ -51,6 +51,18 @@ describe( 'Template schema', function () {
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.repeat ).to.not.exist;
 			expect( nuts.getTemplate('specialNuTs').schema.key ).to.equal( '' );
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.key ).to.not.exist;
+			done();
+		});
+	});
+
+	it('separate regular attributes with nuNamesake', function (done) {
+		var tmpl = '<span id="id" nu-id="nuid">hello</span>';
+		nuts.addTemplate( 'separateNamesakes', tmpl, function (err) {
+			expect( err ).to.equal( null );
+			expect( nuts.getTemplate('separateNamesakes').schema.attribs.id ).to.not.exist;
+			expect( nuts.getTemplate('separateNamesakes').schema.namesakes.id ).to.equal( 'id' );
+			expect( nuts.getTemplate('separateNamesakes').schema.nuAtts.id ).to.not.exist;
+			expect( nuts.getTemplate('separateNamesakes').schema.nuSakes.id ).to.equal( 'nuid' );
 			done();
 		});
 	});
