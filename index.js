@@ -75,7 +75,7 @@ var newCompiledTag = function (tmp) {
 		children[i].render = compile( children[i] );
 	}
 
-	var render = function (x) {
+	var render = function (x, key) {
 		var out = preTag;
 		// set scope
 		if (tmp.scope) {
@@ -113,9 +113,11 @@ var newCompiledTag = function (tmp) {
 			out += x[tmp.model];
 		} else if (tmp.model === '') {
 			out += x;
+		} else if (tmp.key === '') {
+			out += key;
 		} else {
 			for (i in children) {
-				out += children[i].render( x );
+				out += children[i].render( x, key );
 			}
 		}
 
@@ -124,26 +126,29 @@ var newCompiledTag = function (tmp) {
 		return out;
 	};
 
-	// return compiled function
+
+	/* - return compiled function - */
+
+	// with no loop
 	if (!tmp.repeat && tmp.repeat !== '') {
 		return render;
 	}
-
+	// scoped repeat loop
 	if (tmp.repeat) {
 		return function (x) {
 			var out = '';
 			var rep = x[tmp.repeat];
 			for (i in rep) {
-				out += render( rep[i] );
+				out += render( rep[i], i );
 			}
 			return out;
 		};
 	}
-
+	// simple repeat
 	return function (x) {
 		var out = '';
 		for (i in x) {
-			out += render( x[i] );
+			out += render( x[i], i );
 		}
 		return out;
 	};
