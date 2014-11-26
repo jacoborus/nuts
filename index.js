@@ -97,13 +97,13 @@ var newCompiledTag = function (tmp) {
 		var out = preTag;
 		var preX = {},
 			props = [];
-		if (tmp.extend === '') {
+		if (tmp.pipe === '') {
 			for (i in x) {
 				preX[i] = x[i];
 			}
 		}
-		if (tmp.extend) {
-			props = tmp.extend.split(' ');
+		if (tmp.pipe) {
+			props = tmp.pipe.split(' ');
 			for (i in props) {
 				preX[props[i]] = x[props[i]];
 			}
@@ -116,8 +116,8 @@ var newCompiledTag = function (tmp) {
 				x = {};
 			}
 		}
-		// extend data with parents
-		if (tmp.extend || tmp.extend === '') {
+		// pipe properties from parent
+		if (tmp.pipe || tmp.pipe === '') {
 			for (i in preX) {
 				x[i] = preX[i];
 			}
@@ -289,9 +289,9 @@ var Schema = function (dom) {
 			this.key = '';
 			delete atts['nu-key'];
 		}
-		if (atts['nu-extend'] || atts['nu-extend'] === '') {
-			this.extend = atts['nu-extend'];
-			delete atts['nu-extend'];
+		if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
+			this.pipe = atts['nu-pipe'];
+			delete atts['nu-pipe'];
 		}
 
 		// separate nuAttributes from the regular ones

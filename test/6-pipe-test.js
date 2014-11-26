@@ -9,7 +9,7 @@ describe( 'Extend', function () {
 	it('extend data with parent', function () {
 		var tmpl = '<article nu-scope="person">' +
 					'<h1 nu-model="name"></h1>'+
-					'<div nu-scope="skills" nu-extend>' +
+					'<div nu-scope="skills" nu-pipe>' +
 						'<span nu-model="js"></span>' +
 						'<span nu-model="city"></span>' +
 						'<span nu-model="name"></span>' +
@@ -40,7 +40,7 @@ describe( 'Extend', function () {
 	it('extend by select properties from parent', function () {
 		var tmpl = '<article nu-scope="person">' +
 					'<h1 nu-model="name"></h1>'+
-					'<div nu-scope="skills" nu-extend="city">' +
+					'<div nu-scope="skills" nu-pipe="city">' +
 						'<span nu-model="js"></span>' +
 						'<span nu-model="city"></span>' +
 						'<span nu-model="name"></span>' +
