@@ -29,12 +29,14 @@ describe( 'Template schema', function () {
 	it('distribute special nuts attributes', function (done) {
 		var tmpl = '<span ' +
 			'class="class" ' +
-			'nu-class="nuclass"' +
-			'nu-scope="scope"' +
-			'nu-extend="extend"' +
-			'nu-model="model"' +
+			'nu-class="nuclass" ' +
+			'nu-scope="scope" ' +
+			'nu-extend="extend" ' +
+			'nu-model="model" ' +
 			'nu-key ' +
-			'nu-repeat="repeat"' +
+			'nu-pipe="pipe"' +
+			'nu-if="if" ' +
+			'nu-unless="unless" ' +
 			'>' +
 			'hello' +
 			'</span>';
@@ -47,8 +49,12 @@ describe( 'Template schema', function () {
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.scope ).to.not.exist;
 			expect( nuts.getTemplate('specialNuTs').schema.model ).to.equal( 'model' );
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.model ).to.not.exist;
-			expect( nuts.getTemplate('specialNuTs').schema.repeat ).to.equal( 'repeat' );
-			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.repeat ).to.not.exist;
+			expect( nuts.getTemplate('specialNuTs').schema.pipe ).to.equal( 'pipe' );
+			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.pipe ).to.not.exist;
+			expect( nuts.getTemplate('specialNuTs').schema.nuif ).to.equal( 'if' );
+			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.nuif ).to.not.exist;
+			expect( nuts.getTemplate('specialNuTs').schema.unless ).to.equal( 'unless' );
+			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.unless ).to.not.exist;
 			expect( nuts.getTemplate('specialNuTs').schema.key ).to.equal( '' );
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.key ).to.not.exist;
 			done();

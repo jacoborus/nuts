@@ -130,12 +130,10 @@ var newCompiledTag = function (tmp) {
 			}
 			out += '"';
 		}
-
 		// render namesakes
 		for (i in namesakes) {
 			out += ' ' + i + '="' + (nuSakes[i] || namesakes[i]) + '"';
 		}
-
 		// render nuAttributes
 		for (i in nuAtts) {
 			out += ' ' + i + '="' + (x[nuAtts[i]] || '') + '"';
@@ -162,32 +160,65 @@ var newCompiledTag = function (tmp) {
 		return out;
 	};
 
-
-	/* - return compiled function - */
-
-	// with no loop
-	if (!tmp.repeat && tmp.repeat !== '') {
-		return render;
-	}
-	// scoped repeat loop
-	if (tmp.repeat) {
-		return function (x) {
-			var out = '';
-			var rep = x[tmp.repeat];
-			for (i in rep) {
-				out += render( rep[i], i );
-			}
-			return out;
-		};
-	}
-	// simple repeat
-	return function (x) {
+	var renderRepeat = function (x) {
 		var out = '';
 		for (i in x) {
 			out += render( x[i], i );
 		}
 		return out;
 	};
+
+	var renderRepeatLoop = function (x) {
+		var out = '';
+		var rep = x[tmp.repeat];
+		for (i in rep) {
+			out += render( rep[i], i );
+		}
+		return out;
+	};
+
+	/* - return compiled function - */
+
+	// with nuIf or nuUnless
+	if (tmp.nuif) {
+		// with no loop
+		if (!tmp.repeat && tmp.repeat !== '') {
+			return function (x) {
+				if (x[tmp.nuif]) {
+					return render(x);
+				}
+				return '';
+			};
+		}
+		// scoped repeat loop
+		if (tmp.repeat) {
+			return function (x) {
+				if (x[tmp.nuif]) {
+					return renderRepeatLoop(x)
+				}
+				return '';
+			};
+		}
+		// simple repeat
+		return function (x) {
+			if (x[tmp.nuif]) {
+				return renderRepeat(x);
+			}
+			return '';
+		};
+	}
+
+	// Without nuIf or nuUnless
+	// with no loop
+	if (!tmp.repeat && tmp.repeat !== '') {
+		return render;
+	}
+	// scoped repeat loop
+	if (tmp.repeat) {
+		return renderRepeatLoop;
+	}
+	// simple repeat
+	return renderRepeat;
 };
 
 
@@ -292,6 +323,18 @@ var Schema = function (dom) {
 		if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
 			this.pipe = atts['nu-pipe'];
 			delete atts['nu-pipe'];
+		}
+		if (atts['nu-if'] || atts['nu-if'] === '') {
+			if (atts['nu-if']) {
+				this.nuif = atts['nu-if'];
+			}
+			delete atts['nu-if'];
+		}
+		if (atts['nu-unless'] || atts['nu-unless'] === '') {
+			if (atts['nu-unless']) {
+				this.unless = atts['nu-unless'];
+			}
+			delete atts['nu-unless'];
 		}
 
 		// separate nuAttributes from the regular ones
