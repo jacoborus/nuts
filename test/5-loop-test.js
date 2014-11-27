@@ -38,12 +38,14 @@ describe( 'Loop', function () {
 			'</ul>';
 		nuts.addTemplate( 'loopKey', tmpl, function () {
 			expect(
-				nuts.render( 'loopKey', { nums: {one:1,two:2,three:3}})
+				nuts.render( 'loopKey', { nums:
+					{one:'one1',two:'two2',three:'three3'}
+				})
 			).to.equal(
 				'<ul>'+
-					'<li><span>one</span><span>1</span></li>' +
-					'<li><span>two</span><span>2</span></li>' +
-					'<li><span>three</span><span>3</span></li>' +
+					'<li><span>one</span><span>one1</span></li>' +
+					'<li><span>two</span><span>two2</span></li>' +
+					'<li><span>three</span><span>three3</span></li>' +
 				'</ul>'
 			);
 		});

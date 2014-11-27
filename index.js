@@ -67,7 +67,8 @@ var newCompiledTag = function (tmp) {
 		namesakes = tmp.namesakes,
 		nuSakes = tmp.nuSakes,
 		nuAtts = tmp.nuAtts,
-		atts = tmp.attribs;
+		atts = tmp.attribs,
+		nuif = tmp.nuif;
 
 	// render regular attributes
 	for (i in atts) {
@@ -95,6 +96,7 @@ var newCompiledTag = function (tmp) {
 
 	var render = function (x, key) {
 		var out = preTag;
+		var len;
 		var preX = {},
 			props = [];
 		if (tmp.pipe === '') {
@@ -150,8 +152,11 @@ var newCompiledTag = function (tmp) {
 		} else if (tmp.key === '') {
 			out += key;
 		} else {
-			for (i in children) {
+			i = 0;
+			len = children.length;
+			while (i < len) {
 				out += children[i].render( x, key );
+				i++;
 			}
 		}
 
@@ -161,18 +166,36 @@ var newCompiledTag = function (tmp) {
 	};
 
 	var renderRepeat = function (x) {
-		var out = '';
-		for (i in x) {
-			out += render( x[i], i );
-		}
+		var out = '',
+			i = 0,
+			len = x.length;
+		if (len) {
+			while (i < len) {
+				out += render( x[i], i );
+				i++
+			}
+		} else if ('object' === typeof rep) {
+			for (i in rep) {
+				out += render( rep[i], i );
+			}
+		};
 		return out;
 	};
 
 	var renderRepeatLoop = function (x) {
-		var out = '';
-		var rep = x[tmp.repeat];
-		for (i in rep) {
-			out += render( rep[i], i );
+		var out = '',
+			rep = x[tmp.repeat],
+			len = rep.length,
+			i = 0;
+		if (len) {
+			while (i < len) {
+				out += render( rep[i], i );
+				i++
+			}
+		} else if ('object' === typeof rep) {
+			for (i in rep) {
+				out += render( rep[i], i );
+			}
 		}
 		return out;
 	};
@@ -180,11 +203,11 @@ var newCompiledTag = function (tmp) {
 	/* - return compiled function - */
 
 	// with nuIf or nuUnless
-	if (tmp.nuif) {
+	if (nuif) {
 		// with no loop
 		if (!tmp.repeat && tmp.repeat !== '') {
 			return function (x) {
-				if (x[tmp.nuif]) {
+				if (x[nuif]) {
 					return render(x);
 				}
 				return '';
@@ -193,7 +216,7 @@ var newCompiledTag = function (tmp) {
 		// scoped repeat loop
 		if (tmp.repeat) {
 			return function (x) {
-				if (x[tmp.nuif]) {
+				if (x[nuif]) {
 					return renderRepeatLoop(x)
 				}
 				return '';
@@ -201,7 +224,7 @@ var newCompiledTag = function (tmp) {
 		}
 		// simple repeat
 		return function (x) {
-			if (x[tmp.nuif]) {
+			if (x[nuif]) {
 				return renderRepeat(x);
 			}
 			return '';
