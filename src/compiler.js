@@ -1,5 +1,7 @@
 'use strict';
 
+var getRender = require('./render.js');
+
 /* - Generate compiled tags - */
 var compile;
 
@@ -10,12 +12,14 @@ var newCompiledText = function (tmp) {
 	};
 };
 
+
 var newCompiledComment = function (tmp) {
 	var out = '<!--' + tmp.data + '-->';
 	return function () {
 		return out;
 	};
 };
+
 
 var newCompiledDirective = function (tmp) {
 	var out;
@@ -28,6 +32,7 @@ var newCompiledDirective = function (tmp) {
 		return out;
 	};
 };
+
 
 var newCompiledTag = function (tmp) {
 	var i, className, nuClass, classAtt;
@@ -65,77 +70,7 @@ var newCompiledTag = function (tmp) {
 		children[i].render = compile( children[i] );
 	}
 
-	var render = function (x, key) {
-		var out = preTag;
-		var len;
-		var preX = {},
-			props = [];
-		if (tmp.pipe === '') {
-			for (i in x) {
-				preX[i] = x[i];
-			}
-		}
-		if (tmp.pipe) {
-			props = tmp.pipe.split(' ');
-			for (i in props) {
-				preX[props[i]] = x[props[i]];
-			}
-		}
-		// set scope
-		if (tmp.scope) {
-			if (x[tmp.scope]) {
-				x = x[tmp.scope];
-			} else {
-				x = {};
-			}
-		}
-		// pipe properties from parent
-		if (tmp.pipe || tmp.pipe === '') {
-			for (i in preX) {
-				x[i] = preX[i];
-			}
-		}
-		// render nuClass
-		if (nuClass) {
-			out += classAtt;
-			if (nuClass && x[nuClass]) {
-				out += className ? ' ' + x[nuClass] : x[nuClass];
-			}
-			out += '"';
-		}
-		// render namesakes
-		for (i in namesakes) {
-			out += ' ' + i + '="' + (nuSakes[i] || namesakes[i]) + '"';
-		}
-		// render nuAttributes
-		for (i in nuAtts) {
-			out += ' ' + i + '="' + (x[nuAtts[i]] || '') + '"';
-		}
-
-		// close open tag
-		out += '>';
-
-		// compile content
-		if (tmp.model && x[tmp.model]) {
-			out += x[tmp.model];
-		} else if (tmp.model === '') {
-			out += x;
-		} else if (tmp.key === '') {
-			out += key;
-		} else {
-			i = 0;
-			len = children.length;
-			while (i < len) {
-				out += children[i].render( x, key );
-				i++;
-			}
-		}
-
-		// close tag
-		out += postTag;
-		return out;
-	};
-
+	var render = getRender(tmp, preTag, nuClass, namesakes, nuAtts, children, postTag, nuSakes, classAtt, className);
 	var renderRepeat = function (x) {
 		var out = '',
 			i = 0,
@@ -214,6 +149,7 @@ var newCompiledTag = function (tmp) {
 	// simple repeat
 	return renderRepeat;
 };
+
 
 
 /*!
