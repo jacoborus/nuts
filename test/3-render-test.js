@@ -75,4 +75,13 @@ describe( 'nuts.render', function () {
 			).to.equal( '<span class="featured"></span>' );
 		});
 	});
+
+	it('render doctype', function () {
+		var tmpl = '<html nu-doctype></html>';
+		nuts.addTemplate( 'doctype', tmpl, function () {
+			expect(
+				nuts.render('doctype')
+			).to.equal( '<!DOCTYPE html><html></html>' );
+		});
+	});
 });

@@ -29,12 +29,7 @@ var newCompiledCdata = function (tmp) {
 
 
 var newCompiledDirective = function (tmp) {
-	var out;
-	if (tmp.name === '!doctype') {
-		out = '<!DOCTYPE html>';
-	} else {
-		out = '<' + tmp.name + '>';
-	}
+	var out = '<' + tmp.data + '>';
 	return function () {
 		return out;
 	};
@@ -50,6 +45,10 @@ var newCompiledTag = function (tmp) {
 
 	var i, className, classAtt;
 
+	// preprint doctype
+	if (tmp.doctype) {
+		preTag = '<!DOCTYPE html>' + preTag;
+	}
 	// render regular attributes
 	for (i in atts) {
 		preTag += ' ' + i + '="' + atts[i] + '"';

@@ -113,6 +113,10 @@ var Schema = function (dom) {
 			}
 			delete atts['nu-unless'];
 		}
+		if (atts['nu-doctype'] === '') {
+			this.doctype = true
+			delete atts['nu-doctype'];
+		}
 
 		// separate nuAttributes from the regular ones
 		separateNuAtts.call( dom );
