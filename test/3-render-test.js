@@ -24,6 +24,15 @@ describe( 'nuts.render', function () {
 		});
 	});
 
+	it('render CDATA nodes', function (done) {
+		var tmpl = '<![CDATA[ This is a CDATA block ]]>';
+		nuts.addTemplate( 'tmplCdata', tmpl, function (err) {
+			expect( err ).to.equal( null );
+			expect( nuts.render( 'tmplCdata', {} )).to.equal( '<![CDATA[ This is a CDATA block ]]>' );
+			done();
+		});
+	});
+
 	it('render directive nodes', function (done) {
 		var tmpl = '<!DOCTYPE html>';
 		nuts.addTemplate( 'tmplDirective', tmpl, function (err) {

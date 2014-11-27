@@ -20,6 +20,13 @@ var newCompiledComment = function (tmp) {
 	};
 };
 
+var newCompiledCdata = function (tmp) {
+	var out = '<!' + tmp.data + '>';
+	return function () {
+		return out;
+	};
+};
+
 
 var newCompiledDirective = function (tmp) {
 	var out;
@@ -120,7 +127,6 @@ var newCompiledTag = function (tmp) {
 };
 
 
-
 /*!
  * get a compiled template
  * @param  {Object} template template model
@@ -134,7 +140,11 @@ compile = function (template) {
 		case 'text':
 			return newCompiledText( schema );
 		case 'comment':
-			return newCompiledComment( schema );
+			if (schema.data.slice(0, 7) !== '[CDATA[') {
+				return newCompiledComment( schema );
+			}
+			return newCompiledCdata( schema );
+
 		case 'directive':
 			return newCompiledDirective( schema );
 	}
