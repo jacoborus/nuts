@@ -35,16 +35,13 @@ var newCompiledDirective = function (tmp) {
 
 
 var newCompiledTag = function (tmp) {
-	var i, className, nuClass, classAtt;
-
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
-		postTag = '</' + tmp.name +'>',
-		namesakes = tmp.namesakes,
-		nuSakes = tmp.nuSakes,
-		nuAtts = tmp.nuAtts,
 		atts = tmp.attribs,
-		nuif = tmp.nuif;
+		nuif = tmp.nuif,
+		str = {};
+
+	var i, className, classAtt;
 
 	// render regular attributes
 	for (i in atts) {
@@ -52,14 +49,13 @@ var newCompiledTag = function (tmp) {
 	}
 
 	// prepare className tag
-	nuClass = tmp.nuClass;
-	if (tmp.class || nuClass) {
+	if (tmp.class || tmp.nuClass) {
 		classAtt = ' class="';
 	}
 	if (tmp.class) {
 		className = tmp.class;
 		classAtt += className;
-		if (!nuClass) {
+		if (!tmp.nuClass) {
 			classAtt += '"';
 			preTag += classAtt;
 		}
@@ -70,41 +66,14 @@ var newCompiledTag = function (tmp) {
 		children[i].render = compile( children[i] );
 	}
 
-	var render = getRender(tmp, preTag, nuClass, namesakes, nuAtts, children, postTag, nuSakes, classAtt, className);
-	var renderRepeat = function (x) {
-		var out = '',
-			i = 0,
-			len = x.length;
-		if (len) {
-			while (i < len) {
-				out += render( x[i], i );
-				i++;
-			}
-		} else if ('object' === typeof x) {
-			for (i in x) {
-				out += render( x[i], i );
-			}
-		}
-		return out;
-	};
+	str.classAtt = classAtt;
+	str.postTag = '</' + tmp.name + '>';
+	str.preTag = preTag;
 
-	var renderRepeatLoop = function (x) {
-		var out = '',
-			rep = x[tmp.repeat],
-			len = rep.length,
-			i = 0;
-		if (len) {
-			while (i < len) {
-				out += render( rep[i], i );
-				i++;
-			}
-		} else if ('object' === typeof rep) {
-			for (i in rep) {
-				out += render( rep[i], i );
-			}
-		}
-		return out;
-	};
+	var render = getRender.direct( tmp, str );
+	var renderLoop = getRender.loop( render, tmp );
+	var renderLoopScope = getRender.loopScope( render, tmp );
+
 
 	/* - return compiled function - */
 
@@ -123,7 +92,7 @@ var newCompiledTag = function (tmp) {
 		if (tmp.repeat) {
 			return function (x) {
 				if (x[nuif]) {
-					return renderRepeatLoop(x);
+					return renderLoopScope(x);
 				}
 				return '';
 			};
@@ -131,7 +100,7 @@ var newCompiledTag = function (tmp) {
 		// simple repeat
 		return function (x) {
 			if (x[nuif]) {
-				return renderRepeat(x);
+				return renderLoop(x);
 			}
 			return '';
 		};
@@ -144,10 +113,10 @@ var newCompiledTag = function (tmp) {
 	}
 	// scoped repeat loop
 	if (tmp.repeat) {
-		return renderRepeatLoop;
+		return renderLoopScope;
 	}
 	// simple repeat
-	return renderRepeat;
+	return renderLoop;
 };
 
 
