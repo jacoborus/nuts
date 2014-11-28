@@ -39,6 +39,7 @@ describe( 'Template schema', function () {
 			'nu-unless="unless" ' +
 			'nu-doctype ' +
 			'nu-checked="checked"' +
+			'nu-is' +
 			'>' +
 			'hello' +
 			'</span>';
@@ -63,6 +64,7 @@ describe( 'Template schema', function () {
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.doctype ).to.not.exist;
 			expect( nuts.getTemplate('specialNuTs').schema.checked ).to.equal( 'checked' );
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.checked ).to.not.exist;
+			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.is ).to.not.exist;
 			done();
 		});
 	});

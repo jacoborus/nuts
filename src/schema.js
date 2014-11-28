@@ -71,7 +71,6 @@ var Schema = function (dom) {
 
 	// assign attributes
 	if (atts) {
-		this.atts = {};
 		// separate special attributes
 		if (atts.class) {
 			this.class = atts.class;
@@ -120,6 +119,12 @@ var Schema = function (dom) {
 		if (atts['nu-doctype'] === '') {
 			this.doctype = true;
 			delete atts['nu-doctype'];
+		}
+		if (atts['nu-is'] || atts['nu-is'] === '') {
+			if (atts['nu-is']) {
+				this.is = atts['nu-is'];
+			}
+			delete atts['nu-is'];
 		}
 
 		// separate nuAttributes from the regular ones

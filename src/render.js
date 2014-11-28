@@ -95,7 +95,7 @@ var direct = function (t, str) {
 			out += ' ' + i + '="' + (x[nuAtts[i]] || '') + '"';
 		}
 
-		// pipe properties from parent
+		// print checked attribute
 		if (checked === '') {
 			if (x) {
 				out += ' checked';

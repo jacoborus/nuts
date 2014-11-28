@@ -1,6 +1,8 @@
 'use strict';
 
 var getRender = require('./render.js');
+var archive = {};
+var extendTag = require('./extend-tag.js');
 
 /* - Generate compiled tags - */
 var compile;
@@ -37,6 +39,12 @@ var newCompiledDirective = function (tmp) {
 
 
 var newCompiledTag = function (tmp) {
+	var nuis;
+	if (tmp.is) {
+		nuis = tmp.is;
+		delete tmp.is;
+		tmp = extendTag( archive[nuis].schema, tmp );
+	}
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
 		atts = tmp.attribs,
@@ -149,4 +157,7 @@ compile = function (template) {
 	}
 };
 
-module.exports = compile;
+module.exports = {
+	compile: compile,
+	archive: archive
+};

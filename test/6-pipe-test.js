@@ -4,7 +4,7 @@ var expect = require('chai').expect,
 	nuts = require('../index.js');
 
 
-describe( 'Extend', function () {
+describe( 'Pipe', function () {
 
 	it('extend data with parent', function () {
 		var tmpl = '<article nu-scope="person">' +

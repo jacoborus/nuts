@@ -4,10 +4,10 @@ var fs = require('fs'),
 	path = require('path'),
 	recursive = require('recursive-readdir'),
 	htmlparser = require('htmlparser2'),
-	compile = require('./compiler.js'),
+	compile = require('./compiler.js').compile,
 	Schema = require('./schema.js');
 
-var archive = {},
+var archive = require('./compiler.js').archive,
 	allCompiled = false;
 
 
