@@ -1,5 +1,23 @@
 'use strict';
 
+var voidElements = {
+	area: true,
+	base: true,
+	br: true,
+	col: true,
+	embed: true,
+	hr: true,
+	img: true,
+	input: true,
+	keygen: true,
+	link: true,
+	meta: true,
+	param: true,
+	source: true,
+	track: true,
+	wbr: true
+}
+
 var direct = function (t, str) {
 	var pipe = t.pipe,
 		scope = t.scope,
@@ -14,6 +32,7 @@ var direct = function (t, str) {
 		preTag = str.preTag,
 		postTag = str.postTag;
 
+	var selfClose = voidElements[t.name];
 
 	return function (x, key) {
 		var out = preTag,
@@ -69,24 +88,26 @@ var direct = function (t, str) {
 		// close open tag
 		out += '>';
 
-		// compile content
-		if (model && x[model]) {
-			out += x[model];
-		} else if (model === '') {
-			out += x;
-		} else if (t.key === '') {
-			out += key;
-		} else {
-			i = 0;
-			len = children.length;
-			while (i < len) {
-				out += children[i].render( x, key );
-				i++;
+		if (!selfClose) {
+			// compile content
+			if (model && x[model]) {
+				out += x[model];
+			} else if (model === '') {
+				out += x;
+			} else if (t.key === '') {
+				out += key;
+			} else {
+				i = 0;
+				len = children.length;
+				while (i < len) {
+					out += children[i].render( x, key );
+					i++;
+				}
 			}
+			// close tag
+			out += postTag;
 		}
 
-		// close tag
-		out += postTag;
 		return out;
 	};
 };

@@ -84,4 +84,45 @@ describe( 'nuts.render', function () {
 			).to.equal( '<!DOCTYPE html><html></html>' );
 		});
 	});
+
+	it('render vooid elements', function () {
+		var tmpl = '<span>' +
+				'<area>' +
+				'<base>' +
+				'<br>' +
+				'<col>' +
+				'<embed>' +
+				'<hr>' +
+				'<img>' +
+				'<input>' +
+				'<keygen>' +
+				'<link>' +
+				'<meta>' +
+				'<param>' +
+				'<source>' +
+				'<track>' +
+				'<wbr>' +
+			'</span>';
+		nuts.addTemplate( 'voidElements', tmpl, function () {
+			expect(
+				nuts.render('voidElements')
+			).to.equal( '<span>' +
+				'<area>' +
+				'<base>' +
+				'<br>' +
+				'<col>' +
+				'<embed>' +
+				'<hr>' +
+				'<img>' +
+				'<input>' +
+				'<keygen>' +
+				'<link>' +
+				'<meta>' +
+				'<param>' +
+				'<source>' +
+				'<track>' +
+				'<wbr>' +
+			'</span>' );
+		});
+	});
 });
