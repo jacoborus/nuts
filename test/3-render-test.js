@@ -85,7 +85,7 @@ describe( 'nuts.render', function () {
 		});
 	});
 
-	it('render vooid elements', function () {
+	it('render void elements', function () {
 		var tmpl = '<span>' +
 				'<area>' +
 				'<base>' +
@@ -122,6 +122,35 @@ describe( 'nuts.render', function () {
 				'<source>' +
 				'<track>' +
 				'<wbr>' +
+			'</span>' );
+		});
+	});
+
+	it('render SVG elements', function () {
+		var tmpl = '<span>' +
+				'<path>' +
+				'<circle>' +
+				'<ellipse>' +
+				'<line>' +
+				'<rect>' +
+				'<use>' +
+				'<stop>' +
+				'<polyline>' +
+				'<polygone>' +
+			'</span>';
+		nuts.addTemplate( 'voidElements', tmpl, function () {
+			expect(
+				nuts.render('voidElements')
+			).to.equal( '<span>' +
+				'<path>' +
+				'<circle>' +
+				'<ellipse>' +
+				'<line>' +
+				'<rect>' +
+				'<use>' +
+				'<stop>' +
+				'<polyline>' +
+				'<polygone>' +
 			'</span>' );
 		});
 	});

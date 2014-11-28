@@ -15,7 +15,16 @@ var voidElements = {
 	param: true,
 	source: true,
 	track: true,
-	wbr: true
+	wbr: true,
+	path: true,
+	circle: true,
+	ellipse: true,
+	line: true,
+	rect: true,
+	use: true,
+	stop: true,
+	polyline: true,
+	polygone: true
 }
 
 var direct = function (t, str) {
