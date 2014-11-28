@@ -37,7 +37,8 @@ describe( 'Template schema', function () {
 			'nu-pipe="pipe"' +
 			'nu-if="if" ' +
 			'nu-unless="unless" ' +
-			'nu-doctype' +
+			'nu-doctype ' +
+			'nu-checked="checked"' +
 			'>' +
 			'hello' +
 			'</span>';
@@ -60,6 +61,8 @@ describe( 'Template schema', function () {
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.key ).to.not.exist;
 			expect( nuts.getTemplate('specialNuTs').schema.doctype ).to.equal( true );
 			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.doctype ).to.not.exist;
+			expect( nuts.getTemplate('specialNuTs').schema.checked ).to.equal( 'checked' );
+			expect( nuts.getTemplate('specialNuTs').schema.nuAtts.checked ).to.not.exist;
 			done();
 		});
 	});

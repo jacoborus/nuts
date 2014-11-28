@@ -25,7 +25,7 @@ var voidElements = {
 	stop: true,
 	polyline: true,
 	polygone: true
-}
+};
 
 var direct = function (t, str) {
 	var pipe = t.pipe,
@@ -38,6 +38,7 @@ var direct = function (t, str) {
 		nuAtts = t.nuAtts,
 		nuClass = t.nuClass,
 		classAtt = str.classAtt,
+		checked = t.checked,
 		preTag = str.preTag,
 		postTag = str.postTag;
 
@@ -94,6 +95,16 @@ var direct = function (t, str) {
 			out += ' ' + i + '="' + (x[nuAtts[i]] || '') + '"';
 		}
 
+		// pipe properties from parent
+		if (checked === '') {
+			if (x) {
+				out += ' checked';
+			}
+		} else if (checked) {
+			if (x[checked]) {
+				out += ' checked';
+			}
+		}
 		// close open tag
 		out += '>';
 

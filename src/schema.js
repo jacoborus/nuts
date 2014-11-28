@@ -113,8 +113,12 @@ var Schema = function (dom) {
 			}
 			delete atts['nu-unless'];
 		}
+		if (atts['nu-checked'] || atts['nu-checked'] === '') {
+			this.checked = atts['nu-checked'];
+			delete atts['nu-checked'];
+		}
 		if (atts['nu-doctype'] === '') {
-			this.doctype = true
+			this.doctype = true;
 			delete atts['nu-doctype'];
 		}
 

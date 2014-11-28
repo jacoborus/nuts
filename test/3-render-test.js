@@ -154,4 +154,24 @@ describe( 'nuts.render', function () {
 			'</span>' );
 		});
 	});
+
+	it('render checked', function (done) {
+		var tmpl = '<input type="radio" name="name" value="value" nu-scope="nuscope" nu-checked>';
+		nuts.addTemplate( 'checked', tmpl, function () {
+			expect(
+				nuts.render('checked', {nuscope:true})
+			).to.equal( '<input type="radio" name="name" value="value" checked>' );
+			done();
+		});
+	});
+
+	it('render checked scoped', function (done) {
+		var tmpl = '<input type="radio" name="name" value="value" nu-checked="nuscope">';
+		nuts.addTemplate( 'checkedScope', tmpl, function () {
+			expect(
+				nuts.render('checkedScope', {nuscope:true})
+			).to.equal( '<input type="radio" name="name" value="value" checked>' );
+			done();
+		});
+	});
 });
