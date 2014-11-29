@@ -2,7 +2,7 @@
 
 var getRender = require('./render.js');
 var archive = {};
-var extendTag = require('./extend-tag.js');
+var partial = require('./partial.js');
 
 /* - Generate compiled tags - */
 var compile;
@@ -43,7 +43,7 @@ var newCompiledTag = function (tmp) {
 	if (tmp.is) {
 		nuis = tmp.is;
 		delete tmp.is;
-		tmp = extendTag( archive[nuis].schema, tmp );
+		tmp = partial( archive[nuis].schema, tmp );
 	}
 	// open and close tag strings
 	var preTag = '<' + tmp.name,

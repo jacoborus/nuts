@@ -35,7 +35,7 @@ var isEmpty = function (obj) {
     return true;
 };
 
-var extendTag = function (target, obj) {
+var partial = function (target, obj) {
 
 	var i, j;
 
@@ -55,4 +55,4 @@ var extendTag = function (target, obj) {
 	return target;
 };
 
-module.exports = extendTag;
+module.exports = partial;
