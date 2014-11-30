@@ -61,7 +61,7 @@ var separateNuAtts = function () {
  * @param {Object} dom    parsed HTML
  * @param {Object} parent [description]
  */
-var Schema = function (dom) {
+var TagSchema = function (dom) {
 	var atts = dom.attribs,
 		domChildren, nuChildren, i;
 
@@ -99,6 +99,10 @@ var Schema = function (dom) {
 		if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
 			this.pipe = atts['nu-pipe'];
 			delete atts['nu-pipe'];
+		}
+		if (atts['nu-block'] || atts['nu-block'] === '') {
+			this.block = atts['nu-block'];
+			delete atts['nu-block'];
 		}
 		if (atts['nu-if'] || atts['nu-if'] === '') {
 			if (atts['nu-if']) {
@@ -140,7 +144,7 @@ var Schema = function (dom) {
 		for (i in domChildren) {
 			nuChildren[i] = {
 				src : null,
-				schema: new Schema( domChildren[i] )
+				schema: new TagSchema( domChildren[i] )
 			};
 		}
 	}
@@ -152,4 +156,39 @@ var Schema = function (dom) {
 	this.nuSakes = dom.nuSakes || {};
 };
 
-module.exports = Schema;
+
+
+/*!
+ * layout schema constructor
+ * Get nuts formatted dom object info from parsed html
+ * @param {Object} dom    parsed HTML
+ * @param {Object} parent [description]
+ */
+var LayoutSchema = function (dom) {
+	var children = dom.children,
+		blocks = this.blocks = {},
+		blockName, atts,
+		i;
+
+	this.type = dom.type;
+	this.name = dom.name;
+	this.extend = dom.attribs.extend;
+
+	for (i in children) {
+		if (children[i].name === 'nu-block') {
+			atts = children[i].attribs;
+			blockName = atts.extend;
+			blocks[blockName] = {
+				content: atts.content,
+				prepend: atts.prepend,
+				append: atts.append
+			};
+		}
+	}
+};
+
+
+module.exports = {
+	TagSchema: TagSchema,
+	LayoutSchema: LayoutSchema
+};

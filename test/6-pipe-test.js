@@ -8,13 +8,13 @@ describe( 'Pipe', function () {
 
 	it('extend data with parent', function () {
 		var tmpl = '<article nu-scope="person">' +
-					'<h1 nu-model="name"></h1>'+
-					'<div nu-scope="skills" nu-pipe>' +
-						'<span nu-model="js"></span>' +
-						'<span nu-model="city"></span>' +
-						'<span nu-model="name"></span>' +
-					'</div>' +
-				'</article>';
+				'<h1 nu-model="name"></h1>'+
+				'<div nu-scope="skills" nu-pipe>' +
+					'<span nu-model="js"></span>' +
+					'<span nu-model="city"></span>' +
+					'<span nu-model="name"></span>' +
+				'</div>' +
+			'</article>';
 		nuts.addTemplate( 'directExtend', tmpl, function () {
 			expect(
 				nuts.render( 'directExtend', { person:{

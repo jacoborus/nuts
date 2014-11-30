@@ -1,8 +1,9 @@
 'use strict';
 
-var getRender = require('./render.js');
-var archive = {};
-var partial = require('./partial.js');
+var getRender = require('./render.js'),
+	partial = require('./partial.js'),
+	templates = {},
+	layouts = {};
 
 /* - Generate compiled tags - */
 var compile;
@@ -43,7 +44,7 @@ var newCompiledTag = function (tmp) {
 	if (tmp.is) {
 		nuis = tmp.is;
 		delete tmp.is;
-		tmp = partial( archive[nuis].schema, tmp );
+		tmp = partial( templates[nuis].schema, tmp );
 	}
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
@@ -159,5 +160,6 @@ compile = function (template) {
 
 module.exports = {
 	compile: compile,
-	archive: archive
+	templates: templates,
+	layouts: layouts
 };

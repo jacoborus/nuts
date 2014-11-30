@@ -3,33 +3,12 @@
 var fs = require('fs'),
 	path = require('path'),
 	recursive = require('recursive-readdir'),
-	htmlparser = require('htmlparser2'),
 	compile = require('./compiler.js').compile,
-	Schema = require('./schema.js');
+	createTemplate = require('./template.js');
 
-var archive = require('./compiler.js').archive,
+var templates = require('./compiler.js').templates,
+	layouts = require('./compiler.js').layouts,
 	allCompiled = false;
-
-
-/*!
- * generate a template object with its source and model as properties
- * @param  {String}   src      html template
- * @param  {Function} callback Signature: error, generatedTemplate
- */
-var newTemplate = function (src, callback) {
-	var handler = new htmlparser.DomHandler( function (error, dom) {
-		if (error) { return callback( error );}
-		callback( null, {
-			src : src,
-			schema: new Schema( dom[0] )
-		});
-	}, {normalizeWhitespace: true});
-
-	var parser = new htmlparser.Parser( handler );
-	parser.write( src );
-	parser.done();
-};
-
 
 
 /*!
@@ -46,9 +25,13 @@ var Nuts = function () {};
  */
 Nuts.prototype.addTemplate = function (name, source, callback) {
 	callback = callback || function () {};
-	newTemplate( source, function (err, tmpl) {
+	createTemplate( source, function (err, tmpl) {
 		if (err) {return callback( err );}
-		archive[name] = tmpl;
+		if (tmpl.layout) {
+			layouts[name] = tmpl;
+		} else {
+			templates[name] = tmpl;
+		}
 		allCompiled = false;
 		callback( null, tmpl );
 	});
@@ -56,12 +39,12 @@ Nuts.prototype.addTemplate = function (name, source, callback) {
 
 
 /**
- * Get a template object from archive
+ * Get a template object from templates
  * @param  {String} name template keyname
  * @return {Object}      template object
  */
 Nuts.prototype.getTemplate = function (name) {
-	return archive[name];
+	return templates[name] || layouts[name];
 };
 
 
@@ -130,12 +113,12 @@ Nuts.prototype.render = function (tmplName, data) {
 	var i;
 	data = data || {};
 	if (!allCompiled) {
-		for (i in archive) {
-			archive[i].render = compile( archive[i] );
+		for (i in templates) {
+			templates[i].render = compile( templates[i] );
 		}
 		allCompiled = true;
 	}
-	return archive[tmplName].render( data );
+	return templates[tmplName].render( data );
 };
 
 
