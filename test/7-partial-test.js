@@ -6,7 +6,7 @@ var expect = require('chai').expect,
 
 describe( 'Partial', function () {
 	it('render simple partials', function (done) {
-		var tmpl = '<ul><li nu-is="simplePartialLi"></li></ul>';
+		var tmpl = '<ul><li nu-as="simplePartialLi"></li></ul>';
 		var tmpl2 = '<li yeah="yeah">nuts</li>';
 		nuts.addTemplate( 'simplePartialUl', tmpl, function () {
 			nuts.addTemplate('simplePartialLi', tmpl2, function () {

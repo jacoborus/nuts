@@ -42,7 +42,7 @@ describe( 'Template schema', function () {
 				'nu-doctype ' +
 				'nu-checked="checked"' +
 				'nu-block="head"' +
-				'nu-is' +
+				'nu-as' +
 				'>' +
 				'hello' +
 				'</span>';
@@ -80,8 +80,8 @@ describe( 'Template schema', function () {
 				// checked
 				expect( nuts.getTemplate('specialNuTs').schema.checked ).to.equal( 'checked' );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.checked ).to.not.exist;
-				// is
-				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.is ).to.not.exist;
+				// as
+				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.as ).to.not.exist;
 				done();
 			});
 		});

@@ -124,11 +124,11 @@ var TagSchema = function (dom) {
 			this.doctype = true;
 			delete atts['nu-doctype'];
 		}
-		if (atts['nu-is'] || atts['nu-is'] === '') {
-			if (atts['nu-is']) {
-				this.is = atts['nu-is'];
+		if (atts['nu-as'] || atts['nu-as'] === '') {
+			if (atts['nu-as']) {
+				this.as = atts['nu-as'];
 			}
-			delete atts['nu-is'];
+			delete atts['nu-as'];
 		}
 
 		// separate nuAttributes from the regular ones

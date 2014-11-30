@@ -40,11 +40,11 @@ var newCompiledDirective = function (tmp) {
 
 
 var newCompiledTag = function (tmp) {
-	var nuis;
-	if (tmp.is) {
-		nuis = tmp.is;
-		delete tmp.is;
-		tmp = partial( templates[nuis].schema, tmp );
+	var nuas;
+	if (tmp.as) {
+		nuas = tmp.as;
+		delete tmp.as;
+		tmp = partial( templates[nuas].schema, tmp );
 	}
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
