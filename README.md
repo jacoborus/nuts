@@ -24,7 +24,7 @@ Coming soon
 [Guide](https://github.com/jacoborus/nuts/blob/master/docs/guide.md)
 -----
 
-[Tag attribute reference](https://github.com/jacoborus/nuts/blob/master/docs/reference.md)
+[Reference](https://github.com/jacoborus/nuts/blob/master/docs/reference.md)
 -----
 
 [API](https://github.com/jacoborus/nuts/blob/master/docs/api.md)

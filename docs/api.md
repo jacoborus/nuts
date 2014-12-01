@@ -1,49 +1,81 @@
 API
 ===
 
-nuts.addTemplate
-----------------
+addTemplate
+-----------
 
 Add a template and generate its model
 
-Params:
+**Params:**
 
 - **`source`** *String*: html template
 - **`callback`** *Function*: Signature: error, addedTemplate
 
 
-nuts.addFile
-------------
+**Example:**
 
-Add a template from file
+```js
+nuts.addTemplate( '<span nut="devs"></span>', function (err, tmpl) {
+	if (err) { throw err; }
+	console.log( tmpl.src );
+	// => '<span nut="devs"></span>'
+});
 
-Params:
+
+
+addFile
+-------
+
+Add one or multiple templates from file
+
+**Params:**
 
 - **`route`** *String*: template path
 - **`callback`** *Function*: Signature: error, addedTemplate
 
+**Example:**
+
+hi.html
+```html
+<span nut="hello">Hello nuts!</span>
+<span nut="bye">Godd bye nuts!</span>
+```
+
+```js
+nuts.addFile( 'hi.html', function (err, tmpls) {
+	if (err) { throw err; }
+	console.log( tmpls.hello.src );
+	// => '<span nut="hello">Hello nuts!</span>'
+});
 
 
-nuts.addFolder
---------------
+
+addFolder
+---------
 
 Add all templates in a folder using its filenames as template keynames
 
-Params:
+**Params:**
 
 - **`folderPath`** *String*: route to folder
 - **`callback`** *Function*: Signature: error
 
 
 
-nuts.getTemplate
-----------------
+getTemplate
+-----------
 
 Get a template object from nuts templates archive
 
-Params:
+**Params:**
 
 - **`name`** *String*: template keyname
 
 **Return** *Object*: template object
+
+
+render
+------
+
+
 
