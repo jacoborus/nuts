@@ -15,17 +15,20 @@ var createTemplate = function (src, callback) {
 		dom = dom[0];
 
 		var isLayout = dom.name === 'template' && dom.attribs['nu-layout'],
+			nutName = dom.attribs.nut,
 			schema;
+
+		delete dom.attribs.nut;
 
 		if (isLayout) {
 			schema = new LayoutSchema( dom );
 		} else {
 			schema = new TagSchema( dom );
 		}
-
 		callback( null, {
 			src : src,
 			schema: schema,
+			nut: nutName,
 			layout: isLayout
 		});
 	}, {normalizeWhitespace: true});

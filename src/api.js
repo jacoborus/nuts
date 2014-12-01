@@ -26,14 +26,14 @@ var Nuts = function () {};
  * @param {String}   source html template
  * @param {Function} callback    Signature: error, addedTemplate
  */
-Nuts.prototype.addTemplate = function (name, source, callback) {
+Nuts.prototype.addTemplate = function (source, callback) {
 	callback = callback || function () {};
 	createTemplate( source, function (err, tmpl) {
 		if (err) {return callback( err );}
 		if (tmpl.layout) {
-			layouts[name] = tmpl;
+			layouts[tmpl.nut] = tmpl;
 		} else {
-			templates[name] = tmpl;
+			templates[tmpl.nut] = tmpl;
 		}
 		allCompiled = false;
 		callback( null, tmpl );
@@ -57,11 +57,11 @@ Nuts.prototype.getTemplate = function (name) {
  * @param {String}   route template path
  * @param {Function} callback     Signature: error, addedTemplate
  */
-Nuts.prototype.addFile = function (name, route, callback) {
+Nuts.prototype.addFile = function (route, callback) {
 	var self = this;
 	fs.readFile( path.resolve(route), 'utf8', function (err, data) {
 		if (err) {return callback( err );}
-		self.addTemplate( name, data, callback );
+		self.addTemplate( data, callback );
 	});
 };
 
@@ -94,10 +94,9 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 			if (path.extname(filePath) !== '.html') {
 				return counter();
 			}
-			var name = path.basename( filePath, '.html');
 			fs.readFile( filePath, 'utf8', function (err, data) {
 				if (err) { return counter( err );}
-				self.addTemplate( name, data, function (err) {
+				self.addTemplate( data, function (err) {
 					counter( err );
 				});
 			});
@@ -125,7 +124,6 @@ Nuts.prototype.render = function (tmplName, data) {
 			views[i] = layouts[i];
 		}
 		allCompiled = true;
-		//console.log(layouts);
 	}
 	return views[tmplName].render( data );
 };

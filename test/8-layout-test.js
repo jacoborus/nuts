@@ -7,9 +7,9 @@ describe( 'Layout', function (done) {
 
 	it('print layouts with default blocks when no data passed', function (done) {
 
-		var layout = '<template nu-layout="tagLayout"></template>';
+		var layout = '<template nu-layout="tagLayout" nut="simpleLayout"></template>';
 
-		nuts.addTemplate( 'simpleLayout', layout, function () {
+		nuts.addTemplate( layout, function () {
 			expect(
 				nuts.render( 'simpleLayout' )
 			).equal('<html>' +
@@ -18,10 +18,9 @@ describe( 'Layout', function (done) {
 			);
 			done();
 		});
-
 	});
 
-	it('replace() templates');
+	it('extend() templates');
 	it('content() templates');
 	it('append() templates');
 	it('prepend() templates');

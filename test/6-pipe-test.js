@@ -7,7 +7,7 @@ var expect = require('chai').expect,
 describe( 'Pipe', function () {
 
 	it('extend data with parent', function () {
-		var tmpl = '<article nu-scope="person">' +
+		var tmpl = '<article nu-scope="person" nut="directExtend">' +
 				'<h1 nu-model="name"></h1>'+
 				'<div nu-scope="skills" nu-pipe>' +
 					'<span nu-model="js"></span>' +
@@ -15,7 +15,7 @@ describe( 'Pipe', function () {
 					'<span nu-model="name"></span>' +
 				'</div>' +
 			'</article>';
-		nuts.addTemplate( 'directExtend', tmpl, function () {
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render( 'directExtend', { person:{
 					name: 'Jacobo',
@@ -38,7 +38,7 @@ describe( 'Pipe', function () {
 	});
 
 	it('extend by select properties from parent', function () {
-		var tmpl = '<article nu-scope="person">' +
+		var tmpl = '<article nu-scope="person" nut="selectExtend">' +
 					'<h1 nu-model="name"></h1>'+
 					'<div nu-scope="skills" nu-pipe="city">' +
 						'<span nu-model="js"></span>' +
@@ -46,7 +46,7 @@ describe( 'Pipe', function () {
 						'<span nu-model="name"></span>' +
 					'</div>' +
 				'</article>';
-		nuts.addTemplate( 'selectExtend', tmpl, function () {
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render( 'selectExtend', { person:{
 					name: 'Jacobo',

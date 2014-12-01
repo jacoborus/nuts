@@ -6,6 +6,16 @@ var expect = require('chai').expect,
 
 describe( 'nuts.render', function () {
 
+	it('render simple tag nodes', function (done) {
+		var tmpl = '<span nut="simpleTag">hola</span>';
+		nuts.addTemplate( tmpl, function (err) {
+			expect( err ).to.equal( null );
+			expect( nuts.render( 'simpleTag', {} )).to.equal( '<span>hola</span>' );
+			done();
+		});
+	});
+
+/*
 	it('render text nodes', function (done) {
 		var tmpl = 'hola';
 		nuts.addTemplate( 'tmplText', tmpl, function (err) {
@@ -41,26 +51,18 @@ describe( 'nuts.render', function () {
 			done();
 		});
 	});
-
-	it('render simple tag nodes', function (done) {
-		var tmpl = '<span>hola</span>';
-		nuts.addTemplate( 'simpleTag', tmpl, function (err) {
-			expect( err ).to.equal( null );
-			expect( nuts.render( 'simpleTag', {} )).to.equal( '<span>hola</span>' );
-			done();
-		});
-	});
+*/
 
 	it('render through simple scope', function () {
-		var tmpl = '<ul><li>hola</li></ul>';
-		nuts.addTemplate( 'simpleScope', tmpl, function () {
+		var tmpl = '<ul nut="simpleScope"><li>hola</li></ul>';
+		nuts.addTemplate( tmpl, function () {
 			expect( nuts.render( 'simpleScope', {} )).to.equal( '<ul><li>hola</li></ul>' );
 		});
 	});
 
 	it('render regular attributes', function () {
-		var tmpl = '<span id="id" other="other"></span>';
-		nuts.addTemplate( 'regularAttribs', tmpl, function () {
+		var tmpl = '<span nut="regularAttribs" id="id" other="other"></span>';
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render('regularAttribs')
 			).to.equal( '<span id="id" other="other"></span>' );
@@ -68,8 +70,8 @@ describe( 'nuts.render', function () {
 	});
 
 	it('render simple className', function () {
-		var tmpl = '<span class="featured"></span>';
-		nuts.addTemplate( 'simpleClass', tmpl, function () {
+		var tmpl = '<span nut="simpleClass" class="featured"></span>';
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render('simpleClass')
 			).to.equal( '<span class="featured"></span>' );
@@ -77,8 +79,8 @@ describe( 'nuts.render', function () {
 	});
 
 	it('render doctype', function () {
-		var tmpl = '<html nu-doctype></html>';
-		nuts.addTemplate( 'doctype', tmpl, function () {
+		var tmpl = '<html nut="doctype" nu-doctype></html>';
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render('doctype')
 			).to.equal( '<!DOCTYPE html><html></html>' );
@@ -86,7 +88,7 @@ describe( 'nuts.render', function () {
 	});
 
 	it('render void elements', function () {
-		var tmpl = '<span>' +
+		var tmpl = '<span nut="voidElements">' +
 				'<area>' +
 				'<base>' +
 				'<br>' +
@@ -103,7 +105,7 @@ describe( 'nuts.render', function () {
 				'<track>' +
 				'<wbr>' +
 			'</span>';
-		nuts.addTemplate( 'voidElements', tmpl, function () {
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render('voidElements')
 			).to.equal( '<span>' +
@@ -127,7 +129,7 @@ describe( 'nuts.render', function () {
 	});
 
 	it('render SVG elements', function () {
-		var tmpl = '<span>' +
+		var tmpl = '<span nut="svgElements">' +
 				'<path>' +
 				'<circle>' +
 				'<ellipse>' +
@@ -138,9 +140,9 @@ describe( 'nuts.render', function () {
 				'<polyline>' +
 				'<polygone>' +
 			'</span>';
-		nuts.addTemplate( 'voidElements', tmpl, function () {
+		nuts.addTemplate( tmpl, function () {
 			expect(
-				nuts.render('voidElements')
+				nuts.render('svgElements')
 			).to.equal( '<span>' +
 				'<path>' +
 				'<circle>' +
@@ -156,8 +158,8 @@ describe( 'nuts.render', function () {
 	});
 
 	it('render checked', function (done) {
-		var tmpl = '<input type="radio" name="name" value="value" nu-scope="nuscope" nu-checked>';
-		nuts.addTemplate( 'checked', tmpl, function () {
+		var tmpl = '<input nut="checked" type="radio" name="name" value="value" nu-scope="nuscope" nu-checked>';
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render('checked', {nuscope:true})
 			).to.equal( '<input type="radio" name="name" value="value" checked>' );
@@ -166,8 +168,8 @@ describe( 'nuts.render', function () {
 	});
 
 	it('render checked scoped', function (done) {
-		var tmpl = '<input type="radio" name="name" value="value" nu-checked="nuscope">';
-		nuts.addTemplate( 'checkedScope', tmpl, function () {
+		var tmpl = '<input nut="checkedScope" type="radio" name="name" value="value" nu-checked="nuscope">';
+		nuts.addTemplate( tmpl, function () {
 			expect(
 				nuts.render('checkedScope', {nuscope:true})
 			).to.equal( '<input type="radio" name="name" value="value" checked>' );

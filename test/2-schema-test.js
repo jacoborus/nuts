@@ -9,8 +9,8 @@ describe( 'Template schema', function () {
 	describe( 'Tag', function () {
 
 		it('generate a schema from template string', function (done) {
-			var tmpl = '<ul></ul>';
-			nuts.addTemplate( 'simpleTag', tmpl, function (err) {
+			var tmpl = '<ul nut="simpleTag"></ul>';
+			nuts.addTemplate( tmpl, function (err) {
 				expect( err ).to.equal( null );
 				expect( nuts.getTemplate('simpleTag').schema.type ).to.equal( 'tag' );
 				expect( nuts.getTemplate('simpleTag').schema.name ).to.equal( 'ul' );
@@ -19,8 +19,8 @@ describe( 'Template schema', function () {
 		});
 
 		it('separate nuts attributes from regular ones', function (done) {
-			var tmpl = '<span id="id" nu-att="nuid">hello</span>';
-			nuts.addTemplate( 'separateAtts', tmpl, function (err) {
+			var tmpl = '<span id="id" nu-att="nuid" nut="separateAtts">hello</span>';
+			nuts.addTemplate( tmpl, function (err) {
 				expect( err ).to.equal( null );
 				expect( nuts.getTemplate('separateAtts').schema.attribs.id ).to.equal( 'id' );
 				expect( nuts.getTemplate('separateAtts').schema.nuAtts.att ).to.equal( 'nuid' );
@@ -42,11 +42,12 @@ describe( 'Template schema', function () {
 				'nu-doctype ' +
 				'nu-checked="checked"' +
 				'nu-block="head"' +
-				'nu-as' +
+				'nu-as ' +
+				'nut="specialNuTs"' +
 				'>' +
 				'hello' +
 				'</span>';
-			nuts.addTemplate( 'specialNuTs', tmpl, function (err) {
+			nuts.addTemplate( tmpl, function (err) {
 				expect( err ).to.equal( null );
 				// class
 				expect( nuts.getTemplate('specialNuTs').schema.class ).to.equal( 'class' );
@@ -80,6 +81,9 @@ describe( 'Template schema', function () {
 				// checked
 				expect( nuts.getTemplate('specialNuTs').schema.checked ).to.equal( 'checked' );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.checked ).to.not.exist;
+				// checked
+				expect( nuts.getTemplate('specialNuTs').nut ).to.equal( 'specialNuTs' );
+				expect( nuts.getTemplate('specialNuTs').schema.attribs.nuts ).to.not.exist;
 				// as
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.as ).to.not.exist;
 				done();
@@ -87,8 +91,8 @@ describe( 'Template schema', function () {
 		});
 
 		it('separate regular attributes with nuNamesake', function (done) {
-			var tmpl = '<span id="id" nu-id="nuid">hello</span>';
-			nuts.addTemplate( 'separateNamesakes', tmpl, function (err) {
+			var tmpl = '<span id="id" nu-id="nuid" nut="separateNamesakes">hello</span>';
+			nuts.addTemplate( tmpl, function (err) {
 				expect( err ).to.equal( null );
 				expect( nuts.getTemplate('separateNamesakes').schema.attribs.id ).to.not.exist;
 				expect( nuts.getTemplate('separateNamesakes').schema.namesakes.id ).to.equal( 'id' );
@@ -102,15 +106,15 @@ describe( 'Template schema', function () {
 	describe( 'Layout', function () {
 
 		it('generate a different schema for layouts', function (done) {
-			var tmpl = '<html>' +
+			var tmpl = '<html nut="tagLayout">' +
 				'<body block="body">hello</body>' +
 				'</html>';
-			var layout = '<template nu-layout="tagLayout">' +
+			var layout = '<template nu-layout="tagLayout" nut="layoutSchema">' +
 					'<template nu-block="head" append="headTitle"></template>' +
 					'<template nu-block="body" content="printings" prepend="headTitle"></template>' +
 				'</template>';
-			nuts.addTemplate( 'tagLayout', tmpl, function () {
-				nuts.addTemplate( 'layoutSchema', layout, function (err, esto) {
+			nuts.addTemplate( tmpl, function () {
+				nuts.addTemplate( layout, function (err, esto) {
 					expect( err ).to.equal( null );
 					expect( nuts.getTemplate('layoutSchema').schema.extend ).to.equal( 'tagLayout' );
 					expect( nuts.getTemplate('layoutSchema').schema.blocks.head ).to.be.a( 'object' );
