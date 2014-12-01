@@ -6,7 +6,7 @@ var getRender = require('./render.js'),
 	layouts = {};
 
 /* - Generate compiled tags - */
-var compile;
+var compileTag;
 
 var newCompiledText = function (tmp) {
 	var out = tmp.data;
@@ -78,7 +78,7 @@ var newCompiledTag = function (tmp) {
 
 	var	children = tmp.children;
 	for (i in children) {
-		children[i].render = compile( children[i] );
+		children[i].render = compileTag( children[i] );
 	}
 
 	str.classAtt = classAtt;
@@ -134,13 +134,12 @@ var newCompiledTag = function (tmp) {
 	return renderLoop;
 };
 
-
 /*!
  * get a compiled template
  * @param  {Object} template template model
  * @return {Function}          compiled template
  */
-compile = function (template) {
+compileTag = function (template) {
 	var schema = template.schema;
 	switch (schema.type) {
 		case 'tag':
@@ -158,8 +157,15 @@ compile = function (template) {
 	}
 };
 
+var compileLayout = function (tmp) {
+	var schema = templates[tmp.layout].schema;
+	return newCompiledTag( schema );
+};
+
+
 module.exports = {
-	compile: compile,
+	compileTag: compileTag,
+	compileLayout: compileLayout,
 	templates: templates,
 	layouts: layouts
 };

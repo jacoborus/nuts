@@ -172,12 +172,12 @@ var LayoutSchema = function (dom) {
 
 	this.type = dom.type;
 	this.name = dom.name;
-	this.extend = dom.attribs.extend;
+	this.extend = dom.attribs['nu-layout'];
 
 	for (i in children) {
-		if (children[i].name === 'nu-block') {
+		if (children[i].name === 'template') {
 			atts = children[i].attribs;
-			blockName = atts.extend;
+			blockName = atts['nu-block'];
 			blocks[blockName] = {
 				content: atts.content,
 				prepend: atts.prepend,

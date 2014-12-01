@@ -118,6 +118,10 @@ var direct = function (t, str) {
 				out += key;
 			} else {
 				i = 0;
+				if (!children) {
+					console.log(t)
+					console.log('tttttttttttttttttttt')
+				}
 				len = children.length;
 				while (i < len) {
 					out += children[i].render( x, key );

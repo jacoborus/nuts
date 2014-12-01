@@ -102,19 +102,25 @@ describe( 'Template schema', function () {
 	describe( 'Layout', function () {
 
 		it('generate a different schema for layouts', function (done) {
-			var tmpl = '<nu-layout extend="layout">' +
-					'<nu-block extend="head" append="headTitle"></nu-block>' +
-					'<nu-block extend="body" content="printings" prepend="headTitle"></nu-block>' +
-				'</nu-layout>';
-			nuts.addTemplate( 'simpleLayout', tmpl, function (err) {
-				expect( err ).to.equal( null );
-				expect( nuts.getTemplate('simpleLayout').schema.extend ).to.equal( 'layout' );
-				expect( nuts.getTemplate('simpleLayout').schema.blocks.head ).to.be.a( 'object' );
-				expect( nuts.getTemplate('simpleLayout').schema.blocks.head.append ).to.equal( 'headTitle' );
-				expect( nuts.getTemplate('simpleLayout').schema.blocks.body.content ).to.equal( 'printings' );
-				expect( nuts.getTemplate('simpleLayout').schema.blocks.body.prepend ).to.equal( 'headTitle' );
-				done();
+			var tmpl = '<html>' +
+				'<body block="body">hello</body>' +
+				'</html>';
+			var layout = '<template nu-layout="tagLayout">' +
+					'<template nu-block="head" append="headTitle"></template>' +
+					'<template nu-block="body" content="printings" prepend="headTitle"></template>' +
+				'</template>';
+			nuts.addTemplate( 'tagLayout', tmpl, function () {
+				nuts.addTemplate( 'layoutSchema', layout, function (err, esto) {
+					expect( err ).to.equal( null );
+					expect( nuts.getTemplate('layoutSchema').schema.extend ).to.equal( 'tagLayout' );
+					expect( nuts.getTemplate('layoutSchema').schema.blocks.head ).to.be.a( 'object' );
+					expect( nuts.getTemplate('layoutSchema').schema.blocks.head.append ).to.equal( 'headTitle' );
+					expect( nuts.getTemplate('layoutSchema').schema.blocks.body.content ).to.equal( 'printings' );
+					expect( nuts.getTemplate('layoutSchema').schema.blocks.body.prepend ).to.equal( 'headTitle' );
+					done();
+				});
 			});
+
 		});
 	});
 });

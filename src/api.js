@@ -3,13 +3,16 @@
 var fs = require('fs'),
 	path = require('path'),
 	recursive = require('recursive-readdir'),
-	compile = require('./compiler.js').compile,
+	compileTag = require('./compiler.js').compileTag,
+	compileLayout = require('./compiler.js').compileLayout,
 	createTemplate = require('./template.js');
 
 var templates = require('./compiler.js').templates,
 	layouts = require('./compiler.js').layouts,
 	allCompiled = false;
 
+
+var views = {};
 
 /*!
  * Nuts constructor
@@ -114,11 +117,17 @@ Nuts.prototype.render = function (tmplName, data) {
 	data = data || {};
 	if (!allCompiled) {
 		for (i in templates) {
-			templates[i].render = compile( templates[i] );
+			templates[i].render = compileTag( templates[i] );
+			views[i] = templates[i];
+		}
+		for (i in layouts) {
+			layouts[i].render = compileLayout( layouts[i] );
+			views[i] = layouts[i];
 		}
 		allCompiled = true;
+		//console.log(layouts);
 	}
-	return templates[tmplName].render( data );
+	return views[tmplName].render( data );
 };
 
 

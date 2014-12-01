@@ -14,7 +14,7 @@ var createTemplate = function (src, callback) {
 		if (error) { return callback( error );}
 		dom = dom[0];
 
-		var isLayout = (dom.name === 'nu-layout'),
+		var isLayout = dom.name === 'template' && dom.attribs['nu-layout'],
 			schema;
 
 		if (isLayout) {
