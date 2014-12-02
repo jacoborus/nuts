@@ -261,7 +261,7 @@ Print the tag once per item in its scope. Works with objects and arrays
 </ul>
 ```
 
-´´´js
+```js
 nuts.render( 'arrLoop', { nums: [1,2,3]});
 // => '<ul><li>1</li><li>2</li><li>3</li></ul>'
 ```
@@ -281,14 +281,17 @@ Print the tag content once per item in its scope. Works with objects and arrays
 </ul>
 ```
 
-´´´js
+```js
 nuts.render( 'arrLoop', { nums: [1,2,3]});
 // => '<ul><li>1</li><li>2</li><li>3</li></ul>'
 ```
 
 
+
 nu-key
 ------
+
+`nu-key` works inside loops (`nu-repeat` and `nu-each`). Prints keyname of current iterated object
 
 ```html
 <ul nut="loopKey">
@@ -298,6 +301,27 @@ nu-key
 	</li>
 </ul>
 ```
+
+```js
+nuts.render( 'loopKey', {
+	nums: {
+		one: 'one1',
+		two:'two2',
+		three:'three3'
+	}
+});
+```
+
+results in:
+
+```html
+<ul>
+	<li><span>one</span><span>one1</span></li>
+	<li><span>two</span><span>two2</span></li>
+	<li><span>three</span><span>three3</span></li>
+</ul>
+```
+
 
 
 nu-checked
@@ -321,10 +345,19 @@ nuts.render( 'checkedDemo', {available: true});
 nu-[attribute]
 --------------
 
-Sets the value of an [attribute].
+Sets the value of an [attribute] as nu-[attribute] model.
 
 ```html
-<span nu-id="identif">hello</span>
+<span nu-id="identif" nut="demoAtt">Developer</span>
+```
+
+```js
+nuts.render( 'identif', {identif: 'veryNuts'});
+```
+results in:
+
+```html
+<span id="veryNuts">Developer</span>
 ```
 
 
@@ -332,10 +365,40 @@ Sets the value of an [attribute].
 nud-[attribute]
 ---------------
 
+Sets the value of an data-[attribute] as nud-[attribute] model.
+
+```html
+<span nud-language="identif" nut="demoAtt">Developer</span>
+```
+
+```js
+nuts.render( 'identif', {identif: 'veryNuts'});
+```
+results in:
+
+```html
+<span data-language="veryNuts">Developer</span>
+```
+
 
 
 nux-[attribute]
 ---------------
+
+Sets the value of an x-[attribute] as nud-[attribute] model.
+
+```html
+<span nux-language="identif" nut="demoAtt">Developer</span>
+```
+
+```js
+nuts.render( 'identif', {identif: 'veryNuts'});
+```
+results in:
+
+```html
+<span x-language="veryNuts">Developer</span>
+```
 
 
 
@@ -346,7 +409,7 @@ Layouts reference
 nu-block
 --------
 
-Set this tag as a block with value as keyname when its parent template is declared as layout
+Set this tag as a block named as `nu-block` value when its parent template is declared as layout
 
 ```html
 <html>
@@ -361,7 +424,6 @@ Set this tag as a block with value as keyname when its parent template is declar
 nu-layout
 ---------
 
+Coming soon
 
 
-nu-block
---------
