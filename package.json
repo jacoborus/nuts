@@ -1,8 +1,8 @@
 {
   "name": "nuts",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "New Unique Templates System",
-  "main": "index.js",
+  "main": "./src/api.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha"
   },
