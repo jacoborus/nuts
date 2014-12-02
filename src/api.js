@@ -22,7 +22,6 @@ var Nuts = function () {};
 
 /**
  * Add a template and generate its model
- * @param {String}   name        template keyname
  * @param {String}   source html template
  * @param {Function} callback    Signature: error, addedTemplate
  */
@@ -53,7 +52,6 @@ Nuts.prototype.getTemplate = function (name) {
 
 /**
  * Add a template from file
- * @param {String}   name         template keyname
  * @param {String}   route template path
  * @param {Function} callback     Signature: error, addedTemplate
  */

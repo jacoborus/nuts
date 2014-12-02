@@ -290,44 +290,6 @@ nuts.render( 'arrLoop', { nums: [1,2,3]});
 
 
 
-nu-key
-------
-
-`nu-key` works inside loops (`nu-repeat` and `nu-each`). Prints keyname of current iterated object
-
-#### Example
-
-```html
-<ul nut="loopKey">
-	<li nu-repeat="nums">
-		<span nu-key></span>
-		<span nu-model></span>
-	</li>
-</ul>
-```
-
-```js
-nuts.render( 'loopKey', {
-	nums: {
-		one: 'one1',
-		two:'two2',
-		three:'three3'
-	}
-});
-```
-
-results in:
-
-```html
-<ul>
-	<li><span>one</span><span>one1</span></li>
-	<li><span>two</span><span>two2</span></li>
-	<li><span>three</span><span>three3</span></li>
-</ul>
-```
-
-
-
 nu-checked
 ----------
 
