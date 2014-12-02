@@ -27,6 +27,19 @@ var voidElements = {
 	polygone: true
 };
 
+
+var printChildren = function (children, x) {
+	var i = 0,
+		len = children.length,
+		out = '';
+	while (i < len) {
+		out += children[i].render( x );
+		i++;
+	}
+	return out;
+};
+
+
 var direct = function (t, str) {
 	var pipe = t.pipe,
 		scope = t.scope,
@@ -39,16 +52,17 @@ var direct = function (t, str) {
 		nuClass = t.nuClass,
 		classAtt = str.classAtt,
 		checked = t.checked,
+		each = t.each,
 		preTag = str.preTag,
 		postTag = str.postTag;
 
 	var selfClose = voidElements[t.name];
 
-	return function (x, key) {
+	return function (x) {
 		var out = preTag,
 			preX = {},
 			props = [],
-			len, i;
+			len, i, j, z;
 
 		if (pipe === '') {
 			for (i in x) {
@@ -109,19 +123,29 @@ var direct = function (t, str) {
 		out += '>';
 
 		if (!selfClose) {
-			// compile content
-			if (model && x[model]) {
-				out += x[model];
-			} else if (model === '') {
-				out += x;
-			} else if (t.key === '') {
-				out += key;
+			if (each || each === '') {
+				if (each === '') {
+					z = x;
+				} else if (x[each]) {
+					z = x[each];
+				}
+				if (z) {
+					i = 0;
+					len = z.length;
+					while (i < len) {
+						j = z[i];
+						out += printChildren( children, j );
+						i++;
+					}
+				}
 			} else {
-				i = 0;
-				len = children.length;
-				while (i < len) {
-					out += children[i].render( x, key );
-					i++;
+				// compile content
+				if (model && x[model]) {
+					out += x[model];
+				} else if (model === '') {
+					out += x;
+				} else {
+					out += printChildren( children, x );
 				}
 			}
 			// close tag
@@ -139,15 +163,9 @@ var loop = function (render) {
 		var out = '',
 			i = 0,
 			len = x.length;
-		if (len) {
-			while (i < len) {
-				out += render( x[i], i );
-				i++;
-			}
-		} else if ('object' === typeof x) {
-			for (i in x) {
-				out += render( x[i], i );
-			}
+		while (i < len) {
+			out += render( x[i], i );
+			i++;
 		}
 		return out;
 	};
@@ -161,15 +179,9 @@ var loopScope = function (render, tmp) {
 			rep = x[tmp.repeat],
 			len = rep.length,
 			i = 0;
-		if (len) {
-			while (i < len) {
-				out += render( rep[i], i );
-				i++;
-			}
-		} else if ('object' === typeof rep) {
-			for (i in rep) {
-				out += render( rep[i], i );
-			}
+		while (i < len) {
+			out += render( rep[i], i );
+			i++;
 		}
 		return out;
 	};

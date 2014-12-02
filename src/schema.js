@@ -92,9 +92,9 @@ var TagSchema = function (dom) {
 			this.repeat = atts['nu-repeat'];
 			delete atts['nu-repeat'];
 		}
-		if (atts['nu-key'] || atts['nu-key'] === '') {
-			this.key = '';
-			delete atts['nu-key'];
+		if (atts['nu-each'] || atts['nu-each'] === '') {
+			this.each = atts['nu-each'];
+			delete atts['nu-each'];
 		}
 		if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
 			this.pipe = atts['nu-pipe'];

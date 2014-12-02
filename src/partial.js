@@ -8,7 +8,6 @@ var nuProps = [
 	'scope',
 	'model',
 	'repeat',
-	'key',
 	'pipe',
 	'if',
 	'unless',

@@ -35,7 +35,6 @@ describe( 'Template schema', function () {
 				'nu-scope="scope" ' +
 				'nu-extend="extend" ' +
 				'nu-model="model" ' +
-				'nu-key ' +
 				'nu-pipe="pipe"' +
 				'nu-if="if" ' +
 				'nu-unless="unless" ' +
@@ -69,9 +68,6 @@ describe( 'Template schema', function () {
 				// unless
 				expect( nuts.getTemplate('specialNuTs').schema.unless ).to.equal( 'unless' );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.unless ).to.not.exist;
-				// key
-				expect( nuts.getTemplate('specialNuTs').schema.key ).to.equal( '' );
-				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.key ).to.not.exist;
 				// doctype
 				expect( nuts.getTemplate('specialNuTs').schema.doctype ).to.equal( true );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.doctype ).to.not.exist;
@@ -81,9 +77,9 @@ describe( 'Template schema', function () {
 				// checked
 				expect( nuts.getTemplate('specialNuTs').schema.checked ).to.equal( 'checked' );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.checked ).to.not.exist;
-				// checked
+				// nut
 				expect( nuts.getTemplate('specialNuTs').nut ).to.equal( 'specialNuTs' );
-				expect( nuts.getTemplate('specialNuTs').schema.attribs.nuts ).to.not.exist;
+				expect( nuts.getTemplate('specialNuTs').schema.attribs.nut ).to.not.exist;
 				// as
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.as ).to.not.exist;
 				done();
@@ -114,7 +110,7 @@ describe( 'Template schema', function () {
 					'<template nu-block="body" content="printings" prepend="headTitle"></template>' +
 				'</template>';
 			nuts.addTemplate( tmpl, function () {
-				nuts.addTemplate( layout, function (err, esto) {
+				nuts.addTemplate( layout, function (err) {
 					expect( err ).to.equal( null );
 					expect( nuts.getTemplate('layoutSchema').schema.extend ).to.equal( 'tagLayout' );
 					expect( nuts.getTemplate('layoutSchema').schema.blocks.head ).to.be.a( 'object' );

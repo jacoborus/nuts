@@ -49,8 +49,7 @@ var newCompiledTag = function (tmp) {
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
 		atts = tmp.attribs,
-		nuif = tmp.nuif,
-		str = {};
+		nuif = tmp.nuif;
 
 	var i, className, classAtt;
 
@@ -80,10 +79,11 @@ var newCompiledTag = function (tmp) {
 	for (i in children) {
 		children[i].render = compileTag( children[i] );
 	}
-
-	str.classAtt = classAtt;
-	str.postTag = '</' + tmp.name + '>';
-	str.preTag = preTag;
+	var str = {
+		classAtt : classAtt,
+		postTag : '</' + tmp.name + '>',
+		preTag : preTag
+	};
 
 	var render = getRender.direct( tmp, str );
 	var renderLoop = getRender.loop( render, tmp );

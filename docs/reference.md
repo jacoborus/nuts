@@ -32,7 +32,7 @@ nu-doctype
 
 Tag will be preceed with a HTML5 doctype if it has this attribute
 
-Example:
+#### Example:
 
 ```html
 <html nu-doctype nut="htmlBase"></html>
@@ -56,7 +56,7 @@ nu-model
 
 Specify tag content from scope property with `nu-model` keyname. Default tag content will be printed if there is no data in the model.
 
-**Example**
+#### Example
 
 ```html
 <span nut="modelExample" nu-model="words">mustaches are for hipsters</span>
@@ -93,7 +93,7 @@ nu-scope
 
 Specify tag scope from parent scope
 
-**Example**
+#### Example
 
 ```html
 <section nut="news">
@@ -134,7 +134,7 @@ nu-pipe
 
 Extend scope with picked properties from parent scope. Scope will be extended with all parent properties if no properties are selected.
 
-### Example:
+#### Example
 
 Having this model:
 
@@ -150,7 +150,7 @@ nuts.render( 'pipeExample', {
 });
 ```
 
-####  Without picking properties
+**Without picking properties**
 
 ```html
 <article nu-scope="fruit" nut="pipeExample">
@@ -176,7 +176,7 @@ results in:
 </article>
 ```
 
-#### Picking properties
+**Picking properties**
 
 ```html
 <article nu-scope="fruit" nut="pipeExample">
@@ -209,7 +209,7 @@ nu-if
 
 Inserts the element when the value evaluates to true.
 
-### Example:
+#### Example
 
 ```html
 <span nu-if="editable" nut="ifDemo">This is editable</span>
@@ -232,7 +232,7 @@ nu-unless
 
 Inserts the element when the value evaluates to false.
 
-### Example:
+#### Example
 
 ```html
 <span nu-unless="editable" nut="unlessDemo">This is not editable</span>
@@ -255,7 +255,7 @@ nu-repeat
 
 Print the tag once per item in its scope. Works with objects and arrays
 
-### Example:
+#### Example
 
 ```html
 <ul nut="arrLoop" nu-scope="nums">
@@ -275,7 +275,7 @@ nu-each
 
 Print the tag content once per item in its scope. Works with objects and arrays
 
-### Example:
+#### Example
 
 ```html
 <ul nut="arrLoop" nu-scope="nums" nu-each>
@@ -295,7 +295,7 @@ nu-key
 
 `nu-key` works inside loops (`nu-repeat` and `nu-each`). Prints keyname of current iterated object
 
-### Example:
+#### Example
 
 ```html
 <ul nut="loopKey">
@@ -335,7 +335,7 @@ Checks the input when the value evaluates to true.
 
 Use this instead of value when binding to checkboxes or radio buttons.
 
-### Example:
+#### Example
 
 ```html
 <input type="checkbox" nu-checked="available" nut="checkedDemo">
@@ -353,7 +353,7 @@ nu-[attribute]
 
 Sets the value of an [attribute] as nu-[attribute] model.
 
-### Example:
+#### Example
 
 ```html
 <span nu-id="identif" nut="demoAtt">Developer</span>
@@ -375,7 +375,7 @@ nud-[attribute]
 
 Sets the value of an data-[attribute] as nud-[attribute] model.
 
-### Example:
+#### Example
 
 ```html
 <span nud-language="identif" nut="demoDAtt">Developer</span>
@@ -397,7 +397,7 @@ nux-[attribute]
 
 Sets the value of an x-[attribute] as nud-[attribute] model.
 
-### Example:
+#### Example
 
 ```html
 <span nux-language="identif" nut="demoXAtt">Developer</span>
