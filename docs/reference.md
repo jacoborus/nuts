@@ -134,13 +134,13 @@ nu-pipe
 
 Extend scope with picked properties from parent scope. Scope will be extended with all parent properties if no properties are selected.
 
-**Example:**
+### Example:
 
 Having this model:
 
 ```js
-nuts.render( 'directExtend', {
-	person:{
+nuts.render( 'pipeExample', {
+	fruit:{
 		name: 'Walnut',
 		provider: 'tree',
 		specs: {
@@ -150,10 +150,10 @@ nuts.render( 'directExtend', {
 });
 ```
 
-Without picking properties
+####  Without picking properties
 
 ```html
-<article nu-scope="fruit" nut="pipeEx">
+<article nu-scope="fruit" nut="pipeExample">
 	<h1 nu-model="name"></h1>
 	<div nu-scope="specs" nu-pipe>
 		<span nu-model="provider"></span>
@@ -176,10 +176,10 @@ results in:
 </article>
 ```
 
-Picking properties
+#### Picking properties
 
 ```html
-<article nu-scope="fruit" nut="pipeEx">
+<article nu-scope="fruit" nut="pipeExample">
 	<h1 nu-model="name"></h1>
 	<div nu-scope="specs" nu-pipe="name">
 		<span nu-model="provider"></span>
@@ -209,7 +209,7 @@ nu-if
 
 Inserts the element when the value evaluates to true.
 
-**Example:**
+### Example:
 
 ```html
 <span nu-if="editable" nut="ifDemo">This is editable</span>
@@ -232,6 +232,8 @@ nu-unless
 
 Inserts the element when the value evaluates to false.
 
+### Example:
+
 ```html
 <span nu-unless="editable" nut="unlessDemo">This is not editable</span>
 ```
@@ -253,7 +255,7 @@ nu-repeat
 
 Print the tag once per item in its scope. Works with objects and arrays
 
-**Example:**
+### Example:
 
 ```html
 <ul nut="arrLoop" nu-scope="nums">
@@ -273,7 +275,7 @@ nu-each
 
 Print the tag content once per item in its scope. Works with objects and arrays
 
-**Example:**
+### Example:
 
 ```html
 <ul nut="arrLoop" nu-scope="nums" nu-each>
@@ -292,6 +294,8 @@ nu-key
 ------
 
 `nu-key` works inside loops (`nu-repeat` and `nu-each`). Prints keyname of current iterated object
+
+### Example:
 
 ```html
 <ul nut="loopKey">
@@ -331,6 +335,8 @@ Checks the input when the value evaluates to true.
 
 Use this instead of value when binding to checkboxes or radio buttons.
 
+### Example:
+
 ```html
 <input type="checkbox" nu-checked="available" nut="checkedDemo">
 ```
@@ -347,12 +353,14 @@ nu-[attribute]
 
 Sets the value of an [attribute] as nu-[attribute] model.
 
+### Example:
+
 ```html
 <span nu-id="identif" nut="demoAtt">Developer</span>
 ```
 
 ```js
-nuts.render( 'identif', {identif: 'veryNuts'});
+nuts.render( 'demoAtt', {identif: 'veryNuts'});
 ```
 results in:
 
@@ -367,12 +375,14 @@ nud-[attribute]
 
 Sets the value of an data-[attribute] as nud-[attribute] model.
 
+### Example:
+
 ```html
-<span nud-language="identif" nut="demoAtt">Developer</span>
+<span nud-language="identif" nut="demoDAtt">Developer</span>
 ```
 
 ```js
-nuts.render( 'identif', {identif: 'veryNuts'});
+nuts.render( 'demoDAtt', {identif: 'veryNuts'});
 ```
 results in:
 
@@ -387,12 +397,14 @@ nux-[attribute]
 
 Sets the value of an x-[attribute] as nud-[attribute] model.
 
+### Example:
+
 ```html
-<span nux-language="identif" nut="demoAtt">Developer</span>
+<span nux-language="identif" nut="demoXAtt">Developer</span>
 ```
 
 ```js
-nuts.render( 'identif', {identif: 'veryNuts'});
+nuts.render( 'demoXAtt', {identif: 'veryNuts'});
 ```
 results in:
 
@@ -410,6 +422,8 @@ nu-block
 --------
 
 Set this tag as a block named as `nu-block` value when its parent template is declared as layout
+
+### Example:
 
 ```html
 <html>
