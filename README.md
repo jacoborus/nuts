@@ -3,9 +3,9 @@ NUTS
 
 New unique templates system
 
-**IN EARLY DEVELOPMENT**
-
 [![Build Status](https://travis-ci.org/jacoborus/nuts.svg?branch=master)](https://travis-ci.org/jacoborus/nuts)
+
+
 
 Installation
 ------------
@@ -14,26 +14,26 @@ Installation
 npm install nuts
 ```
 
+
 Example
 -------
 
 Coming soon
 
 
-
-[Guide](https://github.com/jacoborus/nuts/blob/master/docs/guide.md)
------
-
 [Reference](https://github.com/jacoborus/nuts/blob/master/docs/reference.md)
 -----
+
+See [reference docs](https://github.com/jacoborus/nuts/blob/master/docs/reference.md).
+
 
 [API](https://github.com/jacoborus/nuts/blob/master/docs/api.md)
 -----
 
+See [API docs](https://github.com/jacoborus/nuts/blob/master/docs/api.md).
 
 
 <br><br>
-
 ---
 
 © 2014 Jacobo Tabernero - [jacoborus](https://github.com/jacoborus)

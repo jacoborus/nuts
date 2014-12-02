@@ -203,15 +203,6 @@ results in:
 ```
 
 
-nu-repeat
----------
-
-
-
-nu-each
--------
-
-
 
 nu-if
 -----
@@ -257,9 +248,56 @@ nuts.render( 'unlessDemo', {editable: true});
 
 
 
+nu-repeat
+---------
+
+Print the tag once per item in its scope. Works with objects and arrays
+
+**Example:**
+
+```html
+<ul nut="arrLoop" nu-scope="nums">
+	<li nu-repeat nu-model></li>
+</ul>
+```
+
+´´´js
+nuts.render( 'arrLoop', { nums: [1,2,3]});
+// => '<ul><li>1</li><li>2</li><li>3</li></ul>'
+```
+
+
+
+nu-each
+-------
+
+Print the tag content once per item in its scope. Works with objects and arrays
+
+**Example:**
+
+```html
+<ul nut="arrLoop" nu-scope="nums" nu-each>
+	<li nu-model></li>
+</ul>
+```
+
+´´´js
+nuts.render( 'arrLoop', { nums: [1,2,3]});
+// => '<ul><li>1</li><li>2</li><li>3</li></ul>'
+```
+
+
 nu-key
 ------
 
+```html
+<ul nut="loopKey">
+	<li nu-repeat="nums">
+		<span nu-key></span>
+		<span nu-model></span>
+	</li>
+</ul>
+```
 
 
 nu-checked
