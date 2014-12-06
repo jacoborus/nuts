@@ -5,11 +5,11 @@ var fs = require('fs'),
 	recursive = require('recursive-readdir'),
 	compileTag = require('./compiler.js').compileTag,
 	compileLayout = require('./compiler.js').compileLayout,
-	createTemplate = require('./template.js');
+	createTemplate = require('./template.js'),
+	templates = require('./compiler.js').templates,
+	layouts = require('./compiler.js').layouts;
 
-var templates = require('./compiler.js').templates,
-	layouts = require('./compiler.js').layouts,
-	allCompiled = false;
+var allCompiled = false;
 
 var newCounter = function (limit, callback) {
 	var count = 0;

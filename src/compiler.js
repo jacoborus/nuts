@@ -157,9 +157,27 @@ compileTag = function (template) {
 	}
 };
 
+
+var setBlocks = function (schema, blocks) {
+	var sch;
+	if (schema.block && blocks[schema.block]) {
+		sch = templates[blocks[schema.block].extend].schema;
+	} else {
+		sch = schema;
+	}
+	var i;
+	var children = sch.children;
+	for (i in children) {
+		children[i].schema = setBlocks( children[i].schema, blocks );
+	}
+	return sch;
+};
+
 var compileLayout = function (tmp) {
 	var schema = templates[tmp.layout].schema;
-	return newCompiledTag( schema );
+	var blocks = tmp.schema.blocks;
+	var extended = setBlocks( schema, blocks );
+	return newCompiledTag( extended );
 };
 
 

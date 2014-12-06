@@ -103,20 +103,17 @@ describe( 'Template schema', function () {
 
 		it('generate a different schema for layouts', function (done) {
 			var tmpl = '<html nut="tagLayout">' +
-				'<body block="body">hello</body>' +
+				'<body nu-block="body">hello</body>' +
 				'</html>';
 			var layout = '<template nu-layout="tagLayout" nut="layoutSchema">' +
-					'<template nu-block="head" append="headTitle"></template>' +
-					'<template nu-block="body" content="printings" prepend="headTitle"></template>' +
+					'<template nu-block="head" nu-extend="headTitle"></template>' +
 				'</template>';
 			nuts.addTemplate( tmpl, function () {
 				nuts.addTemplate( layout, function (err) {
 					expect( err ).to.equal( null );
 					expect( nuts.getTemplate('layoutSchema').schema.extend ).to.equal( 'tagLayout' );
 					expect( nuts.getTemplate('layoutSchema').schema.blocks.head ).to.be.a( 'object' );
-					expect( nuts.getTemplate('layoutSchema').schema.blocks.head.append ).to.equal( 'headTitle' );
-					expect( nuts.getTemplate('layoutSchema').schema.blocks.body.content ).to.equal( 'printings' );
-					expect( nuts.getTemplate('layoutSchema').schema.blocks.body.prepend ).to.equal( 'headTitle' );
+					expect( nuts.getTemplate('layoutSchema').schema.blocks.head.extend ).to.equal( 'headTitle' );
 					done();
 				});
 			});

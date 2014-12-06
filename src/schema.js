@@ -180,6 +180,7 @@ var LayoutSchema = function (dom) {
 			blockName = atts['nu-block'];
 			blocks[blockName] = {
 				content: atts.content,
+				extend: atts['nu-extend'],
 				prepend: atts.prepend,
 				append: atts.append
 			};

@@ -7,21 +7,41 @@ describe( 'Layout', function (done) {
 
 	it('print layouts with default blocks when no data passed', function (done) {
 
-		var layout = '<template nu-layout="tagLayout" nut="simpleLayout"></template>';
-
-		nuts.addTemplate( layout, function () {
+		var layout = '<template nu-layout="layout1" nut="simpleLayout"></template>';
+		var tmpl = '<html nut="layout1">' +
+				'<body nu-block="body">hello</body>' +
+			'</html>';
+		nuts.addTemplate( layout + tmpl, function () {
 			expect(
 				nuts.render( 'simpleLayout' )
 			).equal('<html>' +
-				'<body block="body">hello</body>' +
+				'<body>hello</body>' +
 				'</html>'
 			);
 			done();
 		});
 	});
 
-	it('extend() templates');
-	it('content() templates');
-	it('append() templates');
-	it('prepend() templates');
+	it('extend layout templates with blocks', function (done) {
+		var layout = '<template nu-layout="tagExtend" nut="layoutExtend">' +
+				'<template nu-block="body" nu-extend="blockExtend"></template>' +
+			'</template>';
+		var tmpl = '<html nut="tagExtend">' +
+				'<body nu-block="body">hello</body>' +
+			'</html>';
+		var tmplBlock = '<body nut="blockExtend">' +
+				'<p nu-model="text">bye</p>' +
+			'</body>';
+
+		nuts.addTemplate( layout + tmpl + tmplBlock, function (err) {
+			expect( err ).to.not.exist;
+			expect(
+				nuts.render( 'layoutExtend', {text: 'nuts'} )
+			).equal('<html><body>' +
+					'<p>nuts</p>' +
+				'</body></html>'
+			);
+			done();
+		});
+	});
 });
