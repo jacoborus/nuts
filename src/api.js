@@ -11,6 +11,15 @@ var templates = require('./compiler.js').templates,
 	layouts = require('./compiler.js').layouts,
 	allCompiled = false;
 
+var newCounter = function (limit, callback) {
+	var count = 0;
+	return function (err) {
+		if (err) { callback( err );}
+		if (++count === limit) {
+			callback( null );
+		}
+	}
+};
 
 var views = {};
 
@@ -23,19 +32,24 @@ var Nuts = function () {};
 /**
  * Add a template and generate its model
  * @param {String}   source html template
- * @param {Function} callback    Signature: error, addedTemplate
+ * @param {Function} callback    Signature: error
  */
 Nuts.prototype.addTemplate = function (source, callback) {
 	callback = callback || function () {};
-	createTemplate( source, function (err, tmpl) {
-		if (err) {return callback( err );}
-		if (tmpl.layout) {
-			layouts[tmpl.nut] = tmpl;
-		} else {
-			templates[tmpl.nut] = tmpl;
+	createTemplate( source, function (err, tmpls) {
+		if (err) {
+			return callback( err );
 		}
 		allCompiled = false;
-		callback( null, tmpl );
+		var i;
+		for (i in tmpls) {
+			if (tmpls[i].layout) {
+				layouts[tmpls[i].nut] = tmpls[i];
+			} else {
+				templates[tmpls[i].nut] = tmpls[i];
+			}
+		}
+		callback(null);
 	});
 };
 
@@ -71,8 +85,7 @@ Nuts.prototype.addFile = function (route, callback) {
  */
 Nuts.prototype.addFolder = function (folderPath, callback) {
 	callback = callback || function () {};
-	var self = this,
-		count = 0;
+	var self = this;
 
 	// get all files inside folderPath
 	recursive( folderPath, function (error, files) {
@@ -80,12 +93,7 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 		if (error) { return callback( error );}
 		if (!limit) { return callback();}
 
-		var counter = function (err) {
-			if (err) { callback( err );}
-			if (++count === limit) {
-				callback( null );
-			}
-		};
+		var counter = newCounter( limit, callback );
 		// read files
 		files.forEach( function (filePath) {
 			// exclude no .html files

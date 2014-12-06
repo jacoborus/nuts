@@ -4,6 +4,48 @@ var htmlparser = require('htmlparser2'),
 	TagSchema = require('./schema.js').TagSchema,
 	LayoutSchema = require('./schema.js').LayoutSchema;
 
+var templates = require('./compiler.js').templates,
+	layouts = require('./compiler.js').layouts;
+
+
+
+
+var newNext = function (limit, callback) {
+	var count = 0,
+		tmpls = [];
+	return function (err, tmpl) {
+		if (err) { return callback( err );}
+		tmpls.push( tmpl );
+		if (++count === limit) {
+			callback( null, tmpls );
+		}
+	}
+};
+
+var prepare = function (dom, src, next) {
+	var isLayout = dom.name === 'template' && dom.attribs['nu-layout'],
+		nutName = dom.attribs.nut,
+		schema;
+
+	delete dom.attribs.nut;
+
+	var tmp = {
+		src : src,
+		nut: nutName,
+		schema: isLayout ? new LayoutSchema( dom ) : new TagSchema( dom ),
+		layout: isLayout
+	};
+	next( null, tmp );
+};
+
+var save = function (doms) {
+	var dom,
+		lays = {};
+	for (dom in doms) {
+
+	}
+};
+
 /*!
  * generate a template object with its source and model as properties
  * @param  {String}   src      html template
@@ -12,25 +54,15 @@ var htmlparser = require('htmlparser2'),
 var createTemplate = function (src, callback) {
 	var handler = new htmlparser.DomHandler( function (error, dom) {
 		if (error) { return callback( error );}
-		dom = dom[0];
 
-		var isLayout = dom.name === 'template' && dom.attribs['nu-layout'],
-			nutName = dom.attribs.nut,
-			schema;
-
-		delete dom.attribs.nut;
-
-		if (isLayout) {
-			schema = new LayoutSchema( dom );
-		} else {
-			schema = new TagSchema( dom );
-		}
-		callback( null, {
-			src : src,
-			schema: schema,
-			nut: nutName,
-			layout: isLayout
+		var next = newNext( dom.length, function (err, tmpls) {
+			callback( err, tmpls );
 		});
+
+		var i;
+		for (i in dom) {
+			prepare( dom[i], src, next );
+		}
 	}, {normalizeWhitespace: true});
 
 	var parser = new htmlparser.Parser( handler );

@@ -14,6 +14,16 @@ describe( 'nuts.addTemplate', function () {
 			done();
 		});
 	});
+
+	it('add several templates from a single string', function (done) {
+		var tmpl = '<span nut="three">hello</span><span nut="four">hello</span>';
+		nuts.addTemplate( tmpl, function (err) {
+			expect( err ).to.equal( null );
+			expect( nuts.getTemplate('three').src ).to.equal( '<span nut="three">hello</span><span nut="four">hello</span>' );
+			expect( nuts.getTemplate('four').src ).to.equal( '<span nut="three">hello</span><span nut="four">hello</span>' );
+			done();
+		});
+	});
 });
 
 
