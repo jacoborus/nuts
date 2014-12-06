@@ -6,7 +6,7 @@ var expect = require('chai').expect,
 
 describe( 'nuts.render', function () {
 
-	it('render simple tag nodes', function (done) {
+	it('render simple tag and text nodes', function (done) {
 		var tmpl = '<span nut="simpleTag">hola</span>';
 		nuts.addTemplate( tmpl, function (err) {
 			expect( err ).to.equal( null );
@@ -15,43 +15,26 @@ describe( 'nuts.render', function () {
 		});
 	});
 
-/*
-	it('render text nodes', function (done) {
-		var tmpl = 'hola';
-		nuts.addTemplate( 'tmplText', tmpl, function (err) {
-			expect( err ).to.equal( null );
-			expect( nuts.render( 'tmplText', {} )).to.equal( 'hola' );
-			done();
-		});
-	});
 
 	it('render comment nodes', function (done) {
-		var tmpl = '<!--this is a comment-->';
-		nuts.addTemplate( 'tmplComment', tmpl, function (err) {
+		var tmpl = '<span nut="tmplComment"><!--this is a comment--></span>';
+		nuts.addTemplate( tmpl, function (err) {
 			expect( err ).to.equal( null );
-			expect( nuts.render( 'tmplComment', {} )).to.equal( '<!--this is a comment-->' );
+			expect( nuts.render( 'tmplComment', {} )).to.equal(
+				'<span><!--this is a comment--></span>'
+			);
 			done();
 		});
 	});
 
 	it('render CDATA nodes', function (done) {
-		var tmpl = '<![CDATA[ This is a CDATA block ]]>';
-		nuts.addTemplate( 'tmplCdata', tmpl, function (err) {
+		var tmpl = '<span nut="tmplCdata"><![CDATA[ This is a CDATA block ]]></span>';
+		nuts.addTemplate( tmpl, function (err) {
 			expect( err ).to.equal( null );
-			expect( nuts.render( 'tmplCdata', {} )).to.equal( '<![CDATA[ This is a CDATA block ]]>' );
+			expect( nuts.render( 'tmplCdata', {} )).to.equal( '<span><![CDATA[ This is a CDATA block ]]></span>' );
 			done();
 		});
 	});
-
-	it('render directive nodes', function (done) {
-		var tmpl = '<!DOCTYPE html>';
-		nuts.addTemplate( 'tmplDirective', tmpl, function (err) {
-			expect( err ).to.equal( null );
-			expect( nuts.render( 'tmplDirective', {} )).to.equal( '<!DOCTYPE html>' );
-			done();
-		});
-	});
-*/
 
 	it('render through simple scope', function () {
 		var tmpl = '<ul nut="simpleScope"><li>hola</li></ul>';
