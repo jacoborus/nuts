@@ -1,11 +1,6 @@
 Tag reference
 =============
 
-Previous notes:
-
-- Attributes can be written using dashes or camelCase. (`nu-doctype` equals `nuDoctype`)
-
-
 nut
 ---
 
