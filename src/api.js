@@ -131,7 +131,10 @@ Nuts.prototype.render = function (tmplName, data) {
 		}
 		allCompiled = true;
 	}
-	return views[tmplName].render( data );
+	if (views[tmplName]) {
+		return views[tmplName].render( data );
+	}
+	return '';
 };
 
 

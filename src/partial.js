@@ -25,26 +25,20 @@ var nuObjs = [
 	'nuSakes'
 ];
 
-var isEmpty = function (obj) {
-    for(var prop in obj) {
-        if(obj.hasOwnProperty(prop)) {
-            return false;
-        }
-    }
-    return true;
-};
 
 var partial = function (target, obj) {
 
 	var i, j;
 
 	for (i in nuProps) {
-		if (obj[i] || obj[i] === '') {
-			target[i] = obj[i];
+		if (obj[nuProps[i]] || obj[nuProps[i]] === '') {
+			target[nuProps[i]] = obj[nuProps[i]];
 		}
 	}
-	if (!isEmpty( obj.children )) {
-		target.children = obj.children;
+	if (obj.children.length > 0) {
+		if (obj.children.length !== 1 || obj.children[0].schema.data !== ' ') {
+			target.children = obj.children;
+		}
 	}
 	for (i in nuObjs) {
 		for (j in obj[nuObjs[i]]) {

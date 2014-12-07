@@ -24,10 +24,14 @@ var newNext = function (limit, callback) {
 
 var prepare = function (dom, src, next) {
 	var isLayout = dom.name === 'template' && dom.attribs['nu-layout'],
-		nutName = dom.attribs.nut,
 		schema;
 
-	delete dom.attribs.nut;
+	var nutName = dom.attribs ? dom.attribs.nut : null;
+
+	if (nutName) {
+		delete dom.attribs.nut;
+	}
+
 
 	var tmp = {
 		src : src,

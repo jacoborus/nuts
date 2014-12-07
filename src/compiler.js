@@ -9,7 +9,8 @@ var getRender = require('./render.js'),
 var compileTag;
 
 var newCompiledText = function (tmp) {
-	var out = tmp.data;
+	// FIX THIS!!
+	var out = tmp.data === ' ' ? '' : tmp.data;
 	return function () {
 		return out;
 	};
@@ -44,7 +45,7 @@ var newCompiledTag = function (tmp) {
 	if (tmp.as) {
 		nuas = tmp.as;
 		delete tmp.as;
-		tmp = partial( templates[nuas].schema, tmp );
+		tmp = partial( tmp, templates[nuas].schema );
 	}
 	// open and close tag strings
 	var preTag = '<' + tmp.name,
