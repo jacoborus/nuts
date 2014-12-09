@@ -3,10 +3,29 @@
 var getRender = require('./render.js'),
 	partial = require('./partial.js'),
 	templates = {},
-	layouts = {};
+	layouts = {},
+	filters = {};
 
 /* - Generate compiled tags - */
 var compileTag;
+
+
+var filter = function (x, tmp) {
+	if (!tmp.nut || !filters[tmp.nut]) {
+		return x;
+	}
+	var f = filters[tmp.nut],
+		y = {},
+		i;
+	for (i in x) {
+		if (!f[i]) {
+			y[i] = x[i];
+		} else {
+			y[i] = f[i]( x[i], x );
+		}
+	}
+	return y;
+};
 
 var newCompiledText = function (tmp) {
 	// FIX THIS!!
@@ -98,8 +117,9 @@ var newCompiledTag = function (tmp) {
 		// with no loop
 		if (!tmp.repeat && tmp.repeat !== '') {
 			return function (x) {
-				if (x[nuif]) {
-					return render(x);
+				var y = filter( x, tmp );
+				if (y[nuif]) {
+					return render(y);
 				}
 				return '';
 			};
@@ -107,16 +127,18 @@ var newCompiledTag = function (tmp) {
 		// scoped repeat loop
 		if (tmp.repeat) {
 			return function (x) {
-				if (x[nuif]) {
-					return renderLoopScope(x);
+				var y = filter( x, tmp );
+				if (y[nuif]) {
+					return renderLoopScope(y);
 				}
 				return '';
 			};
 		}
 		// simple repeat
 		return function (x) {
-			if (x[nuif]) {
-				return renderLoop(x);
+			var y = filter( x, tmp );
+			if (y[nuif]) {
+				return renderLoop(y);
 			}
 			return '';
 		};
@@ -125,14 +147,23 @@ var newCompiledTag = function (tmp) {
 	// Without nuIf or nuUnless
 	// with no loop
 	if (!tmp.repeat && tmp.repeat !== '') {
-		return render;
+		return function (x) {
+			var y = filter( x, tmp );
+			return render(y);
+		}
 	}
 	// scoped repeat loop
 	if (tmp.repeat) {
-		return renderLoopScope;
+		return function (x) {
+			var y = filter( x, tmp );
+			return renderLoopScope(y);
+		}
 	}
 	// simple repeat
-	return renderLoop;
+	return function (x) {
+		var y = filter( x, tmp );
+		return renderLoop(y);
+	}
 };
 
 /*!
@@ -186,5 +217,6 @@ module.exports = {
 	compileTag: compileTag,
 	compileLayout: compileLayout,
 	templates: templates,
-	layouts: layouts
+	layouts: layouts,
+	filters: filters
 };

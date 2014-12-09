@@ -7,7 +7,10 @@ var fs = require('fs'),
 	compileLayout = require('./compiler.js').compileLayout,
 	createTemplate = require('./template.js'),
 	templates = require('./compiler.js').templates,
-	layouts = require('./compiler.js').layouts;
+	layouts = require('./compiler.js').layouts,
+	filters = require('./compiler.js').filters;
+
+
 
 var allCompiled = false;
 
@@ -89,6 +92,7 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 
 	// get all files inside folderPath
 	recursive( folderPath, function (error, files) {
+		if (!files) { return callback();}
 		var limit = files.length;
 		if (error) { return callback( error );}
 		if (!limit) { return callback();}
@@ -181,6 +185,13 @@ Nuts.prototype.render = function (tmplName, data) {
 		return views[tmplName].render( data );
 	}
 	return '';
+};
+
+
+
+Nuts.prototype.addFilter = function (name, filter, callback) {
+	filters[name] = filter;
+	callback();
 };
 
 

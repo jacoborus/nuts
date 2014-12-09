@@ -28,10 +28,6 @@ var prepare = function (dom, src, next) {
 
 	var nutName = dom.attribs ? dom.attribs.nut : null;
 
-	if (nutName) {
-		delete dom.attribs.nut;
-	}
-
 
 	var tmp = {
 		src : src,

@@ -79,6 +79,7 @@ describe( 'Template schema', function () {
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.checked ).to.not.exist;
 				// nut
 				expect( nuts.getTemplate('specialNuTs').nut ).to.equal( 'specialNuTs' );
+				expect( nuts.getTemplate('specialNuTs').schema.nut ).to.equal( 'specialNuTs' );
 				expect( nuts.getTemplate('specialNuTs').schema.attribs.nut ).to.not.exist;
 				// as
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.as ).to.not.exist;

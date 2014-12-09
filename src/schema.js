@@ -80,6 +80,10 @@ var TagSchema = function (dom) {
 			this.nuClass = atts['nu-class'];
 			delete atts['nu-class'];
 		}
+		if (atts['nut']) {
+			this.nut = atts['nut'];
+			delete atts['nut'];
+		}
 		if (atts['nu-scope']) {
 			this.scope = atts['nu-scope'];
 			delete atts['nu-scope'];
