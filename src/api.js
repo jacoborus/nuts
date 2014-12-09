@@ -18,7 +18,7 @@ var newCounter = function (limit, callback) {
 		if (++count === limit) {
 			callback( null );
 		}
-	}
+	};
 };
 
 var views = {};
@@ -79,7 +79,7 @@ Nuts.prototype.addFile = function (route, callback) {
 
 
 /**
- * Add all templates in a folder using its filenames as template keynames
+ * Add all templates in a folder
  * @param {String}   folderPath route to folder
  * @param {Function} callback   Signature: error
  */
@@ -110,6 +110,52 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 	});
 };
 
+/**
+ * Add all templates in a folder using its filename paths as template keynames
+ * @param {String}   folderPath route to folder
+ * @param {Function} callback   Signature: error
+ */
+Nuts.prototype.addTree = function (folderPath, callback) {
+	callback = callback || function () {};
+	folderPath = path.resolve( folderPath );
+	var cutPath = folderPath.length + 1;
+
+
+	// get all files inside folderPath
+	recursive( folderPath, function (error, files) {
+		var limit = files.length;
+		if (error) { return callback( error );}
+		if (!limit) { return callback();}
+
+		var counter = newCounter( limit, callback );
+		// read files
+		files.forEach( function (filePath) {
+			var namePath = filePath.slice( cutPath, filePath.length );
+			// exclude no .html files
+			if (path.extname(filePath) !== '.html') {
+				return counter();
+			}
+			fs.readFile( filePath, 'utf8', function (err, data) {
+				if (err) { return counter( err );}
+				createTemplate( data, function (err2, tmpls) {
+					if (err2) {
+						return counter( err2 );
+					}
+					allCompiled = false;
+					var i;
+					for (i in tmpls) {
+						if (tmpls[i].layout) {
+							layouts[namePath] = tmpls[i];
+						} else {
+							templates[namePath] = tmpls[i];
+						}
+					}
+					counter(null);
+				});
+			});
+		});
+	});
+};
 
 /**
  * Get a rendered template
