@@ -11,7 +11,9 @@ describe( 'Layout', function (done) {
 		var tmpl = '<html nut="layout1">' +
 				'<body nu-block="body">hello</body>' +
 			'</html>';
-		nuts.addTemplate( layout + tmpl, function () {
+		nuts
+		.addTemplate( layout + tmpl )
+		.exec( function () {
 			expect(
 				nuts.render( 'simpleLayout' )
 			).equal('<html>' +
@@ -33,7 +35,9 @@ describe( 'Layout', function (done) {
 				'<p nu-model="text">bye</p>' +
 			'</body>';
 
-		nuts.addTemplate( layout + tmpl + tmplBlock, function (err) {
+		nuts
+		.addTemplate( layout + tmpl + tmplBlock )
+		.exec( function (err) {
 			expect( err ).to.not.exist;
 			expect(
 				nuts.render( 'layoutExtend', {text: 'nuts'} )

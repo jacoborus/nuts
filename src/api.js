@@ -8,41 +8,33 @@ var fs = require('fs'),
 	createTemplate = require('./template.js'),
 	templates = require('./compiler.js').templates,
 	layouts = require('./compiler.js').layouts,
-	filters = require('./compiler.js').filters;
-
+	filters = require('./compiler.js').filters,
+	Prom = require('./promise.js');
 
 
 var allCompiled = false;
 
-var newCounter = function (limit, callback) {
+var newCounter = function (limit, prom) {
 	var count = 0;
 	return function (err) {
-		if (err) { callback( err );}
+		if (err) { prom.next( err );}
 		if (++count === limit) {
-			callback( null );
+			prom.next( null );
 		}
 	};
 };
 
 var views = {};
 
-/*!
- * Nuts constructor
- */
-var Nuts = function () {};
-
-
 /**
  * Add a template and generate its model
  * @param {String}   source html template
  * @param {Function} callback    Signature: error
  */
-Nuts.prototype.addTemplate = function (source, callback) {
-	callback = callback || function () {};
+var _addTemplate = function (source, prom) {
 	createTemplate( source, function (err, tmpls) {
-		if (err) {
-			return callback( err );
-		}
+		if (err) { return prom.next( err ); }
+
 		allCompiled = false;
 		var i;
 		for (i in tmpls) {
@@ -52,52 +44,27 @@ Nuts.prototype.addTemplate = function (source, callback) {
 				templates[tmpls[i].nut] = tmpls[i];
 			}
 		}
-		callback(null);
+		prom.next();
 	});
 };
 
-
-/**
- * Get a template object from templates
- * @param  {String} name template keyname
- * @return {Object}      template object
- */
-Nuts.prototype.getTemplate = function (name) {
-	return templates[name] || layouts[name];
-};
-
-
-/**
- * Add a template from file
- * @param {String}   route template path
- * @param {Function} callback     Signature: error, addedTemplate
- */
-Nuts.prototype.addFile = function (route, callback) {
-	var self = this;
+var _addFile = function (route, prom) {
 	fs.readFile( path.resolve(route), 'utf8', function (err, data) {
-		if (err) {return callback( err );}
-		self.addTemplate( data, callback );
+		if (err) {return prom.next( err );}
+		_addTemplate( data, prom );
 	});
 };
 
-
-/**
- * Add all templates in a folder
- * @param {String}   folderPath route to folder
- * @param {Function} callback   Signature: error
- */
-Nuts.prototype.addFolder = function (folderPath, callback) {
-	callback = callback || function () {};
-	var self = this;
+var _addFolder = function (folderPath, prom, self) {
 
 	// get all files inside folderPath
 	recursive( folderPath, function (error, files) {
-		if (!files) { return callback();}
+		if (!files) { return prom.next();}
 		var limit = files.length;
-		if (error) { return callback( error );}
-		if (!limit) { return callback();}
+		if (error) { return prom.next( error );}
+		if (!limit) { return prom.next();}
 
-		var counter = newCounter( limit, callback );
+		var counter = newCounter( limit, prom );
 		// read files
 		files.forEach( function (filePath) {
 			// exclude no .html files
@@ -106,7 +73,9 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 			}
 			fs.readFile( filePath, 'utf8', function (err, data) {
 				if (err) { return counter( err );}
-				self.addTemplate( data, function (err) {
+				self
+				.addTemplate( data )
+				.exec( function (err) {
 					counter( err );
 				});
 			});
@@ -114,13 +83,14 @@ Nuts.prototype.addFolder = function (folderPath, callback) {
 	});
 };
 
-/**
- * Add all templates in a folder using its filename paths as template keynames
- * @param {String}   folderPath route to folder
- * @param {Function} callback   Signature: error
- */
-Nuts.prototype.addTree = function (folderPath, callback) {
-	callback = callback || function () {};
+
+var _addFilter = function (filter, prom) {
+	filters[filter.name] = filter.filter;
+	prom.next();
+};
+
+
+var _addTree = function (folderPath, prom) {
 	folderPath = path.resolve( folderPath );
 	var cutPath = folderPath.length + 1;
 
@@ -128,10 +98,10 @@ Nuts.prototype.addTree = function (folderPath, callback) {
 	// get all files inside folderPath
 	recursive( folderPath, function (error, files) {
 		var limit = files.length;
-		if (error) { return callback( error );}
-		if (!limit) { return callback();}
+		if (error) { return prom.next( error );}
+		if (!limit) { return prom.next();}
 
-		var counter = newCounter( limit, callback );
+		var counter = newCounter( limit, prom );
 		// read files
 		files.forEach( function (filePath) {
 			var namePath = filePath.slice( cutPath, filePath.length );
@@ -161,6 +131,79 @@ Nuts.prototype.addTree = function (folderPath, callback) {
 	});
 };
 
+/*!
+ * Nuts constructor
+ */
+var Nuts = function () {
+	Prom.create( 'addTemplate', this, _addTemplate );
+	Prom.create( 'addFile', this, _addFile );
+	Prom.create( 'addFolder', this, _addFolder );
+	Prom.create( 'addTree', this, _addTree );
+	Prom.create( 'addFilter', this, _addFilter );
+};
+
+
+Nuts.prototype.addTemplate = function (source) {
+	var promise = new Prom();
+	promise.cueue( function () {
+		_addTemplate( source, promise );
+	});
+	return promise;
+};
+
+/**
+ * Add a template from file
+ * @param {String}   route template path
+ * @param {Function} callback     Signature: error, addedTemplate
+ */
+
+Nuts.prototype.addFile = function (route) {
+	var self = this;
+	var promise = new Prom();
+	promise.cueue( function () {
+		_addFile( route, promise, self );
+	});
+	return promise;
+};
+
+/**
+ * Get a template object from templates
+ * @param  {String} name template keyname
+ * @return {Object}      template object
+ */
+Nuts.prototype.getTemplate = function (name) {
+	return templates[name] || layouts[name];
+};
+
+
+/**
+ * Add all templates in a folder
+ * @param {String}   folderPath route to folder
+ * @param {Function} callback   Signature: error
+ */
+Nuts.prototype.addFolder = function (folderPath) {
+	var self = this;
+	var promise = new Prom();
+	promise.cueue( function () {
+		_addFolder( folderPath, promise, self );
+	});
+	return promise;
+};
+
+/**
+ * Add all templates in a folder using its filename paths as template keynames
+ * @param {String}   folderPath route to folder
+ * @param {Function} callback   Signature: error
+ */
+Nuts.prototype.addTree = function (folderPath) {
+	var self = this;
+	var promise = new Prom();
+	promise.cueue( function () {
+		_addTree( folderPath, promise, self );
+	});
+	return promise;
+};
+
 /**
  * Get a rendered template
  * @param  {String} tmplName template keyname
@@ -188,10 +231,12 @@ Nuts.prototype.render = function (tmplName, data) {
 };
 
 
-
-Nuts.prototype.addFilter = function (name, filter, callback) {
-	filters[name] = filter;
-	callback();
+Nuts.prototype.addFilter = function (filter) {
+	var promise = new Prom();
+	promise.cueue( function () {
+		_addFilter( filter, promise);
+	});
+	return promise;
 };
 
 

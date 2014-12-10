@@ -5,20 +5,25 @@ var expect = require('chai').expect,
 
 
 describe( 'Partial', function () {
-	it('render simple partials', function () {
+	it('render simple partials', function (done) {
 		var tmpl = '<ul nut="simplePartialUl"><li nu-as="simplePartialLi"></li></ul>' +
 			'<li nut="simplePartialLi" yeah="yeah">nuts</li>';
-		nuts.addTemplate( tmpl, function () {
+		nuts
+		.addTemplate( tmpl )
+		.exec( function () {
 			expect(
 				nuts.render('simplePartialUl')
 			).to.equal( '<ul><li yeah="yeah">nuts</li></ul>' );
+			done();
 		});
 	});
 
 
 
 	it('render complex partials', function (done) {
-		nuts.addFile( './test/assets/complex-partial.html', function () {
+		nuts
+		.addFile( './test/assets/complex-partial.html' )
+		.exec( function () {
 			expect(
 				nuts.render('blogDemo', {
 					articles: [{

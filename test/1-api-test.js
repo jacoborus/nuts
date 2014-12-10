@@ -8,8 +8,10 @@ describe( 'nuts.addTemplate', function () {
 
 	it('add src to a new template in templates archive', function (done) {
 		var tmpl = '<span nut="one">hello</span>';
-		nuts.addTemplate( tmpl, function (err) {
-			expect( err ).to.equal( null );
+		nuts
+		.addTemplate( tmpl )
+		.exec( function (err) {
+			expect( err ).to.equal( undefined );
 			expect( nuts.getTemplate('one').src ).to.equal(
 				'<span nut="one">hello</span>'
 			);
@@ -19,8 +21,10 @@ describe( 'nuts.addTemplate', function () {
 
 	it('add several templates from a single string', function (done) {
 		var tmpl = '<span nut="three">hello</span><span nut="four">hello</span>';
-		nuts.addTemplate( tmpl, function (err) {
-			expect( err ).to.equal( null );
+		nuts
+		.addTemplate( tmpl )
+		.exec( function (err) {
+			expect( err ).to.equal( undefined );
 			expect( nuts.getTemplate('three').src ).to.equal(
 				'<span nut="three">hello</span><span nut="four">hello</span>'
 			);
@@ -36,8 +40,10 @@ describe( 'nuts.addTemplate', function () {
 describe( 'nuts.addFile', function () {
 
 	it('add template from file', function (done) {
-		nuts.addFile( './test/assets/basic.html', function (err) {
-			expect( err ).to.equal( null );
+		nuts
+		.addFile( './test/assets/basic.html' )
+		.exec( function (err) {
+			expect( err ).to.equal( undefined );
 			expect( nuts.getTemplate('two').src ).to.equal(
 				'<span nut="two">hello</span>'
 			);
@@ -50,8 +56,10 @@ describe( 'nuts.addFile', function () {
 describe( 'nuts.addFolder', function () {
 
 	it('add templates from folder with its filename as templatename', function (done) {
-		nuts.addFolder( './test/assets/folder', function (err) {
-			expect( err ).to.equal( null );
+		nuts
+		.addFolder( './test/assets/folder' )
+		.exec( function (err) {
+			expect( err ).to.equal( undefined );
 			expect( nuts.getTemplate('folderone').src ).to.equal(
 				'<span nut="folderone">hello</span>'
 			);
@@ -67,8 +75,10 @@ describe( 'nuts.addFolder', function () {
 describe( 'nuts.addTree', function () {
 
 	it('add templates from folder with its filename as templatename', function (done) {
-		nuts.addTree( './test/assets', function (err) {
-			expect( err ).to.equal( null );
+		nuts
+		.addTree( './test/assets' )
+		.exec( function (err) {
+			expect( err ).to.equal( undefined );
 			expect( nuts.getTemplate('basic.html').src ).to.equal(
 				'<span nut="two">hello</span>'
 			);
