@@ -8,9 +8,8 @@ describe( 'Filter', function () {
 		var simpleFilter = '<span nu-model="word" nut="simpleFilter"></span>';
 		nuts
 		.addTemplate( simpleFilter )
-		.addFilter({
-			name: 'simpleFilter',
-			filter: {
+		.addFilters({
+			simpleFilter: {
 				word: function (field, scope) {
 					return 'get ' + field + '!';
 				}
@@ -25,6 +24,33 @@ describe( 'Filter', function () {
 		});
 	});
 
+	it('add multiple filters', function (done) {
+		var multiFilter1 = '<span nu-model="word" nut="multiFilter1"></span>';
+		var multiFilter2 = '<span nu-model="word" nut="multiFilter2"></span>';
+		nuts
+		.addTemplate( multiFilter1 )
+		.addTemplate( multiFilter2)
+		.addFilters({
+			multiFilter1: {
+				word: function (field, scope) {
+					return 'get ' + field + '!';
+				}
+			},
+			multiFilter2: {
+				word: function (field, scope) {
+					return 'get ' + field + '!';
+				}
+			}
+		})
+		.exec( function () {
+			var rendered = nuts.render( 'multiFilter2', { word: 'nuts'});
+			expect( rendered ).to.equal(
+				'<span>get nuts!</span>'
+			);
+			done();
+		});
+	});
+
 
 	it('Filter looped data', function (done) {
 		var loopedFilter = '<ul nut="loopedFilter">'+
@@ -32,9 +58,8 @@ describe( 'Filter', function () {
 			'</ul>';
 		nuts
 		.addTemplate( loopedFilter )
-		.addFilter({
-			name: 'loopedFilter',
-			filter: {
+		.addFilters({
+			loopedFilter: {
 				nums: function (val, scope) {
 					var i;
 					for (i in val) {

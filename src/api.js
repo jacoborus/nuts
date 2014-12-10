@@ -126,8 +126,11 @@ var _addTree = function (folderPath, prom) {
 };
 
 
-var _addFilter = function (filter, prom) {
-	filters[filter.name] = filter.filter;
+var _addFilters = function (filts, prom) {
+	var i;
+	for (i in filts) {
+		filters[i] = filts[i];
+	}
 	prom.next();
 };
 
@@ -139,7 +142,7 @@ var Nuts = function () {
 	Prom.create( 'addFile', this, _addFile );
 	Prom.create( 'addFolder', this, _addFolder );
 	Prom.create( 'addTree', this, _addTree );
-	Prom.create( 'addFilter', this, _addFilter );
+	Prom.create( 'addFilters', this, _addFilters );
 };
 
 
@@ -235,7 +238,7 @@ Nuts.prototype.render = function (tmplName, data) {
 };
 
 
-Nuts.prototype.addFilter = function (filter) {
+Nuts.prototype.addFilters = function (filter) {
 	var promise = new Prom();
 	promise.cueue( function () {
 		_addFilter( filter, promise);
