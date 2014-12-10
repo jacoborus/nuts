@@ -9,7 +9,8 @@ Add a template and generate its model
 **Params:**
 
 - **`source`** *String*: html template
-- **`callback`** *Function*: Signature: error, addedTemplate
+
+**Return** a promise with signature: error
 
 
 **Example:**
@@ -31,7 +32,8 @@ Add one or multiple templates from file
 **Params:**
 
 - **`route`** *String*: template path
-- **`callback`** *Function*: Signature: error, addedTemplate
+
+**Return** a promise with signature: error
 
 **Example:**
 
@@ -58,7 +60,8 @@ Add all templates in a folder using its filenames as template keynames
 **Params:**
 
 - **`folderPath`** *String*: route to folder
-- **`callback`** *Function*: Signature: error
+
+**Return** a promise with signature: error
 
 
 

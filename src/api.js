@@ -84,12 +84,6 @@ var _addFolder = function (folderPath, prom, self) {
 };
 
 
-var _addFilter = function (filter, prom) {
-	filters[filter.name] = filter.filter;
-	prom.next();
-};
-
-
 var _addTree = function (folderPath, prom) {
 	folderPath = path.resolve( folderPath );
 	var cutPath = folderPath.length + 1;
@@ -131,6 +125,12 @@ var _addTree = function (folderPath, prom) {
 	});
 };
 
+
+var _addFilter = function (filter, prom) {
+	filters[filter.name] = filter.filter;
+	prom.next();
+};
+
 /*!
  * Nuts constructor
  */
@@ -143,6 +143,10 @@ var Nuts = function () {
 };
 
 
+/**
+ * Add template to templates archive
+ * @param {String} source html with nut templates
+ */
 Nuts.prototype.addTemplate = function (source) {
 	var promise = new Prom();
 	promise.cueue( function () {

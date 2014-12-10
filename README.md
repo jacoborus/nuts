@@ -60,11 +60,13 @@ var data = {
 	}
 };
 
-nuts.addFile('templates.html', function (err) {
+nuts
+.addFile( 'templates.html' )
+.exec( function (err) {
 	if (err) { throw err;}
 
-	var render = nuts.render( 'blog', data );
-	console.log( render );
+	var rendered = nuts.render( 'blog', data );
+	console.log( rendered );
 });
 ```
 
