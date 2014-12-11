@@ -3,14 +3,14 @@
 var Prom = function (fn) {
 	this.fns = [];
 	if (fn) {
-		this.cueue( fn );
+		this.enqueue( fn );
 	}
 };
 
 Prom.create = function (name, parent, method) {
 	Prom.prototype[name] = function (x) {
 		var self = this;
-		this.cueue( function () {
+		this.enqueue( function () {
 			method( x, self, parent );
 		});
 		return this;
@@ -35,7 +35,7 @@ Prom.prototype.next = function (err) {
 	}
 };
 
-Prom.prototype.cueue = function (fn) {
+Prom.prototype.enqueue = function (fn) {
 	this.fns.push(fn);
 };
 

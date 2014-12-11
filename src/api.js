@@ -17,7 +17,7 @@ var allCompiled = false;
 var newCounter = function (limit, prom) {
 	var count = 0;
 	return function (err) {
-		if (err) { prom.next( err );}
+		if (err) {return prom.next( err )};
 		if (++count === limit) {
 			prom.next( null );
 		}
@@ -55,8 +55,8 @@ var _addFile = function (route, prom) {
 	});
 };
 
-var _addFolder = function (folderPath, prom, self) {
 
+var _addFolder = function (folderPath, prom, self) {
 	// get all files inside folderPath
 	recursive( folderPath, function (error, files) {
 		if (!files) { return prom.next();}
@@ -87,7 +87,6 @@ var _addFolder = function (folderPath, prom, self) {
 var _addTree = function (folderPath, prom) {
 	folderPath = path.resolve( folderPath );
 	var cutPath = folderPath.length + 1;
-
 
 	// get all files inside folderPath
 	recursive( folderPath, function (error, files) {
@@ -152,7 +151,7 @@ var Nuts = function () {
  */
 Nuts.prototype.addTemplate = function (source) {
 	var promise = new Prom();
-	promise.cueue( function () {
+	promise.enqueue( function () {
 		_addTemplate( source, promise );
 	});
 	return promise;
@@ -167,7 +166,7 @@ Nuts.prototype.addTemplate = function (source) {
 Nuts.prototype.addFile = function (route) {
 	var self = this;
 	var promise = new Prom();
-	promise.cueue( function () {
+	promise.enqueue( function () {
 		_addFile( route, promise, self );
 	});
 	return promise;
@@ -191,7 +190,7 @@ Nuts.prototype.getTemplate = function (name) {
 Nuts.prototype.addFolder = function (folderPath) {
 	var self = this;
 	var promise = new Prom();
-	promise.cueue( function () {
+	promise.enqueue( function () {
 		_addFolder( folderPath, promise, self );
 	});
 	return promise;
@@ -205,7 +204,7 @@ Nuts.prototype.addFolder = function (folderPath) {
 Nuts.prototype.addTree = function (folderPath) {
 	var self = this;
 	var promise = new Prom();
-	promise.cueue( function () {
+	promise.enqueue( function () {
 		_addTree( folderPath, promise, self );
 	});
 	return promise;
@@ -240,7 +239,7 @@ Nuts.prototype.render = function (tmplName, data) {
 
 Nuts.prototype.addFilters = function (filter) {
 	var promise = new Prom();
-	promise.cueue( function () {
+	promise.enqueue( function () {
 		_addFilter( filter, promise);
 	});
 	return promise;
