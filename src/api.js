@@ -17,7 +17,7 @@ var allCompiled = false;
 var newCounter = function (limit, prom) {
 	var count = 0;
 	return function (err) {
-		if (err) {return prom.next( err )};
+		if (err) {return prom.next( err );}
 		if (++count === limit) {
 			prom.next( null );
 		}
@@ -240,7 +240,7 @@ Nuts.prototype.render = function (tmplName, data) {
 Nuts.prototype.addFilters = function (filter) {
 	var promise = new Prom();
 	promise.enqueue( function () {
-		_addFilter( filter, promise);
+		_addFilters( filter, promise);
 	});
 	return promise;
 };
