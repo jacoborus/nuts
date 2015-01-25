@@ -1,10 +1,11 @@
 {
   "name": "nuts",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "New Unique Templates System",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha"
+    "test": "node ./node_modules/mocha/bin/mocha",
+    "build-docs": "node ./docs/createdocs.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,8 @@
   },
   "dependencies": {
     "htmlparser2": "^3.8.2",
-    "recursive-readdir": "^1.2.0"
+    "recursive-readdir": "^1.2.0",
+    "updox": "0.0.5"
   },
   "author": "Jacobo Tabernero - jacobo@xarope.eu",
   "license": "MIT",

@@ -26,8 +26,8 @@ var newCounter = function (limit, prom) {
 
 var views = {};
 
-/**
- * Add a template and generate its model
+/*!
+ * Add templates from a `string` and generate their models
  * @param {String}   source html template
  * @param {Function} callback    Signature: error
  */
@@ -146,9 +146,17 @@ var Nuts = function () {
 
 
 /**
- * Add template to templates archive
+ * Add templates from given `string` to templates archive
+ *
+ * Example:
+ * ```js
+ * nuts.addTemplate(  '<span nut="super-span" nu-model="fruit"><span>' );
+ * ```
+ *
  * @param {String} source html with nut templates
+ * @return {Object}      promise
  */
+
 Nuts.prototype.addTemplate = function (source) {
 	var promise = new Prom();
 	promise.enqueue( function () {
@@ -158,14 +166,22 @@ Nuts.prototype.addTemplate = function (source) {
 };
 
 /**
- * Add a template from file
- * @param {String}   route template path
- * @param {Function} callback     Signature: error, addedTemplate
+ * Add templates from html file
+ *
+ * Example:
+ * ```js
+ * nuts
+ * .addFile( 'core-templates.html' )
+ * .addFile( 'calendar-templates.html' );
+ * // => return promise
+ * ```
+ *
+ * @param {String}   route templates file path
+ * @return {Object}      promise
  */
-
 Nuts.prototype.addFile = function (route) {
-	var self = this;
-	var promise = new Prom();
+	var self = this,
+		promise = new Prom();
 	promise.enqueue( function () {
 		_addFile( route, promise, self );
 	});
@@ -173,7 +189,12 @@ Nuts.prototype.addFile = function (route) {
 };
 
 /**
- * Get a template object from templates
+ * Get a object template from templates archive
+ *
+ * Example:
+ * ```js
+ * nuts.getTemplate( 'super-span' );
+ * ```
  * @param  {String} name template keyname
  * @return {Object}      template object
  */
@@ -183,27 +204,39 @@ Nuts.prototype.getTemplate = function (name) {
 
 
 /**
- * Add all templates in a folder
- * @param {String}   folderPath route to folder
- * @param {Function} callback   Signature: error
+ * Add all templates from files within a folder
+ *
+ * Example:
+ * ```js
+ * nuts.addFolder( './templates' );
+ * ```
+ * @param {String}   folder  path to folder
+ * @return {Object}      promise
  */
-Nuts.prototype.addFolder = function (folderPath) {
-	var self = this;
-	var promise = new Prom();
+Nuts.prototype.addFolder = function (folder) {
+	var self = this,
+		promise = new Prom();
 	promise.enqueue( function () {
-		_addFolder( folderPath, promise, self );
+		_addFolder( folder, promise, self );
 	});
 	return promise;
 };
 
 /**
- * Add all templates in a folder using its filename paths as template keynames
+ * Add all templates in a folder using its filename paths as template keynames.
+ * This operation only allow a template each file
+ *
+ * Example:
+ * ```js
+ * nuts.addTree( './layouts' );
+ * ```
+ *
  * @param {String}   folderPath route to folder
- * @param {Function} callback   Signature: error
+ * @return {Object}      promise
  */
 Nuts.prototype.addTree = function (folderPath) {
-	var self = this;
-	var promise = new Prom();
+	var self = this,
+		promise = new Prom();
 	promise.enqueue( function () {
 		_addTree( folderPath, promise, self );
 	});
@@ -212,6 +245,19 @@ Nuts.prototype.addTree = function (folderPath) {
 
 /**
  * Get a rendered template
+ *
+ * Example:
+ * ```js
+ * var tmpl = '<span nut="simpleTag">hola</span>';
+ * var html;
+ *
+ * nuts
+ * .addTemplate( tmpl )
+ * .exec( function (err) {
+ *     html = nuts.render( 'simpleTag', {} );
+ *     // html === '<span>hola</span>'
+ * });
+ * ```
  * @param  {String} tmplName template keyname
  * @param  {Object} data     locals
  * @return {String}          rendered html
@@ -236,11 +282,26 @@ Nuts.prototype.render = function (tmplName, data) {
 	return '';
 };
 
-
-Nuts.prototype.addFilters = function (filter) {
+/**
+ * Add filters to filters archive
+ *
+ * Example:
+ * ```js
+ * nuts.addFilters({
+ * 		templatename: {
+ * 			fieldName: function (val, scope) {
+ * 				return 'get ' + val + '!';
+ * 			}
+ * 		}
+ * });
+ * ```
+ * @param {Object} filters
+ * @return {Object}      promise
+ */
+Nuts.prototype.addFilters = function (filters) {
 	var promise = new Prom();
 	promise.enqueue( function () {
-		_addFilters( filter, promise);
+		_addFilters( filters, promise);
 	});
 	return promise;
 };

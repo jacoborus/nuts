@@ -5,9 +5,9 @@ var expect = require('chai').expect,
 
 describe( 'Filter', function () {
 	it('Filter simple data', function (done) {
-		var simpleFilter = '<span nu-model="word" nut="simpleFilter"></span>';
+		var tmpl = '<span nu-model="word" nut="simpleFilter"></span>';
 		nuts
-		.addTemplate( simpleFilter )
+		.addTemplate( tmpl )
 		.addFilters({
 			simpleFilter: {
 				word: function (field, scope) {
@@ -25,11 +25,11 @@ describe( 'Filter', function () {
 	});
 
 	it('add multiple filters', function (done) {
-		var multiFilter1 = '<span nu-model="word" nut="multiFilter1"></span>';
-		var multiFilter2 = '<span nu-model="word" nut="multiFilter2"></span>';
+		var tmpl1 = '<span nu-model="word" nut="multiFilter1"></span>';
+		var tmpl2 = '<span nu-model="word" nut="multiFilter2"></span>';
 		nuts
-		.addTemplate( multiFilter1 )
-		.addTemplate( multiFilter2)
+		.addTemplate( tmpl1 )
+		.addTemplate( tmpl2 )
 		.addFilters({
 			multiFilter1: {
 				word: function (field, scope) {
@@ -53,11 +53,11 @@ describe( 'Filter', function () {
 
 
 	it('Filter looped data', function (done) {
-		var loopedFilter = '<ul nut="loopedFilter">'+
+		var loopedFilterTmpl = '<ul nut="loopedFilter">'+
 				'<li nu-repeat="nums" nu-model></li>' +
 			'</ul>';
 		nuts
-		.addTemplate( loopedFilter )
+		.addTemplate( loopedFilterTmpl )
 		.addFilters({
 			loopedFilter: {
 				nums: function (val, scope) {

@@ -55,7 +55,7 @@ describe( 'nuts.addFile', function () {
 
 describe( 'nuts.addFolder', function () {
 
-	it('add templates from folder with its filename as templatename', function (done) {
+	it('Add all templates in a folder', function (done) {
 		nuts
 		.addFolder( './test/assets/folder' )
 		.exec( function (err) {
