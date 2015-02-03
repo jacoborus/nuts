@@ -9,7 +9,7 @@ describe( 'Filter', function () {
 		nuts
 		.addTemplate( tmpl )
 		.addFilters({
-			simpleFilter: {
+			simpleFilter:{
 				word: function (field, scope) {
 					return 'get ' + field + '!';
 				}

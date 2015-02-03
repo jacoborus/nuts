@@ -14,134 +14,24 @@ var fs = require('fs'),
 
 var allCompiled = false;
 
-var newCounter = function (limit, prom) {
+var newCounter = function (limit, next) {
 	var count = 0;
 	return function (err) {
-		if (err) {return prom.next( err );}
+		if (err) {return next( err );}
 		if (++count === limit) {
-			prom.next( null );
+			next();
 		}
 	};
 };
 
 var views = {};
 
-/*!
- * Add templates from a `string` and generate their models
- * @param {String}   source html template
- * @param {Function} callback    Signature: error
- */
-var _addTemplate = function (source, prom) {
-	createTemplate( source, function (err, tmpls) {
-		if (err) { return prom.next( err ); }
-
-		allCompiled = false;
-		var i;
-		for (i in tmpls) {
-			if (tmpls[i].layout) {
-				layouts[tmpls[i].nut] = tmpls[i];
-			} else {
-				templates[tmpls[i].nut] = tmpls[i];
-			}
-		}
-		prom.next();
-	});
-};
-
-var _addFile = function (route, prom) {
-	fs.readFile( path.resolve(route), 'utf8', function (err, data) {
-		if (err) {return prom.next( err );}
-		_addTemplate( data, prom );
-	});
-};
-
-
-var _addFolder = function (folderPath, prom, self) {
-	// get all files inside folderPath
-	recursive( folderPath, function (error, files) {
-		if (!files) { return prom.next();}
-		var limit = files.length;
-		if (error) { return prom.next( error );}
-		if (!limit) { return prom.next();}
-
-		var counter = newCounter( limit, prom );
-		// read files
-		files.forEach( function (filePath) {
-			// exclude no .html files
-			if (path.extname(filePath) !== '.html') {
-				return counter();
-			}
-			fs.readFile( filePath, 'utf8', function (err, data) {
-				if (err) { return counter( err );}
-				self
-				.addTemplate( data )
-				.exec( function (err) {
-					counter( err );
-				});
-			});
-		});
-	});
-};
-
-
-var _addTree = function (folderPath, prom) {
-	folderPath = path.resolve( folderPath );
-	var cutPath = folderPath.length + 1;
-
-	// get all files inside folderPath
-	recursive( folderPath, function (error, files) {
-		var limit = files.length;
-		if (error) { return prom.next( error );}
-		if (!limit) { return prom.next();}
-
-		var counter = newCounter( limit, prom );
-		// read files
-		files.forEach( function (filePath) {
-			var namePath = filePath.slice( cutPath, filePath.length );
-			// exclude no .html files
-			if (path.extname(filePath) !== '.html') {
-				return counter();
-			}
-			fs.readFile( filePath, 'utf8', function (err, data) {
-				if (err) { return counter( err );}
-				createTemplate( data, function (err2, tmpls) {
-					if (err2) {
-						return counter( err2 );
-					}
-					allCompiled = false;
-					var i;
-					for (i in tmpls) {
-						if (tmpls[i].layout) {
-							layouts[namePath] = tmpls[i];
-						} else {
-							templates[namePath] = tmpls[i];
-						}
-					}
-					counter(null);
-				});
-			});
-		});
-	});
-};
-
-
-var _addFilters = function (filts, prom) {
-	var i;
-	for (i in filts) {
-		filters[i] = filts[i];
-	}
-	prom.next();
-};
 
 /*!
  * Nuts constructor
  */
 var Nuts = function () {
-	Prom.create( 'addTemplate', this, _addTemplate );
-	Prom.create( 'addFile', this, _addFile );
-	Prom.create( 'addFolder', this, _addFolder );
-	Prom.create( 'addTree', this, _addTree );
-	Prom.create( 'addFilters', this, _addFilters );
+	Prom.create( this, ['addTemplate', 'addFile', 'addFolder', 'addTree', 'addFilters']);
 };
 
 
@@ -157,13 +47,23 @@ var Nuts = function () {
  * @return {Object}      promise
  */
 
-Nuts.prototype.addTemplate = function (source) {
-	var promise = new Prom();
-	promise.enqueue( function () {
-		_addTemplate( source, promise );
+Nuts.prototype.addTemplate = function (source, callback) {
+	createTemplate( source, function (err, tmpls) {
+		if (err) { return callback( err ); }
+
+		allCompiled = false;
+
+		tmpls.forEach( function (tmpl) {
+			if (tmpl.layout) {
+				return (layouts[tmpl.nut] = tmpl);
+			}
+			templates[tmpl.nut] = tmpl;
+		});
+		callback();
 	});
-	return promise;
 };
+
+
 
 /**
  * Add templates from html file
@@ -179,13 +79,12 @@ Nuts.prototype.addTemplate = function (source) {
  * @param {String}   route templates file path
  * @return {Object}      promise
  */
-Nuts.prototype.addFile = function (route) {
-	var self = this,
-		promise = new Prom();
-	promise.enqueue( function () {
-		_addFile( route, promise, self );
+Nuts.prototype.addFile = function (route, callback) {
+	var self = this;
+	fs.readFile( path.resolve(route), 'utf8', function (err, data) {
+		if (err) {return callback( err );}
+		self.addTemplate( data, callback );
 	});
-	return promise;
 };
 
 /**
@@ -213,13 +112,29 @@ Nuts.prototype.getTemplate = function (name) {
  * @param {String}   folder  path to folder
  * @return {Object}      promise
  */
-Nuts.prototype.addFolder = function (folder) {
-	var self = this,
-		promise = new Prom();
-	promise.enqueue( function () {
-		_addFolder( folder, promise, self );
+Nuts.prototype.addFolder = function (folder, callback) {
+
+	var self = this;
+
+	// get all files inside folderPath
+	recursive( folder, function (error, files) {
+		if (!files) { return callback();}
+		var limit = files.length;
+		if (error) { return callback( error );}
+		if (!limit) { return callback();}
+
+		var counter = newCounter( limit, callback );
+		// read files
+		files.forEach( function (filePath) {
+			// exclude no .html files
+			if (path.extname(filePath) !== '.html') {
+				return counter();
+			}
+			self.addFile( filePath, function (err) {
+				counter( err );
+			});
+		});
 	});
-	return promise;
 };
 
 /**
@@ -234,13 +149,44 @@ Nuts.prototype.addFolder = function (folder) {
  * @param {String}   folderPath route to folder
  * @return {Object}      promise
  */
-Nuts.prototype.addTree = function (folderPath) {
-	var self = this,
-		promise = new Prom();
-	promise.enqueue( function () {
-		_addTree( folderPath, promise, self );
+Nuts.prototype.addTree = function (folderPath, callback) {
+
+	folderPath = path.resolve( folderPath );
+	var cutPath = folderPath.length + 1;
+
+	// get all files inside folderPath
+	recursive( folderPath, function (error, files) {
+		var limit = files.length;
+		if (error) { return callback( error );}
+		if (!limit) { return callback();}
+
+		var counter = newCounter( limit, callback );
+		// read files
+		files.forEach( function (filePath) {
+			var namePath = filePath.slice( cutPath, filePath.length );
+			// exclude no .html files
+			if (path.extname(filePath) !== '.html') {
+				return counter();
+			}
+			fs.readFile( filePath, 'utf8', function (err, data) {
+				if (err) { return counter( err );}
+				createTemplate( data, function (err2, tmpls) {
+					if (err2) {
+						return counter( err2 );
+					}
+					allCompiled = false;
+					tmpls.forEach( function (tmpl) {
+						if (tmpl.layout) {
+							return (layouts[namePath] = tmpl);
+						}
+						templates[namePath] = tmpl;
+					});
+					counter(null);
+				});
+			});
+		});
 	});
-	return promise;
+
 };
 
 /**
@@ -298,12 +244,12 @@ Nuts.prototype.render = function (tmplName, data) {
  * @param {Object} filters
  * @return {Object}      promise
  */
-Nuts.prototype.addFilters = function (filters) {
-	var promise = new Prom();
-	promise.enqueue( function () {
-		_addFilters( filters, promise);
-	});
-	return promise;
+Nuts.prototype.addFilters = function (filts, callback) {
+	var i;
+	for (i in filts) {
+		filters[i] = filts[i];
+	}
+	return callback();
 };
 
 

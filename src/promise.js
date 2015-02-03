@@ -1,42 +1,66 @@
 'use strict';
 
-var Prom = function (fn) {
-	this.fns = [];
-	if (fn) {
-		this.enqueue( fn );
-	}
-};
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+var ARGUMENT_NAMES = /([^\s,]+)/g;
+function getParamNames(func) {
+  var fnStr = func.toString().replace(STRIP_COMMENTS, '');
+  var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+  if(result === null)
+     result = [];
+  return result;
+}
 
-Prom.create = function (name, parent, method) {
-	Prom.prototype[name] = function (x) {
-		var self = this;
-		this.enqueue( function () {
-			method( x, self, parent );
-		});
-		return this;
+var Prom = function () {
+	this.fns = [];
+
+	var self = this;
+	this.next = function (err) {
+
+		if (err) {
+			if (self.finalFn) {
+				return self.finalFn( err );
+			}
+			throw err;
+		}
+
+		var fn = self.fns.shift();
+		if (fn) {
+			fn( self );
+		} else if (self.finalFn) {
+			self.finalFn();
+		}
 	};
 };
 
 
-Prom.prototype.next = function (err) {
-	var fn = this.fns.shift();
+Prom.create = function (instance, methods) {
+	methods.forEach( function (method) {
+		var prototype = Object.getPrototypeOf( instance ),
+			oldMethod = prototype[method];
 
-	if (err) {
-		if (this.finalFn) {
-			return this.finalFn(err);
-		}
-		throw err;
-	}
+		prototype[method] = function (x, callback, promise) {
+			promise = promise || new Prom();
+			var next = callback || promise.next;
+			return promise.enqueue( function () {
+				oldMethod.call( instance, x, next );
+			}, callback );
+		};
 
-	if (fn) {
-		return fn( this );
-	} else if (this.finalFn) {
-		this.finalFn();
-	}
+		Prom.prototype[method] = function (x, callback) {
+			return instance[method].call( instance, x, callback, this );
+		};
+
+	});
 };
 
-Prom.prototype.enqueue = function (fn) {
+
+Prom.prototype.enqueue = function (fn, now) {
+	if (now) {
+		return fn();
+	}
 	this.fns.push(fn);
+	return this;
+
 };
 
 Prom.prototype.exec = function (fn) {

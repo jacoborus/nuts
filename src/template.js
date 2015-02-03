@@ -10,14 +10,14 @@ var templates = require('./compiler.js').templates,
 
 
 
-var newNext = function (limit, callback) {
+var newNext = function (limit, next) {
 	var count = 0,
 		tmpls = [];
 	return function (err, tmpl) {
-		if (err) { return callback( err );}
+		if (err) { return next( err );}
 		tmpls.push( tmpl );
 		if (++count === limit) {
-			callback( null, tmpls );
+			next( null, tmpls );
 		}
 	}
 };

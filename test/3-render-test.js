@@ -7,12 +7,12 @@ var expect = require('chai').expect,
 describe( 'nuts.render', function () {
 
 	it('render simple tag and text nodes', function (done) {
-		var tmpl = '<span nut="simpleTag">hola</span>';
+		var tmpl = '<span nut="simpleTag2">hola</span>';
 		nuts
 		.addTemplate( tmpl )
 		.exec( function (err) {
 			expect( err ).to.equal( undefined );
-			expect( nuts.render( 'simpleTag', {} )).to.equal( '<span>hola</span>' );
+			expect( nuts.render( 'simpleTag2', {} )).to.equal( '<span>hola</span>' );
 			done();
 		});
 	});

@@ -130,4 +130,5 @@ describe( 'Template schema:', function () {
 
 		});
 	});
+
 });

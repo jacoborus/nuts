@@ -100,9 +100,9 @@ var newCompiledTag = function (tmp) {
 		children[i].render = compileTag( children[i] );
 	}
 	var str = {
-		classAtt : classAtt,
-		postTag : '</' + tmp.name + '>',
-		preTag : preTag
+		classAtt: classAtt,
+		postTag: '</' + tmp.name + '>',
+		preTag: preTag
 	};
 
 	var render = getRender.direct( tmp, str );
