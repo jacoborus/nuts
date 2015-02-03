@@ -8,7 +8,6 @@ var fs = require('fs'),
 	createTemplate = require('./template.js'),
 	templates = require('./compiler.js').templates,
 	layouts = require('./compiler.js').layouts,
-	filters = require('./compiler.js').filters,
 	Prom = require('./promise.js');
 
 
@@ -247,7 +246,9 @@ Nuts.prototype.render = function (tmplName, data) {
 Nuts.prototype.addFilters = function (filts, callback) {
 	var i;
 	for (i in filts) {
-		filters[i] = filts[i];
+		if (templates[i]) {
+			templates[i].schema.filters = filts[i];
+		}
 	}
 	return callback();
 };

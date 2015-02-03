@@ -11,10 +11,10 @@ var compileTag;
 
 
 var filter = function (x, tmp) {
-	if (!tmp.nut || !filters[tmp.nut]) {
+	if (!tmp.filters) {
 		return x;
 	}
-	var f = filters[tmp.nut],
+	var f = tmp.filters,
 		y = {},
 		i;
 
