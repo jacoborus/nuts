@@ -17,6 +17,11 @@ var filter = function (x, tmp) {
 	var f = filters[tmp.nut],
 		y = {},
 		i;
+
+	if (f._global) {
+		x = f._global(x);
+	}
+
 	for (i in x) {
 		if (!f[i]) {
 			y[i] = x[i];

@@ -81,4 +81,25 @@ describe( 'Filter', function () {
 			done();
 		});
 	});
+
+	it('Filter global data scope', function (done) {
+		var tmpl = '<span nu-model="word" nut="globalFilter"></span>';
+		nuts
+		.addTemplate( tmpl )
+		.addFilters({
+			simpleFilter: {
+				_global: function (val) {
+					val.word = 'get ' + val.word + '!'
+					return val;
+				}
+			}
+		})
+		.exec( function () {
+			var rendered = nuts.render( 'simpleFilter', { word: 'nuts'});
+			expect( rendered ).to.equal(
+				'<span>get nuts!</span>'
+			);
+			done();
+		});
+	});
 });
