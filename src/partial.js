@@ -8,7 +8,7 @@ var nuProps = [
 	'scope',
 	'model',
 	'repeat',
-	'pipe',
+	'inherit',
 	'if',
 	'unless',
 	'checked',

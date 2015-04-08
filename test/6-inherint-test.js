@@ -4,12 +4,12 @@ var expect = require('chai').expect,
 	nuts = require('../index.js');
 
 
-describe( 'Pipe', function () {
+describe( 'Inherit', function () {
 
 	it('extend data with parent', function (done) {
 		var tmpl = '<article nu-scope="person" nut="directExtend">' +
 				'<h1 nu-model="name"></h1>'+
-				'<div nu-scope="skills" nu-pipe>' +
+				'<div nu-scope="skills" nu-inherit>' +
 					'<span nu-model="js"></span>' +
 					'<span nu-model="city"></span>' +
 					'<span nu-model="name"></span>' +
@@ -44,7 +44,7 @@ describe( 'Pipe', function () {
 	it('extend by select properties from parent', function (done) {
 		var tmpl = '<article nu-scope="person" nut="selectExtend">' +
 					'<h1 nu-model="name"></h1>'+
-					'<div nu-scope="skills" nu-pipe="city">' +
+					'<div nu-scope="skills" nu-inherit="city">' +
 						'<span nu-model="js"></span>' +
 						'<span nu-model="city"></span>' +
 						'<span nu-model="name"></span>' +

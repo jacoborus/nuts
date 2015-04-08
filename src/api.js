@@ -169,9 +169,9 @@ Nuts.prototype.addTree = function (folderPath, callback) {
 			}
 			fs.readFile( filePath, 'utf8', function (err, data) {
 				if (err) { return counter( err );}
-				createTemplate( data, function (err2, tmpls) {
-					if (err2) {
-						return counter( err2 );
+				createTemplate( data, function (err, tmpls) {
+					if (err) {
+						return counter( err );
 					}
 					allCompiled = false;
 					tmpls.forEach( function (tmpl) {

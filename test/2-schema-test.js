@@ -39,7 +39,7 @@ describe( 'Template schema:', function () {
 				'nu-scope="scope" ' +
 				'nu-extend="extend" ' +
 				'nu-model="model" ' +
-				'nu-pipe="pipe"' +
+				'nu-inherit="inherit"' +
 				'nu-if="if" ' +
 				'nu-unless="unless" ' +
 				'nu-doctype ' +
@@ -65,9 +65,9 @@ describe( 'Template schema:', function () {
 				// model
 				expect( nuts.getTemplate('specialNuTs').schema.model ).to.equal( 'model' );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.model ).to.not.exist;
-				// pipe
-				expect( nuts.getTemplate('specialNuTs').schema.pipe ).to.equal( 'pipe' );
-				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.pipe ).to.not.exist;
+				// inherit
+				expect( nuts.getTemplate('specialNuTs').schema.inherit ).to.equal( 'inherit' );
+				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.inherit ).to.not.exist;
 				// nuif
 				expect( nuts.getTemplate('specialNuTs').schema.nuif ).to.equal( 'if' );
 				expect( nuts.getTemplate('specialNuTs').schema.nuAtts.nuif ).to.not.exist;

@@ -41,7 +41,7 @@ var printChildren = function (children, x) {
 
 
 var direct = function (t, str) {
-	var pipe = t.pipe,
+	var inherit = t.inherit,
 		scope = t.scope,
 		model = t.model,
 		nuSakes = t.nuSakes,
@@ -64,13 +64,13 @@ var direct = function (t, str) {
 			props = [],
 			len, i, j, z;
 
-		if (pipe === '') {
+		if (inherit === '') {
 			for (i in x) {
 				preX[i] = x[i];
 			}
 		}
-		if (pipe) {
-			props = pipe.split(' ');
+		if (inherit) {
+			props = inherit.split(' ');
 			for (i in props) {
 				preX[props[i]] = x[props[i]];
 			}
@@ -83,8 +83,8 @@ var direct = function (t, str) {
 				x = {};
 			}
 		}
-		// pipe properties from parent
-		if (pipe || pipe === '') {
+		// inherit properties from parent
+		if (inherit || inherit === '') {
 			for (i in preX) {
 				x[i] = preX[i];
 			}

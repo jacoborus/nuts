@@ -1,10 +1,10 @@
 {
   "name": "nuts",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "New Unique Templates System",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha",
+    "test": "mocha",
     "build-docs": "node ./docs/createdocs.js"
   },
   "repository": {

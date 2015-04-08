@@ -100,9 +100,9 @@ var TagSchema = function (dom) {
 			this.each = atts['nu-each'];
 			delete atts['nu-each'];
 		}
-		if (atts['nu-pipe'] || atts['nu-pipe'] === '') {
-			this.pipe = atts['nu-pipe'];
-			delete atts['nu-pipe'];
+		if (atts['nu-inherit'] || atts['nu-inherit'] === '') {
+			this.inherit = atts['nu-inherit'];
+			delete atts['nu-inherit'];
 		}
 		if (atts['nu-block'] || atts['nu-block'] === '') {
 			this.block = atts['nu-block'];
