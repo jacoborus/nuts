@@ -28,23 +28,25 @@ var nuObjs = [
 
 var partial = function (target, obj) {
 
-	var i, j;
+	var i;
 
-	for (i in nuProps) {
-		if (obj[nuProps[i]] || obj[nuProps[i]] === '') {
-			target[nuProps[i]] = obj[nuProps[i]];
+	nuProps.forEach( function (prop) {
+		if (obj[prop] || obj[prop] === '') {
+			target[prop] = obj[prop];
 		}
-	}
+	});
+
 	if (obj.children.length > 0) {
 		if (obj.children.length !== 1 || obj.children[0].schema.data !== ' ') {
 			target.children = obj.children;
 		}
 	}
-	for (i in nuObjs) {
-		for (j in obj[nuObjs[i]]) {
-			target[nuObjs[i]][j] = obj[nuObjs[i]][j];
+	nuObjs.forEach( function (o) {
+		for (i in obj[o]) {
+			target[o][i] = obj[o][i];
 		}
-	}
+	});
+
 	return target;
 };
 

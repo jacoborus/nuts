@@ -4,11 +4,6 @@ var htmlparser = require('htmlparser2'),
 	TagSchema = require('./schema.js').TagSchema,
 	LayoutSchema = require('./schema.js').LayoutSchema;
 
-var templates = require('./compiler.js').templates,
-	layouts = require('./compiler.js').layouts;
-
-
-
 
 var newNext = function (limit, next) {
 	var count = 0,
@@ -19,12 +14,11 @@ var newNext = function (limit, next) {
 		if (++count === limit) {
 			next( null, tmpls );
 		}
-	}
+	};
 };
 
 var prepare = function (dom, src, next) {
-	var isLayout = dom.name === 'template' && dom.attribs['nu-layout'],
-		schema;
+	var isLayout = dom.name === 'template' && dom.attribs['nu-layout'];
 
 	var nutName = dom.attribs ? dom.attribs.nut : null;
 
@@ -38,13 +32,6 @@ var prepare = function (dom, src, next) {
 	next( null, tmp );
 };
 
-var save = function (doms) {
-	var dom,
-		lays = {};
-	for (dom in doms) {
-
-	}
-};
 
 /*!
  * generate a template object with its source and model as properties

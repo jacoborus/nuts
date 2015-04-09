@@ -155,20 +155,20 @@ var newCompiledTag = function (tmp) {
 		return function (x) {
 			var y = filter( x, tmp );
 			return render(y);
-		}
+		};
 	}
 	// scoped repeat loop
 	if (tmp.repeat) {
 		return function (x) {
 			var y = filter( x, tmp );
 			return renderLoopScope(y);
-		}
+		};
 	}
 	// simple repeat
 	return function (x) {
 		var y = filter( x, tmp );
 		return renderLoop(y);
-	}
+	};
 };
 
 /*!
