@@ -405,12 +405,12 @@ Sets the value of an [attribute] as nu-[attribute] model.
 **Example:**
 
 ```html
-<span nu-id="identif" nut="demoAtt">Developer</span>
+<span nu-id="identif" nut="demoAtt"></span>
 ```
 
 ```js
 nuts.render( 'demoAtt', { identif: 'veryNuts' });
-// => '<span id="veryNuts">Developer</span>'
+// => '<span id="veryNuts"></span>'
 ```
 
 <a name="class"></a>
@@ -438,12 +438,12 @@ Sets the value of an data-[attribute] as nud-[attribute] model.
 **Example**
 
 ```html
-<span nud-language="identif" nut="demoDAtt">Developer</span>
+<span nud-language="identif" nut="demoD"></span>
 ```
 
 ```js
-nuts.render( 'demoDAtt', { identif: 'veryNuts' });
-// => '<span data-language="veryNuts">Developer</span>'
+nuts.render( 'demoD', { identif: 'veryNuts' });
+// => '<span data-language="veryNuts"></span>'
 ```
 
 
@@ -455,12 +455,12 @@ Sets the value of an `x-[attribute]` as `nux-[attribute]` model.
 **Example:**
 
 ```html
-<span nux-language="identif" nut="demoXAtt">Developer</span>
+<span nux-language="identif" nut="demoX"></span>
 ```
 
 ```js
-nuts.render( 'demoXAtt', { identif: 'veryNuts' });
-// => '<span x-language="veryNuts">Developer</span>'
+nuts.render( 'demoX', { identif: 'veryNuts' });
+// => '<span x-language="veryNuts"></span>'
 ```
 
 
@@ -500,13 +500,7 @@ Tag will be preceed with a HTML doctype if it has this attribute
 
 ```js
 nuts.render( 'htmlBase' );
-```
-
-results in:
-
-```html
-<!DOCTYPE html>
-<html></html>
+// => '<!DOCTYPE html><html></html>'
 ```
 
 **Types:**
