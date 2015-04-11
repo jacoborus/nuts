@@ -61,9 +61,9 @@ var separateNuAtts = function () {
  * @param {Object} dom    parsed HTML
  * @param {Object} parent [description]
  */
-var TagSchema = function (dom) {
+var Schema = function (dom) {
 	var atts = dom.attribs,
-		domChildren, nuChildren, i;
+		self = this;
 
 	this.type = dom.type;
 	this.data = dom.data;
@@ -84,6 +84,7 @@ var TagSchema = function (dom) {
 			this.nut = atts.nut;
 			delete atts.nut;
 		}
+		// scope
 		if (atts['nu-scope']) {
 			this.scope = atts['nu-scope'];
 			delete atts['nu-scope'];
@@ -92,6 +93,11 @@ var TagSchema = function (dom) {
 			this.model = atts['nu-model'];
 			delete atts['nu-model'];
 		}
+		if (atts['nu-inherit'] || atts['nu-inherit'] === '') {
+			this.inherit = atts['nu-inherit'];
+			delete atts['nu-inherit'];
+		}
+		// iterations
 		if (atts['nu-repeat'] || atts['nu-repeat'] === '') {
 			this.repeat = atts['nu-repeat'];
 			delete atts['nu-repeat'];
@@ -100,14 +106,7 @@ var TagSchema = function (dom) {
 			this.each = atts['nu-each'];
 			delete atts['nu-each'];
 		}
-		if (atts['nu-inherit'] || atts['nu-inherit'] === '') {
-			this.inherit = atts['nu-inherit'];
-			delete atts['nu-inherit'];
-		}
-		if (atts['nu-block'] || atts['nu-block'] === '') {
-			this.block = atts['nu-block'];
-			delete atts['nu-block'];
-		}
+		// conditionals
 		if (atts['nu-if'] || atts['nu-if'] === '') {
 			if (atts['nu-if']) {
 				this.nuif = atts['nu-if'];
@@ -120,19 +119,59 @@ var TagSchema = function (dom) {
 			}
 			delete atts['nu-unless'];
 		}
-		if (atts['nu-checked'] || atts['nu-checked'] === '') {
-			this.checked = atts['nu-checked'];
-			delete atts['nu-checked'];
+		// layouts and extensions
+		if (atts['nu-block'] || atts['nu-block'] === '') {
+			this.block = atts['nu-block'];
+			delete atts['nu-block'];
 		}
-		if (atts['nu-doctype'] === '') {
-			this.doctype = true;
-			delete atts['nu-doctype'];
+		if (atts['nu-layout'] || atts['nu-layout'] === '') {
+			this.layout = atts['nu-layout'];
+			delete atts['nu-layout'];
+		}
+		if (atts['nu-extend'] || atts['nu-extend'] === '') {
+			this.extend = atts['nu-extend'];
+			delete atts['nu-extend'];
 		}
 		if (atts['nu-as'] || atts['nu-as'] === '') {
 			if (atts['nu-as']) {
 				this.as = atts['nu-as'];
 			}
 			delete atts['nu-as'];
+		}
+
+		// doctypes
+		if (atts['nu-doctype'] || atts['nu-doctype'] === '') {
+			// HTML5
+			if (atts['nu-doctype'] === '' || atts['nu-doctype'] === '5') {
+				this.doctype = '5';
+			}
+			// HTML4
+			if (atts['nu-doctype'] === '4' || atts['nu-doctype'] === '4s') {
+				this.doctype = '4s';
+			}
+			if (atts['nu-doctype'] === '4t') {
+				this.doctype = '4t';
+			}
+			if (atts['nu-doctype'] === '4f') {
+				this.doctype = '4f';
+			}
+			// XHTML1.0
+			if (atts['nu-doctype'] === 'x' || atts['nu-doctype'] === 'xs') {
+				this.doctype = 'xs';
+			}
+			if (atts['nu-doctype'] === 'xt') {
+				this.doctype = 'xt';
+			}
+			if (atts['nu-doctype'] === 'xf') {
+				this.doctype = 'xf';
+			}
+			// XHTML1.1
+			if (atts['nu-doctype'] === 'xx' || atts['nu-doctype'] === '11') {
+				this.doctype = 'xx';
+			}
+			delete atts['nu-doctype'];
+		} else {
+			this.doctype = false;
 		}
 
 		// separate nuAttributes from the regular ones
@@ -143,14 +182,12 @@ var TagSchema = function (dom) {
 	// assign children dom elements
 	if (dom.children) {
 		this.children = [];
-		nuChildren = this.children;
-		domChildren = dom.children;
-		for (i in domChildren) {
-			nuChildren[i] = {
+		dom.children.forEach( function (child, i) {
+			self.children[i] = {
 				src : null,
-				schema: new TagSchema( domChildren[i] )
+				schema: new Schema( child )
 			};
-		}
+		});
 	}
 
 	// assign attributes
@@ -160,40 +197,4 @@ var TagSchema = function (dom) {
 	this.nuSakes = dom.nuSakes || {};
 };
 
-
-
-/*!
- * layout schema constructor
- * Get nuts formatted dom object info from parsed html
- * @param {Object} dom    parsed HTML
- * @param {Object} parent [description]
- */
-var LayoutSchema = function (dom) {
-	var children = dom.children,
-		blocks = this.blocks = {},
-		blockName, atts,
-		i;
-
-	this.type = dom.type;
-	this.name = dom.name;
-	this.extend = dom.attribs['nu-layout'];
-
-	for (i in children) {
-		if (children[i].name === 'template') {
-			atts = children[i].attribs;
-			blockName = atts['nu-block'];
-			blocks[blockName] = {
-				content: atts.content,
-				extend: atts['nu-extend'],
-				prepend: atts.prepend,
-				append: atts.append
-			};
-		}
-	}
-};
-
-
-module.exports = {
-	TagSchema: TagSchema,
-	LayoutSchema: LayoutSchema
-};
+module.exports = Schema;

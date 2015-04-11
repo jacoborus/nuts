@@ -583,6 +583,6 @@ See [API docs](https://github.com/jacoborus/nuts/blob/master/docs/api.md).
 <br><br>
 ---
 
-© 2014 Jacobo Tabernero - [jacoborus](https://github.com/jacoborus)
+© 2015 Jacobo Tabernero - [jacoborus](http://jacoborus.codes)
 
 Released under [MIT License](https://raw.github.com/jacoborus/nuts/master/LICENSE)
