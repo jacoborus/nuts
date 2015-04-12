@@ -1,10 +1,11 @@
 'use strict';
 
 var expect = require('chai').expect,
-	nuts = require('../index.js');
+	Nuts = require('../src/Nuts.js');
 
 
 describe( 'Constructor', function () {
+	var nuts = new Nuts();
 	it( 'init nuts with constructor', function () {
 		expect( nuts.Nuts ).to.be.a( 'function' );
 	});
@@ -18,6 +19,7 @@ describe( 'Constructor', function () {
 
 
 describe( 'nuts.then', function () {
+	var nuts = new Nuts();
 
 	it( 'add a function to promises list', function (done) {
 		var myFn = function () {};
@@ -25,13 +27,13 @@ describe( 'nuts.then', function () {
 		nuts
 		.then( myFn )
 		expect( nuts.promises[0].test ).to.equal( 1 );
-		nuts.promises = [];
 		done();
 	});
 
 });
 
 describe( 'nuts.exec', function () {
+	var nuts = new Nuts();
 
 	it( 'executes promises list and then callback', function (done) {
 		var control = false;

@@ -180,14 +180,22 @@ var Schema = function (dom) {
 	}
 
 	// assign children dom elements
-	if (dom.children) {
+	if (dom.children && dom.children.length) {
+		// create children container in schema
 		this.children = [];
-		dom.children.forEach( function (child, i) {
-			self.children[i] = {
-				src : null,
-				schema: new Schema( child )
-			};
+		dom.children.forEach( function (child) {
+			// avoid empty text tags
+			if (child.type !== 'text' && child.data.trim() !== '') {
+				// add child
+				self.children.push({
+					schema: new Schema( child )
+				});
+			}
 		});
+		// remove children container if empty
+		if (!this.children.length) {
+			delete this.children;
+		}
 	}
 
 	// assign attributes
