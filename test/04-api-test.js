@@ -93,7 +93,7 @@ describe( 'API', function () {
 	});
 
 	describe( 'addFormat', function () {
-		it( 'add formats to archive', function (done) {
+		it( 'add formats to Nuts', function (done) {
 			var nuts = new Nuts();
 			nuts
 			.addFormat( '€', function (val) {
@@ -102,6 +102,21 @@ describe( 'API', function () {
 			.exec( function (err) {
 				expect( err ).to.not.be.ok;
 				expect( nuts.formats['€'] ).to.be.a( 'function' );
+				done();
+			});
+		});
+	});
+
+	describe( 'addFilter', function () {
+		it( 'add filters to Nuts', function (done) {
+			var nuts = new Nuts();
+			nuts
+			.addFilter( 'myFilter', function (val) {
+				return val + '€';
+			})
+			.exec( function (err) {
+				expect( err ).to.not.be.ok;
+				expect( nuts.filters['myFilter'] ).to.be.a( 'function' );
 				done();
 			});
 		});

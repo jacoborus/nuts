@@ -40,6 +40,7 @@ var Nuts = function () {
 	this.Nuts = Nuts;
 	this.items = {};
 	this.formats = {};
+	this.filters = {};
 	this.promises = [];
 	this.errors = [];
 };
@@ -152,9 +153,17 @@ Nuts.prototype.addFolder = function (folderPath) {
 
 Nuts.prototype.addFormat = function (keyname, formatter) {
 	var self = this;
-
 	this.promises.push( function (next) {
 		self.formats[keyname] = formatter;
+		next();
+	});
+	return this;
+};
+
+Nuts.prototype.addFilter = function (keyname, filter) {
+	var self = this;
+	this.promises.push( function (next) {
+		self.filters[keyname] = filter;
 		next();
 	});
 	return this;
