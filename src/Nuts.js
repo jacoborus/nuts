@@ -81,10 +81,10 @@ var addNuts = function (html, next) {
 				return count();
 			}
 			var nut = new Nut( parsedNut, self );
-			if (!nut.name) {
+			if (!nut.nutName) {
 				return next( 'Nuts templates requires nut attribute' );
 			}
-			self.items[ nut.name ] = nut;
+			self.items[ nut.nutName ] = nut;
 			count();
 		});
 	});

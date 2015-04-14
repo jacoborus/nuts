@@ -33,7 +33,7 @@ var voidElements = {
 var compiler = {};
 
 compiler.text = function () {
-	var out = this.schema.data;
+	var out = this.data;
 	return function () {
 		return out;
 	};
@@ -41,21 +41,21 @@ compiler.text = function () {
 
 
 compiler.comment = function () {
-	var out = '<!--' + this.schema.data + '-->';
+	var out = '<!--' + this.data + '-->';
 	return function () {
 		return out;
 	};
 };
 
 compiler.cdata = function () {
-	var out = '<!' + this.schema.data + '>';
+	var out = '<!' + this.data + '>';
 	return function () {
 		return out;
 	};
 };
 
 compiler.directive = function () {
-	var out = '<' + this.schema.data + '>';
+	var out = '<' + this.data + '>';
 	return function () {
 		return out;
 	};
@@ -65,20 +65,20 @@ compiler.tag = function () {
 	var i;
 	var self = this;
 	var start = '';
-	if (this.schema.doctype) {
-		start += doctypes[ this.schema.doctype ];
+	if (this.doctype) {
+		start += doctypes[ this.doctype ];
 	}
-	start += '<' + this.schema.name;
-	var attribs = this.schema.attribs;
+	start += '<' + this.name;
+	var attribs = this.attribs;
 	if (attribs) {
 		for (i in attribs) {
 			start += ' ' + i + '="' + attribs[i] + '"';
 		}
 	}
-	if (this.schema.classes) {
-		start += ' class="' + this.schema.classes + '"';
+	if (this.classes) {
+		start += ' class="' + this.classes + '"';
 	}
-	if (!voidElements[this.schema.name]) {
+	if (!voidElements[this.name]) {
 		start += '>';
 
 		if (this.children) {
@@ -87,7 +87,7 @@ compiler.tag = function () {
 			});
 		}
 
-		var end = '</' + this.schema.name + '>';
+		var end = '</' + this.name + '>';
 	} else {
 		var end = '>';
 	}

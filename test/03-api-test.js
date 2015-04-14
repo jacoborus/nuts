@@ -13,8 +13,8 @@ describe( 'API', function () {
 			.addNuts( tmpl )
 			.exec( function (err) {
 				expect( err ).to.not.be.ok;
-				expect( nuts.getNut('add1').name ).to.equal( 'add1' );
-				expect( nuts.getNut('add2').name ).to.equal( 'add2' );
+				expect( nuts.getNut('add1').nutName ).to.equal( 'add1' );
+				expect( nuts.getNut('add2').nutName ).to.equal( 'add2' );
 				done();
 			});
 		});
@@ -67,9 +67,9 @@ describe( 'API', function () {
 			.addFile( __dirname + '/assets/basic2.html' )
 			.exec( function (err) {
 				expect( err ).to.not.be.ok;
-				expect( nuts.getNut('basic1').name ).to.equal( 'basic1' );
-				expect( nuts.getNut('basic2').name ).to.equal( 'basic2' );
-				expect( nuts.getNut('basic3').name ).to.equal( 'basic3' );
+				expect( nuts.getNut('basic1').nutName ).to.equal( 'basic1' );
+				expect( nuts.getNut('basic2').nutName ).to.equal( 'basic2' );
+				expect( nuts.getNut('basic3').nutName ).to.equal( 'basic3' );
 				done();
 			});
 		});
@@ -83,10 +83,10 @@ describe( 'API', function () {
 			.addFolder( __dirname + '/assets/folder' )
 			.exec( function (err) {
 				expect( err ).to.not.be.ok;
-				expect( nuts.getNut('basic1').name ).to.equal( 'basic1' );
-				expect( nuts.getNut('basic2').name ).to.equal( 'basic2' );
-				expect( nuts.getNut('basic3').name ).to.equal( 'basic3' );
-				expect( nuts.getNut('basic4').name ).to.equal( 'basic4' );
+				expect( nuts.getNut('basic1').nutName ).to.equal( 'basic1' );
+				expect( nuts.getNut('basic2').nutName ).to.equal( 'basic2' );
+				expect( nuts.getNut('basic3').nutName ).to.equal( 'basic3' );
+				expect( nuts.getNut('basic4').nutName ).to.equal( 'basic4' );
 				done();
 			});
 		});
