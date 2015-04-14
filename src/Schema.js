@@ -185,11 +185,9 @@ var Schema = function (dom) {
 		this.children = [];
 		dom.children.forEach( function (child) {
 			// avoid empty text tags
-			if (child.type !== 'text' && child.data.trim() !== '') {
+			if (child.type !== 'text' || child.data.trim() !== '') {
 				// add child
-				self.children.push({
-					schema: new Schema( child )
-				});
+				self.children.push( child );
 			}
 		});
 		// remove children container if empty

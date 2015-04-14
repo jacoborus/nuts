@@ -14,7 +14,8 @@ describe( 'Nut', function () {
 			expect( nut.nuts ).to.equal( 5 );
 			expect( nut.name ).to.equal( 'simpleTag' );
 			expect( nut.schema ).to.be.a( 'object' );
-			expect( nut.render ).to.be.a( 'function' );
+			expect( nut.render ).to.equal( false );
+			expect( nut.compile ).to.be.a( 'function' );
 			done();
 		});
 	});

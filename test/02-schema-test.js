@@ -125,6 +125,16 @@ describe( 'Schema', function () {
 		});
 	});
 
+	it('add children to schema', function (done) {
+		var tmpl = '<span nut="withchildren">hello</span>';
+		parser( tmpl, function (err, parsed) {
+			var schema = new Schema( parsed[0] );
+			expect( err ).to.not.be.ok;
+			expect( schema.children ).to.be.a( 'array' );
+			done();
+		});
+	});
+
 	describe( 'doctypes', function () {
 
 		it('detect HTML5', function (done) {

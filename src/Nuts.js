@@ -169,5 +169,15 @@ Nuts.prototype.addFilter = function (keyname, filter) {
 	return this;
 };
 
+Nuts.prototype.render = function (keyname, data) {
+	var nut = this.items[ keyname ];
+	if (nut) {
+		if (nut.render) {
+			return nut.render( data );
+		}
+		return nut.compile( nut )(data);
+	}
+	return '';
+};
 
 module.exports = Nuts;
