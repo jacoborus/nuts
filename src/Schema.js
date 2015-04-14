@@ -21,39 +21,47 @@ var hasProp = function (name, list) {
 };
 
 // move attributes with nu- prefix to nuAtts property
-var separateNamesakes = function () {
-	var names = {},
-		sakes = {},
-		atts = this.attribs,
-		i;
+var getNamesakes = function (atts, nuAtts) {
+	var ns = {
+		names : {},
+		sakes : {}
+	}, i;
 
 	for (i in atts) {
-		if (hasProp( i, this.nuAtts )) {
-			names[i] = atts[i];
-			sakes[i] = this.nuAtts[i];
+		if (hasProp( i, nuAtts )) {
+			ns.names[i] = atts[i];
+			ns.sakes[i] = nuAtts[i];
 			delete atts[i];
-			delete this.nuAtts[i];
+			delete nuAtts[i];
 		}
 	}
-	this.namesakes = names;
-	this.nuSakes = sakes;
+	return ns;
 };
 // move attributes with nu- prefix to nuAtts property
-var separateNuAtts = function () {
+var getNuAtts = function (atts) {
 	var nuAtts = {},
-		atts = this.attribs,
 		i;
-
 	for (i in atts) {
 		if (startsWithNu( i )) {
 			nuAtts[ getNuProp( i )] = atts[i];
 			delete atts[i];
 		}
 	}
-	this.nuAtts = nuAtts;
+	return nuAtts;
 };
 
-
+var getBooleans = function (attribs) {
+	var bools = {},
+		pattern = /-$/g,
+		i;
+	for (i in attribs) {
+    	if (i.match( pattern )) {
+    		bools[ i.replace( pattern, '' )] = attribs[i];
+    		delete attribs[i];
+    	}
+	}
+	return bools;
+};
 
 /*!
  * nuts schema constructor
@@ -73,7 +81,7 @@ var Schema = function (dom) {
 	if (atts) {
 		// separate special attributes
 		if (atts.class) {
-			this.class = atts.class;
+			this.classes = atts.class;
 			delete atts.class;
 		}
 		if (atts['nu-class']) {
@@ -175,8 +183,11 @@ var Schema = function (dom) {
 		}
 
 		// separate nuAttributes from the regular ones
-		separateNuAtts.call( dom );
-		separateNamesakes.call( dom );
+		this.nuAtts = getNuAtts( atts );
+		var ns = getNamesakes( atts, this.nuAtts );
+		this.namesakes = ns.names;
+		this.nuSakes = ns.sakes;
+		this.booleans = getBooleans( this.nuAtts );
 	}
 
 	// assign children dom elements
@@ -198,9 +209,6 @@ var Schema = function (dom) {
 
 	// assign attributes
 	this.attribs = atts || {};
-	this.nuAtts = dom.nuAtts || {};
-	this.namesakes = dom.namesakes || {};
-	this.nuSakes = dom.nuSakes || {};
 };
 
 module.exports = Schema;

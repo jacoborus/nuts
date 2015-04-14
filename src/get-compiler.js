@@ -12,7 +12,7 @@ module.exports = function (schema) {
 			compile = compiler.text;
 			break;
 		case 'comment':
-			if (this.schema.data.slice(0, 7) !== '[CDATA[') {
+			if (schema.data.slice(0, 7) !== '[CDATA[') {
 				compile = compiler.comment;
 				break;
 			}

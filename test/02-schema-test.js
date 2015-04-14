@@ -50,7 +50,7 @@ describe( 'Schema', function () {
 
 			expect( err ).to.not.be.ok;
 			// class
-			expect( schema.class ).to.equal( 'class' );
+			expect( schema.classes ).to.equal( 'class' );
 			expect( schema.nuAtts.class ).to.not.exist;
 			// nuClass
 			expect( schema.nuClass ).to.equal( 'nuclass' );
@@ -119,8 +119,8 @@ describe( 'Schema', function () {
 			expect( err ).to.not.be.ok;
 			expect( schema.attribs.id ).to.not.exist;
 			expect( schema.namesakes.id ).to.equal( 'id' );
-			expect( schema.nuAtts.id ).to.not.exist;
 			expect( schema.nuSakes.id ).to.equal( 'nuid' );
+			expect( schema.nuAtts.id ).to.not.exist;
 			done();
 		});
 	});
@@ -131,6 +131,16 @@ describe( 'Schema', function () {
 			var schema = new Schema( parsed[0] );
 			expect( err ).to.not.be.ok;
 			expect( schema.children ).to.be.a( 'array' );
+			done();
+		});
+	});
+
+	it('add boolean attributes to schema', function (done) {
+		var tmpl = '<span nut="booleans" nu-bool-="myboolean">hello</span>';
+		parser( tmpl, function (err, parsed) {
+			var schema = new Schema( parsed[0] );
+			expect( err ).to.be.falsy;
+			expect( schema.booleans.bool ).to.equal( 'myboolean' );
 			done();
 		});
 	});
