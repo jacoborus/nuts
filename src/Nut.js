@@ -1,35 +1,8 @@
 'use strict';
 
 // private dependencies
-var getCompiler = require('./compiler.js');
-
-
-var voidElements = {
-	area: true,
-	base: true,
-	br: true,
-	col: true,
-	embed: true,
-	hr: true,
-	img: true,
-	input: true,
-	keygen: true,
-	link: true,
-	meta: true,
-	param: true,
-	source: true,
-	track: true,
-	wbr: true,
-	path: true,
-	circle: true,
-	ellipse: true,
-	line: true,
-	rect: true,
-	use: true,
-	stop: true,
-	polyline: true,
-	polygone: true
-};
+var getCompiler = require('./compiler.js'),
+	voidElements = require('./void-elements.json');
 
 /* - Utils */
 // detect if an attribute name is prefixed with nu-
