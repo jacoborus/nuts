@@ -30,9 +30,7 @@ var voidElements = {
 };
 
 
-var compiler = {};
-
-compiler.text = function () {
+var text = function () {
 	var out = this.data;
 	return function () {
 		return out;
@@ -40,31 +38,33 @@ compiler.text = function () {
 };
 
 
-compiler.comment = function () {
+var comment = function () {
 	var out = '<!--' + this.data + '-->';
 	return function () {
 		return out;
 	};
 };
 
-compiler.cdata = function () {
+var cdata = function () {
 	var out = '<!' + this.data + '>';
 	return function () {
 		return out;
 	};
 };
 
-compiler.directive = function () {
+var directive = function () {
 	var out = '<' + this.data + '>';
 	return function () {
 		return out;
 	};
 };
 
-compiler.tag = function () {
-	var i;
-	var self = this;
-	var start = '';
+var tag = function () {
+	var self = this,
+		start = '',
+		end = '',
+		i;
+
 	if (this.doctype) {
 		start += doctypes[ this.doctype ];
 	}
@@ -87,9 +87,9 @@ compiler.tag = function () {
 			});
 		}
 
-		var end = '</' + this.name + '>';
+		end = '</' + this.name + '>';
 	} else {
-		var end = '>';
+		end = '>';
 	}
 
 
@@ -104,4 +104,27 @@ compiler.tag = function () {
 	};
 };
 
-module.exports = compiler;
+
+module.exports = function (schema) {
+	var compile;
+	switch (schema.type) {
+		case 'tag':
+			compile = tag;
+			break;
+		case 'text':
+			compile = text;
+			break;
+		case 'comment':
+			if (schema.data.slice(0, 7) !== '[CDATA[') {
+				compile = comment;
+				break;
+			}
+			compile = cdata;
+			break;
+
+		case 'directive':
+			compile = directive;
+			break;
+	}
+	return compile;
+};

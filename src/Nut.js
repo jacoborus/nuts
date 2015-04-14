@@ -1,7 +1,7 @@
 'use strict';
 
 // private dependencies
-var getCompiler = require('./get-compiler.js');
+var getCompiler = require('./compiler.js');
 
 
 /* - Utils */
