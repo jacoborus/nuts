@@ -8,7 +8,6 @@ var Nut = require('./Nut.js'),
 	newCounter = require('./loop.js').newCounter,
 	sequence = require('./loop.js').sequence;
 
-
 // nuts constructor
 var Nuts = function () {
 	this.compiled = false;

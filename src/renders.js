@@ -1,37 +1,47 @@
 'use strict';
 
-var renderNoModel = function (nut, start, end, next) {
-	nut.render = function (x) {
-		var out = start,
-			y = nut.scope ? x[ nut.scope ] : x;
+var renderNoModel = function (nut, next) {
+	if (nut.scope) {
+		nut.render = function (x) {
+			var out = this.start,
+				y = x[ this.scope ];
+			if (this.children) {
+				this.children.forEach( function (child) {
+					out += child.render(y);
+				});
+			}
+			return out + this.end;
+		};
+	} else {
+		nut.render = function (x) {
+			var out = this.start;
+			if (this.children) {
+				this.children.forEach( function (child) {
+					out += child.render(x);
+				});
+			}
+			return out + this.end;
+		};
+	}
+	next();
+};
 
-		if (nut.children) {
-			nut.children.forEach( function (child) {
+var renderModel = function (nut, next) {
+	nut.render = function (x) {
+		var out = this.start,
+			y = this.scope ? x[ this.scope ] : x;
+
+		if (typeof y[this.model] !== 'undefined') {
+			out += y[this.model];
+		} else if (this.children) {
+			this.children.forEach( function (child) {
 				out += child.render(y);
 			});
 		}
-
-		return out + end;
+		return out + this.end;
 	};
 	next();
-}
-
-var renderModel = function (nut, start, end, next) {
-	nut.render = function (x) {
-		var out = start,
-			y = nut.scope ? x[ nut.scope ] : x;
-
-		if (typeof y[nut.model] !== 'undefined') {
-			out += y[nut.model];
-		} else if (nut.children) {
-			nut.children.forEach( function (child) {
-				out += child.render(y);
-			});
-		}
-		return out + end;
-	}
-	next()
-}
+};
 
 module.exports = {
 	renderModel: renderModel,

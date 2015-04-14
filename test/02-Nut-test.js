@@ -9,7 +9,7 @@ var expect = require('chai').expect,
 describe( 'Nut', function () {
 
 
-	it('contain parent nuts, render, compile and name', function (done) {
+	it( 'contain parent nuts, render, compile and name', function (done) {
 		var tmpl = '<ul nut="simpleTag"></ul>';
 
 		parser( tmpl, function (err, parsed) {
@@ -22,7 +22,7 @@ describe( 'Nut', function () {
 		});
 	});
 
-	it('generate a nut from template string', function (done) {
+	it( 'generate a nut from template string', function (done) {
 		var tmpl = '<ul nut="simpleTag"></ul>';
 
 		parser( tmpl, function (err, parsed) {
@@ -35,7 +35,7 @@ describe( 'Nut', function () {
 	});
 
 
-	it('distribute special nuts attributes', function (done) {
+	it( 'distribute special nuts attributes', function (done) {
 		var tmpl = '<span' +
 			' class="class"' +
 			' nu-class="nuclass"' +
@@ -113,7 +113,7 @@ describe( 'Nut', function () {
 	});
 
 
-	it('separate nuts attributes from regular ones', function (done) {
+	it( 'separate nuts attributes from regular ones', function (done) {
 		var tmpl = '<span id="id" nu-att="nuid" nut="separateAtts">hello</span>';
 
 		parser( tmpl, function (err, parsed) {
@@ -126,7 +126,7 @@ describe( 'Nut', function () {
 	});
 
 
-	it('separate regular attributes with nuNamesake', function (done) {
+	it( 'separate regular attributes with nuNamesake', function (done) {
 		var tmpl = '<span id="id" nu-id="nuid" nut="separateNamesakes">hello</span>';
 		parser( tmpl, function (err, parsed) {
 			var schema = new Nut( parsed[0] );
@@ -139,7 +139,7 @@ describe( 'Nut', function () {
 		});
 	});
 
-	it('add children to schema', function (done) {
+	it( 'add children to schema', function (done) {
 		var tmpl = '<span nut="withchildren">hello</span>';
 		parser( tmpl, function (err, parsed) {
 			var schema = new Nut( parsed[0] );
@@ -149,7 +149,7 @@ describe( 'Nut', function () {
 		});
 	});
 
-	it('add boolean attributes to schema', function (done) {
+	it( 'add boolean attributes to schema', function (done) {
 		var tmpl = '<span nut="booleans" nu-bool-="myboolean">hello</span>';
 		parser( tmpl, function (err, parsed) {
 			var schema = new Nut( parsed[0] );
@@ -159,9 +159,19 @@ describe( 'Nut', function () {
 		});
 	});
 
+	it( 'detect void elements', function (done) {
+		var tmpl = '<input nut="voidelem">';
+		parser( tmpl, function (err, parsed) {
+			var schema0 = new Nut( parsed[0] );
+			expect( err ).to.not.be.ok;
+			expect( schema0.voidElement ).to.equal( true );
+			done();
+		});
+	});
+
 	describe( 'doctypes', function () {
 
-		it('detect HTML5', function (done) {
+		it( 'detect HTML5', function (done) {
 			var tmpl = '<html nu-doctype></html><html nu-doctype="5"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] ),
@@ -173,7 +183,7 @@ describe( 'Nut', function () {
 			});
 		});
 		// HTML4
-		it('detect HTML4 Strict', function (done) {
+		it( 'detect HTML4 Strict', function (done) {
 			var tmpl = '<html nu-doctype=4></html><html nu-doctype="4s"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] ),
@@ -184,7 +194,7 @@ describe( 'Nut', function () {
 				done();
 			});
 		});
-		it('detect HTML4 Transactional', function (done) {
+		it( 'detect HTML4 Transactional', function (done) {
 			var tmpl = '<html nu-doctype="4t"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] );
@@ -193,7 +203,7 @@ describe( 'Nut', function () {
 				done();
 			});
 		});
-		it('detect HTML4 Frameset', function (done) {
+		it( 'detect HTML4 Frameset', function (done) {
 			var tmpl = '<html nu-doctype="4f"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] );
@@ -203,7 +213,7 @@ describe( 'Nut', function () {
 			});
 		});
 		// XHTML1.0
-		it('detect XHTML1.0 Strict', function (done) {
+		it( 'detect XHTML1.0 Strict', function (done) {
 			var tmpl = '<html nu-doctype="x"></html><html nu-doctype="xs"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] ),
@@ -214,7 +224,7 @@ describe( 'Nut', function () {
 				done();
 			});
 		});
-		it('detect XHTML1.0 Transactional', function (done) {
+		it( 'detect XHTML1.0 Transactional', function (done) {
 			var tmpl = '<html nu-doctype="xt"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] );
@@ -223,7 +233,7 @@ describe( 'Nut', function () {
 				done();
 			});
 		});
-		it('detect XHTML1.0 Frameset', function (done) {
+		it( 'detect XHTML1.0 Frameset', function (done) {
 			var tmpl = '<html nu-doctype="xf"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] );
@@ -233,7 +243,7 @@ describe( 'Nut', function () {
 			});
 		});
 		// XHTML1.1
-		it('detect XHTML1.1', function (done) {
+		it( 'detect XHTML1.1', function (done) {
 			var tmpl = '<html nu-doctype="xx"></html><html nu-doctype="11"></html>';
 			parser( tmpl, function (err, parsed) {
 				var schema0 = new Nut( parsed[0] ),

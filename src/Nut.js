@@ -4,6 +4,33 @@
 var getCompiler = require('./compiler.js');
 
 
+var voidElements = {
+	area: true,
+	base: true,
+	br: true,
+	col: true,
+	embed: true,
+	hr: true,
+	img: true,
+	input: true,
+	keygen: true,
+	link: true,
+	meta: true,
+	param: true,
+	source: true,
+	track: true,
+	wbr: true,
+	path: true,
+	circle: true,
+	ellipse: true,
+	line: true,
+	rect: true,
+	use: true,
+	stop: true,
+	polyline: true,
+	polygone: true
+};
+
 /* - Utils */
 // detect if an attribute name is prefixed with nu-
 var startsWithNu = function (str) {
@@ -80,7 +107,7 @@ var Nut = function (dom, nuts) {
 	this.type = dom.type;
 	this.data = dom.data;
 	this.name = dom.name;
-
+	this.voidElement = voidElements[ this.name ] || false;
 	// assign attributes
 	if (atts) {
 		// separate special attributes

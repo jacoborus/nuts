@@ -14,34 +14,6 @@ var newCounter = function (limit, callback) {
 	};
 };
 
-var voidElements = {
-	area: true,
-	base: true,
-	br: true,
-	col: true,
-	embed: true,
-	hr: true,
-	img: true,
-	input: true,
-	keygen: true,
-	link: true,
-	meta: true,
-	param: true,
-	source: true,
-	track: true,
-	wbr: true,
-	path: true,
-	circle: true,
-	ellipse: true,
-	line: true,
-	rect: true,
-	use: true,
-	stop: true,
-	polyline: true,
-	polygone: true
-};
-
-
 var text = function (next) {
 	var out = this.data;
 	this.render = function () {
@@ -76,36 +48,35 @@ var directive = function (next) {
 };
 
 var tag = function (next) {
+	this.start = '';
 	var self = this,
-		start = '',
-		end = '',
 		i;
 
 	if (this.doctype) {
-		start += doctypes[ this.doctype ];
+		this.start += doctypes[ this.doctype ];
 	}
-	start += '<' + this.name;
+	this.start += '<' + this.name;
 	var attribs = this.attribs;
 	if (attribs) {
 		for (i in attribs) {
-			start += ' ' + i + '="' + attribs[i] + '"';
+			this.start += ' ' + i + '="' + attribs[i] + '"';
 		}
 	}
 	if (this.classes) {
-		start += ' class="' + this.classes + '"';
+		this.start += ' class="' + this.classes + '"';
 	}
-	if (!voidElements[this.name]) {
-		start += '>';
-		end = '</' + this.name + '>';
+	if (!this.voidElement) {
+		this.start += '>';
+		this.end = '</' + this.name + '>';
 
 		if (this.children) {
 			var len = this.children.length;
 			var count = newCounter( len, function (err) {
 				if (err) { return next( err );}
 				if (typeof self.model !== 'undefined') {
-					renders.renderModel( self, start, end, next );
+					renders.renderModel( self, next );
 				}  else {
-					renders.renderNoModel( self, start, end, next );
+					renders.renderNoModel( self, next );
 				}
 			});
 			return this.children.forEach( function (child) {
@@ -114,13 +85,13 @@ var tag = function (next) {
 		}
 
 	} else {
-		end = '>';
+		this.end = '>';
 	}
 
 	if (typeof this.model !== 'undefined') {
-		renders.renderModel( this, start, end, next );
+		renders.renderModel( this, next );
 	}  else {
-		renders.renderNoModel( this, start, end, next );
+		renders.renderNoModel( this, next );
 	}
 };
 
