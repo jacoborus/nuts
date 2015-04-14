@@ -4,39 +4,14 @@ var Nut = require('./Nut.js'),
 	parser = require('./parser.js'),
 	recursive = require('recursive-readdir'),
 	fs = require('fs'),
-	path = require('path');
-
-
-var serie = function (target, fns, callback) {
-	callback = callback || function (err) {
-		if (err) { throw err;}
-	};
-	if (target.errors.length) {
-		return callback( new Error( target.errors[0] ));
-	}
-	var next = function (err) {
-		if (err) { return callback( err );}
-		if (!fns.length) {
-			return callback();
-		}
-		fns.shift().call( target, next );
-	};
-	next();
-};
-
-var newCounter = function (limit, callback) {
-	var count = 0;
-	return function (err) {
-		if (err) { return callback( err );}
-		if (++count === limit) {
-			callback();
-		}
-	};
-};
+	path = require('path'),
+	newCounter = require('./loop.js').newCounter,
+	sequence = require('./loop.js').sequence;
 
 
 // nuts constructor
 var Nuts = function () {
+	this.compiled = false;
 	this.Nuts = Nuts;
 	this.items = {};
 	this.formats = {};
@@ -54,12 +29,34 @@ Nuts.prototype.then = function (fn) {
 	return this;
 };
 
+
+Nuts.prototype.compile = function (next) {
+	var self = this;
+	var len = Object.keys( this.items ).length;
+	if (!len) {
+		return next();
+	}
+	var count = newCounter( len, function (err) {
+		if (err) {return next( err );}
+		self.compiled = true;
+		next();
+	});
+
+	var i;
+	for (i in this.items) {
+		this.items[i].compile.call( this.items[i], count );
+	}
+};
+
+
 Nuts.prototype.exec = function (callback) {
 	callback = callback || function () {};
+	this.promises.push( this.compile );
 	var fns = this.promises.slice();
 	this.promises = [];
-	serie( this, fns, callback );
+	sequence( this, fns, callback );
 };
+
 
 Nuts.prototype.getNut = function (keyname) {
 	return this.items[keyname];
@@ -67,6 +64,7 @@ Nuts.prototype.getNut = function (keyname) {
 
 var addNuts = function (html, next) {
 	var self = this;
+	this.compiled = false;
 
 	parser( html, function (err, parsed) {
 		if (err) {
@@ -102,6 +100,7 @@ Nuts.prototype.addNuts = function (html) {
 
 Nuts.prototype.setTemplate = function (keyname, tmpl) {
 	var self = this;
+	this.compiled = false;
 	this.promises.push( function (next) {
 		parser( tmpl, function (err, parsed) {
 			var nut = new Nut( parsed[0], self );
@@ -129,6 +128,7 @@ Nuts.prototype.addFile = function (filePath) {
 
 Nuts.prototype.addFolder = function (folderPath) {
 	var self = this;
+	this.compiled = false;
 	this.promises.push( function (next) {
 		// get all files inside folderPath
 		recursive( folderPath, function (error, files) {
@@ -153,6 +153,7 @@ Nuts.prototype.addFolder = function (folderPath) {
 
 Nuts.prototype.addFormat = function (keyname, formatter) {
 	var self = this;
+	this.compiled = false;
 	this.promises.push( function (next) {
 		self.formats[keyname] = formatter;
 		next();
@@ -162,6 +163,7 @@ Nuts.prototype.addFormat = function (keyname, formatter) {
 
 Nuts.prototype.addFilter = function (keyname, filter) {
 	var self = this;
+	this.compiled = false;
 	this.promises.push( function (next) {
 		self.filters[keyname] = filter;
 		next();
@@ -170,12 +172,12 @@ Nuts.prototype.addFilter = function (keyname, filter) {
 };
 
 Nuts.prototype.render = function (keyname, data) {
+	if (!this.compiled) {
+		throw new Error( 'compile before render please' );
+	}
 	var nut = this.items[ keyname ];
 	if (nut) {
-		if (nut.render) {
-			return nut.render( data );
-		}
-		return nut.compile( nut )(data);
+		return nut.render( data );
 	}
 	return '';
 };

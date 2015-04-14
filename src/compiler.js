@@ -1,6 +1,18 @@
 'use strict';
 
-var doctypes = require('./doctypes.json');
+var renders = require('./renders.js'),
+	doctypes = require('./doctypes.json'),
+	newCounter = require('./loop.js').newCounter;
+
+var newCounter = function (limit, callback) {
+	var count = 0;
+	return function (err) {
+		if (err) { return callback( err );}
+		if (++count === limit) {
+			callback();
+		}
+	};
+};
 
 var voidElements = {
 	area: true,
@@ -30,36 +42,40 @@ var voidElements = {
 };
 
 
-var text = function () {
+var text = function (next) {
 	var out = this.data;
-	return function () {
+	this.render = function () {
 		return out;
 	};
+	next();
 };
 
 
-var comment = function () {
+var comment = function (next) {
 	var out = '<!--' + this.data + '-->';
-	return function () {
+	this.render = function () {
 		return out;
 	};
+	next();
 };
 
-var cdata = function () {
+var cdata = function (next) {
 	var out = '<!' + this.data + '>';
-	return function () {
+	this.render = function () {
 		return out;
 	};
+	next();
 };
 
-var directive = function () {
+var directive = function (next) {
 	var out = '<' + this.data + '>';
-	return function () {
+	this.render = function () {
 		return out;
 	};
+	next();
 };
 
-var tag = function () {
+var tag = function (next) {
 	var self = this,
 		start = '',
 		end = '',
@@ -80,34 +96,39 @@ var tag = function () {
 	}
 	if (!voidElements[this.name]) {
 		start += '>';
+		end = '</' + this.name + '>';
 
 		if (this.children) {
-			this.children.forEach( function (child) {
-				child.render = child.compile( child );
+			var len = this.children.length;
+			var count = newCounter( len, function (err) {
+				if (err) { return next( err );}
+				if (typeof self.model !== 'undefined') {
+					renders.renderModel( self, start, end, next );
+				}  else {
+					renders.renderNoModel( self, start, end, next );
+				}
+			});
+			return this.children.forEach( function (child) {
+				child.compile( count );
 			});
 		}
 
-		end = '</' + this.name + '>';
 	} else {
 		end = '>';
 	}
 
-
-	return function () {
-		var out = start;
-		if (self.children) {
-			self.children.forEach( function (child) {
-				out += child.render();
-			});
-		}
-		return out + end;
-	};
+	if (typeof this.model !== 'undefined') {
+		renders.renderModel( this, start, end, next );
+	}  else {
+		renders.renderNoModel( this, start, end, next );
+	}
 };
 
 
-module.exports = function (schema) {
+
+module.exports = function (nut) {
 	var compile;
-	switch (schema.type) {
+	switch (nut.type) {
 		case 'tag':
 			compile = tag;
 			break;
@@ -115,7 +136,7 @@ module.exports = function (schema) {
 			compile = text;
 			break;
 		case 'comment':
-			if (schema.data.slice(0, 7) !== '[CDATA[') {
+			if (nut.data.slice(0, 7) !== '[CDATA[') {
 				compile = comment;
 				break;
 			}
