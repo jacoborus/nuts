@@ -65,6 +65,17 @@ describe( 'Scope', function () {
 		});
 	});
 
+	it.skip( 'render attributes from data', function () {
+		var tmpl = '<span nut="nuAtts" nu-id="color"></span>';
+		nuts
+		.addNuts( tmpl )
+		.exec( function () {
+			expect(
+				nuts.render('nuAtts', {color: 'white'})
+			).to.equal( '<span id="white"></span>' );
+		});
+	});
+
 	it.skip( 'render className from data', function () {
 		var tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>';
 		nuts
@@ -88,16 +99,6 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render attributes from data', function () {
-		var tmpl = '<span nut="nuAtts" nu-id="color"></span>';
-		nuts
-		.addNuts( tmpl )
-		.exec( function () {
-			expect(
-				nuts.render('nuAtts', {color: 'white'})
-			).to.equal( '<span id="white"></span>' );
-		});
-	});
 
 	it.skip( 'Inserts the element only when the value evaluates to true', function () {
 		var tmpl = '<span nut="nuif" nu-if="color">hi</span>';

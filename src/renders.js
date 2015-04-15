@@ -1,37 +1,9 @@
 'use strict';
 
-var renderNoModel = function (nut, next) {
-	if (nut.scope) {
-		if (nut.printChildren) {
-			nut.render = function (x) {
-				var y = x[ this.scope ];
-				return this.start + this.printChildren( y ) + this.end;
-			};
-		} else {
-			nut.out = nut.start + nut.end;
-			nut.render = function () {
-				return this.out;
-			};
-		}
-	} else {
-		if (nut.printChildren) {
-			nut.render = function (x) {
-				return this.start + this.printChildren( x ) + this.end;
-			};
-		} else {
-			nut.out = nut.start + nut.end;
-			nut.render = function (x) {
-				return this.out;
-			};
-		}
-	}
-	next();
-};
-
-var renderModel = function (nut, next) {
-	if (nut.scope) {
-		if (nut.printChildren) {
-			nut.render = function (x) {
+var renders = {
+	scope: {
+		model: {
+			children: function (x) {
 				var out = this.start,
 					y = x[ this.scope ];
 
@@ -41,9 +13,8 @@ var renderModel = function (nut, next) {
 					out += this.printChildren( y );
 				}
 				return out + this.end;
-			};
-		} else {
-			nut.render = function (x) {
+			},
+			noChildren: function (x) {
 				var out = this.start,
 					y = x[ this.scope ];
 
@@ -51,22 +22,84 @@ var renderModel = function (nut, next) {
 					out += y[this.model];
 				}
 				return out + this.end;
-			};
+			}
+		},
+		noModel: {
+			children: function (x) {
+				return this.start + this.printChildren( x[ this.scope ] ) + this.end;
+			},
+			noChildren: function () {
+				return this.start + this.end;
+			}
+		}
+	},
+	noScope: {
+		model: {
+			children: function (x) {
+				var out = this.start,
+					model = x[this.model];
+
+				if (typeof model !== 'undefined') {
+					out += model;
+				} else if (this.children) {
+					out += this.printChildren( x );
+				}
+				return out + this.end;
+			},
+			noChildren: function (x) {
+				var out = this.start,
+					model = x[this.model];
+				if (typeof model !== 'undefined') {
+					out += model;
+				}
+				return out + this.end;
+			}
+		},
+		noModel: {
+			children: function (x) {
+				return this.start + this.printChildren( x ) + this.end;
+			},
+			noChildren: function () {
+				return this.start + this.end;
+			}
+		}
+	}
+};
+
+var renderNoModel = function (nut, next) {
+	if (nut.scope) {
+		if (nut.printChildren) {
+			nut.render = renders.scope.noModel.children;
+		} else {
+			nut.render = renders.scope.noModel.noChildren;
 		}
 	} else {
-		nut.render = function (x) {
-			var out = this.start;
-
-			if (typeof x[this.model] !== 'undefined') {
-				out += x[this.model];
-			} else if (this.children) {
-				out += this.printChildren( x );
-			}
-			return out + this.end;
-		};
+		if (nut.printChildren) {
+			nut.render = renders.noScope.noModel.children;
+		} else {
+			nut.render = renders.noScope.noModel.noChildren;
+		}
 	}
 	next();
 };
+
+var renderModel = function (nut, next) {
+	if (nut.scope) {
+		if (nut.printChildren) {
+			nut.render = renders.scope.model.children;
+		} else {
+			nut.render = renders.scope.model.noChildren;
+		}
+	} else {
+		if (nut.printChildren) {
+			nut.render = renders.noScope.model.children;
+		} else {
+			nut.render = renders.noScope.model.noChildren;
+		}
+	}
+	next();
+};
+
 
 module.exports = {
 	renderModel: renderModel,
