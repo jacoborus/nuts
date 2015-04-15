@@ -67,6 +67,14 @@ var getBooleans = function (attribs) {
 	return bools;
 };
 
+var printChildren = function (x) {
+	var out = '';
+	this.children.forEach( function (child) {
+		out += child.render( x );
+	});
+	return out;
+};
+
 /*!
  * nuts schema constructor
  * Get nuts formatted dom object info from parsed html
@@ -224,6 +232,7 @@ var Nut = function (dom, nuts) {
 		delete this.nutChildren;
 	}
 	this.render = false;
+	this.printChildren = this.children ? printChildren : false;
 };
 
 module.exports = Nut;
