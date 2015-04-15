@@ -7,6 +7,7 @@ var renders = {
 				var out = this.start,
 					y = x[ this.scope ];
 
+ 				out += this.renderAtts(y) + '>';
 				if (typeof y[this.model] !== 'undefined') {
 					out += y[this.model];
 				} else {
@@ -18,6 +19,7 @@ var renders = {
 				var out = this.start,
 					y = x[ this.scope ];
 
+ 				out += this.renderAtts(y) + '>';
 				if (typeof y[this.model] !== 'undefined') {
 					out += y[this.model];
 				}
@@ -26,10 +28,10 @@ var renders = {
 		},
 		noModel: {
 			children: function (x) {
-				return this.start + this.printChildren( x[ this.scope ] ) + this.end;
+				return this.start + this.renderAtts(x) + '>' + this.printChildren( x[ this.scope ] ) + this.end;
 			},
 			noChildren: function () {
-				return this.start + this.end;
+				return this.start + this.renderAtts(x) + '>' + this.end;
 			}
 		}
 	},
@@ -38,7 +40,7 @@ var renders = {
 			children: function (x) {
 				var out = this.start,
 					model = x[this.model];
-
+ 				out += this.renderAtts(x) + '>';
 				if (typeof model !== 'undefined') {
 					out += model;
 				} else if (this.children) {
@@ -57,51 +59,48 @@ var renders = {
 		},
 		noModel: {
 			children: function (x) {
-				return this.start + this.printChildren( x ) + this.end;
+				return this.start + this.renderAtts(x) + '>' + this.printChildren( x ) + this.end;
 			},
-			noChildren: function () {
-				return this.start + this.end;
+			noChildren: function (x) {
+				return this.start + this.renderAtts(x) + '>' + this.end;
 			}
 		}
 	}
 };
 
-var renderNoModel = function (nut, next) {
+
+var getRender = function (nut, next) {
 	if (nut.scope) {
-		if (nut.printChildren) {
-			nut.render = renders.scope.noModel.children;
+		if (nut.model) {
+			if (nut.printChildren) {
+				nut.render = renders.scope.model.children;
+			} else {
+				nut.render = renders.scope.model.noChildren;
+			}
 		} else {
-			nut.render = renders.scope.noModel.noChildren;
+			if (nut.printChildren) {
+				nut.render = renders.scope.noModel.children;
+			} else {
+				nut.render = renders.scope.noModel.noChildren;
+			}
 		}
 	} else {
-		if (nut.printChildren) {
-			nut.render = renders.noScope.noModel.children;
+		if (nut.model) {
+			if (nut.printChildren) {
+				nut.render = renders.noScope.model.children;
+			} else {
+				nut.render = renders.noScope.model.noChildren;
+			}
 		} else {
-			nut.render = renders.noScope.noModel.noChildren;
+			if (nut.printChildren) {
+				nut.render = renders.noScope.noModel.children;
+			} else {
+				nut.render = renders.noScope.noModel.noChildren;
+			}
 		}
 	}
 	next();
 };
 
-var renderModel = function (nut, next) {
-	if (nut.scope) {
-		if (nut.printChildren) {
-			nut.render = renders.scope.model.children;
-		} else {
-			nut.render = renders.scope.model.noChildren;
-		}
-	} else {
-		if (nut.printChildren) {
-			nut.render = renders.noScope.model.children;
-		} else {
-			nut.render = renders.noScope.model.noChildren;
-		}
-	}
-	next();
-};
 
-
-module.exports = {
-	renderModel: renderModel,
-	renderNoModel: renderNoModel
-};
+module.exports = getRender;

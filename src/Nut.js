@@ -75,6 +75,13 @@ var printChildren = function (x) {
 	return out;
 };
 
+var renderAtts = function (x) {
+	var out = '', i;
+	for (i in this.nuAtts) {
+		out += ' ' + i + '="' + x[this.nuAtts[i]] +'"';
+	}
+	return out;
+};
 /*!
  * nuts schema constructor
  * Get nuts formatted dom object info from parsed html
@@ -233,6 +240,7 @@ var Nut = function (dom, nuts) {
 	}
 	this.render = false;
 	this.printChildren = this.children ? printChildren : false;
+	this.renderAtts = renderAtts;
 };
 
 module.exports = Nut;

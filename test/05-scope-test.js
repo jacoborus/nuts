@@ -65,7 +65,7 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render attributes from data', function () {
+	it( 'render attributes from data', function () {
 		var tmpl = '<span nut="nuAtts" nu-id="color"></span>';
 		nuts
 		.addNuts( tmpl )

@@ -1,6 +1,6 @@
 'use strict';
 
-var renders = require('./renders.js'),
+var setRenders = require('./renders.js'),
 	doctypes = require('./doctypes.json'),
 	newCounter = require('./loop.js').newCounter;
 
@@ -47,16 +47,10 @@ var directive = function (next) {
 	next();
 };
 
-var setRender = function (target, next) {
-	if (typeof target.model !== 'undefined') {
-		renders.renderModel( target, next );
-	}  else {
-		renders.renderNoModel( target, next );
-	}
-};
 
 var tag = function (next) {
 	this.start = '';
+	this.end = '';
 	var self = this, i;
 
 	if (this.doctype) {
@@ -82,13 +76,12 @@ var tag = function (next) {
 	}
 
 	if (!this.voidElement) {
-		this.start += '>';
 		this.end = '</' + this.name + '>';
 
 		if (this.children) {
 			var count = newCounter( this.children.length, function (err) {
 				if (err) { return next( err );}
-				setRender( self, next );
+				setRenders( self, next );
 			});
 
 			return this.children.forEach( function (child) {
@@ -96,10 +89,8 @@ var tag = function (next) {
 			});
 		}
 
-	} else {
-		this.end = '>';
 	}
-	setRender( this, next );
+	setRenders( this, next );
 };
 
 
