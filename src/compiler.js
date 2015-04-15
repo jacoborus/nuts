@@ -15,70 +15,82 @@ var newCounter = function (limit, callback) {
 };
 
 var text = function (next) {
-	var out = this.data;
+	this.out = this.data;
 	this.render = function () {
-		return out;
+		return this.out;
 	};
 	next();
 };
 
 
 var comment = function (next) {
-	var out = '<!--' + this.data + '-->';
+	this.out = '<!--' + this.data + '-->';
 	this.render = function () {
-		return out;
+		return this.out;
 	};
 	next();
 };
 
 var cdata = function (next) {
-	var out = '<!' + this.data + '>';
+	this.out = '<!' + this.data + '>';
 	this.render = function () {
-		return out;
+		return this.out;
 	};
 	next();
 };
 
 var directive = function (next) {
-	var out = '<' + this.data + '>';
+	this.out = '<' + this.data + '>';
 	this.render = function () {
-		return out;
+		return this.out;
 	};
 	next();
 };
 
+var setRender = function (target, next) {
+	if (typeof target.model !== 'undefined') {
+		renders.renderModel( target, next );
+	}  else {
+		renders.renderNoModel( target, next );
+	}
+};
+
 var tag = function (next) {
 	this.start = '';
-	var self = this,
-		i;
+	var self = this, i;
 
 	if (this.doctype) {
+		// add doctype to string
 		this.start += doctypes[ this.doctype ];
 	}
+
 	this.start += '<' + this.name;
+
 	var attribs = this.attribs;
 	if (attribs) {
 		for (i in attribs) {
 			this.start += ' ' + i + '="' + attribs[i] + '"';
 		}
 	}
+
 	if (this.classes) {
-		this.start += ' class="' + this.classes + '"';
+		if (!this.nuClass) {
+			this.start += ' class="' + this.classes + '"';
+		} else {
+			this.start += ' class="' + this.classes;
+		}
 	}
+
 	if (!this.voidElement) {
 		this.start += '>';
 		this.end = '</' + this.name + '>';
 
 		if (this.children) {
-			var len = this.children.length;
-			var count = newCounter( len, function (err) {
+			var count = newCounter( this.children.length, function (err) {
 				if (err) { return next( err );}
-				if (typeof self.model !== 'undefined') {
-					renders.renderModel( self, next );
-				}  else {
-					renders.renderNoModel( self, next );
-				}
+				setRender( self, next );
 			});
+
 			return this.children.forEach( function (child) {
 				child.compile( count );
 			});
@@ -87,12 +99,7 @@ var tag = function (next) {
 	} else {
 		this.end = '>';
 	}
-
-	if (typeof this.model !== 'undefined') {
-		renders.renderModel( this, next );
-	}  else {
-		renders.renderNoModel( this, next );
-	}
+	setRender( this, next );
 };
 
 
