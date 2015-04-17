@@ -91,27 +91,33 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render className from data', function () {
-		var tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>';
-		nuts
-		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
-			expect(
-				nuts.render( 'classData', { nuclass: 'white' })
-			).to.equal( '<span class="featured white">bye</span>' );
-		});
-	});
 
-	it.skip( 'render attributes with namesake', function (done) {
+	it( 'render attributes with namesake', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="nuSakes" id="id" nu-id="nuid"></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function () {
-			nuts.render( 'nuSakes', {nuclass: 'white'}, function (err, html) {
-				expect( html ).to.equal( '<span id="nuid"></span>' );
-				done();
+			nuts.render( 'nuSakes', {nuid: 'white'}, function (err, html) {
+				expect( html ).to.equal( '<span id="white"></span>' );
+				nuts.render( 'nuSakes', {}, function (err, html) {
+					expect( html ).to.equal( '<span id="id"></span>' );
+					done();
+				});
+			});
+		});
+	});
+
+
+	it( 'render className from data', function () {
+		var nuts = new Nuts();
+		var tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>';
+		nuts
+		.addNuts( tmpl )
+		.exec( function (err) {
+			expect( err ).to.be.falsy;
+			nuts.render( 'classData', { nuclass: 'white' }, function (err, html) {
+				expect( html ).to.equal( '<span class="featured white">bye</span>' );
 			});
 		});
 	});

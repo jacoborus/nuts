@@ -34,6 +34,38 @@ renders.addRenderNuAtts = function () {
 	});
 };
 
+renders.addRenderNamesakes = function () {
+	var nusakes = this.nuSakes,
+		namesakes = this.namesakes;
+	this.renders.push( function (out, x, next) {
+		var i;
+		for (i in nusakes) {
+			if (typeof x[nusakes[i]] !== 'undefined') {
+				out += ' ' + i + '="' + x[nusakes[i]] + '"';
+			} else {
+				out += ' ' + i + '="' + namesakes[i] + '"';
+			}
+		}
+		next( out, x );
+	});
+};
+
+
+renders.addRenderNuClass = function () {
+	var nuClass = this.nuClass,
+		classes = this.classes ? this.classes + ' ': '',
+		pre = ' class="' + classes;
+
+	this.renders.push( function (out, x, next) {
+		if (typeof x[nuClass] !== 'undefined') {
+			out += pre + x[nuClass];
+		} else {
+			out += pre;
+		}
+		next( out + '"', x );
+	});
+};
+
 
 renders.addRenderFullModel = function () {
 	var end = this.end;
@@ -77,4 +109,5 @@ renders.getPrintChildren = function () {
 	};
 };
 
-module.exports = renders
+module.exports = renders;
+

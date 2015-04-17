@@ -1,12 +1,13 @@
 {
   "name": "nuts",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "New Unique Templates System",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "build-docs": "node ./docs/createdocs.js"
   },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git@github.com:jacoborus/nuts.git"

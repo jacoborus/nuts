@@ -62,8 +62,6 @@ var tag = function (next) {
 	if (this.classes) {
 		if (!this.nuClass) {
 			this.start += ' class="' + this.classes + '"';
-		} else {
-			this.start += ' class="' + this.classes;
 		}
 	}
 
@@ -73,6 +71,14 @@ var tag = function (next) {
 
 	if (this.nuAtts) {
 		this.addRenderNuAtts();
+	}
+
+	if (this.nuClass) {
+		this.addRenderNuClass();
+	}
+
+	if (this.nuSakes) {
+		this.addRenderNamesakes();
 	}
 
 	if (!this.voidElement) {

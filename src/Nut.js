@@ -45,14 +45,19 @@ var getNamesakes = function (atts, nuAtts) {
 // move attributes with nu- prefix to nuAtts property
 var getNuAtts = function (atts) {
 	var nuAtts = {},
+		c = 0,
 		i;
 	for (i in atts) {
 		if (startsWithNu( i )) {
 			nuAtts[ getNuProp( i )] = atts[i];
 			delete atts[i];
+			++c;
 		}
 	}
-	return nuAtts;
+	if (c > 0) {
+		return nuAtts;
+	}
+	return false;
 };
 
 var getBooleans = function (attribs) {
@@ -241,6 +246,8 @@ Nut.prototype.addRenderScope = render.addRenderScope;
 Nut.prototype.addRenderNuAtts = render.addRenderNuAtts;
 Nut.prototype.addRenderFullModel = render.addRenderFullModel;
 Nut.prototype.addRenderPartialModel = render.addRenderPartialModel;
+Nut.prototype.addRenderNamesakes = render.addRenderNamesakes;
+Nut.prototype.addRenderNuClass = render.addRenderNuClass;
 
 Nut.prototype.serie = function (data, callback) {
 	var limit = this.renders.length,
