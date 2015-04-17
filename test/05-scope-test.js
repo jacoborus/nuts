@@ -1,12 +1,13 @@
 'use strict';
 
 var expect = require('chai').expect,
-	nuts = require('../index.js');
+	Nuts = require('../src/Nuts.js');
 
 
 describe( 'Scope', function () {
 
-	it( 'render simple data', function () {
+	it( 'render simple data', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<span nut="simpleData" nu-model="word">hi</span>';
 		nuts
 		.addNuts( tmpl )
@@ -14,42 +15,54 @@ describe( 'Scope', function () {
 			expect( err ).to.be.falsy;
 			nuts.render( 'simpleData', { word: 'bye' }, function (err, html) {
 				expect( html ).to.equal( '<span>bye</span>' );
+				done();
 			});
 		});
 	});
 
-	it.skip( 'render data inside inner tags', function () {
+	it( 'render data inside inner tags', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<ul nut="dataThrough"><li nu-model="word">hi</li></ul>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render( 'dataThrough', { word:'bye' })
-			).to.equal( '<ul><li>bye</li></ul>' );
+			nuts.render( 'dataThrough', { word:'bye' }, function (err, html) {
+				expect( html ).to.equal( '<ul><li>bye</li></ul>' );
+				done();
+			});
 		});
 	});
 
-	it.skip( 'render data passed through scope', function (done) {
+	it( 'render data passed through scope', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render( 'basicScope', { card: { name: 'Name' }})
-			).to.equal( '<ul><li>Name</li></ul>' );
-			done();
+			nuts.render( 'basicScope', { card: { name: 'Name' }}, function (err, html) {
+				expect( html ).to.equal( '<ul><li>Name</li></ul>' );
+				done();
+			});
 		});
 	});
 
-	it.skip( 'use children dom elem if there is no model in data', function () {
-		expect(
-			nuts.render( 'basicScope', { card: { }})
-		).to.equal( '<ul><li>no name</li></ul>' );
+	it( 'use children dom elem if there is no model in data', function (done) {
+		var nuts = new Nuts();
+		var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>';
+		nuts
+		.addNuts( tmpl )
+		.exec( function (err) {
+			nuts.render( 'basicScope', { card: { }}, function (err, html) {
+				expect( html ).to.equal( '<ul><li>no name</li></ul>' );
+				done();
+			});
+		});
 	});
 
-	it.skip( 'render data passed through multiple scopes', function (done) {
+	it( 'render data passed through multiple scopes', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<div  nut="doubleScope">' +
 			'<ul nu-scope="card">'+
 			'<li nu-model="name">no name</li>'+
@@ -58,10 +71,10 @@ describe( 'Scope', function () {
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render( 'doubleScope', { card: { name: 'Name' }})
-			).to.equal( '<div><ul><li>Name</li></ul></div>' );
-			done();
+			nuts.render( 'doubleScope', { card: { name: 'Name' }}, function (err, html) {
+				expect( html ).to.equal( '<div><ul><li>Name</li></ul></div>' );
+				done();
+			});
 		});
 	});
 

@@ -256,11 +256,49 @@ Nut.prototype.getPrintChildren = function () {
 		children.forEach( function (child, i) {
 			child.render( x, count, i );
 		});
-	};
-}
+	}
+};
+
+Nut.prototype.addRenderScope = function () {
+	var scope = this.scope;
+	this.renders.push( function (out, x, next) {
+		next( out, x[scope] );
+	});
+};
+
+Nut.prototype.addRenderFullModel = function () {
+	var end = this.end;
+	this.renders.push( function (out, x, next) {
+		next( out + x + end );
+	});
+};
+
+Nut.prototype.addRenderPartialModel = function () {
+	var model = this.model,
+		self = this;
+
+	if (this.children) {
+		this.renders.push( function (out, x, next) {
+			if (typeof x[model] !== 'undefined'){
+				next( out + x[model] );
+			} else {
+				self.getPrintChildren()( out, x, next );
+			}
+		});
+	} else {
+		this.renders.push( function (out, x, next) {
+			if (typeof x[model] !== 'undefined'){
+				return next( out + x[model] );
+			}
+			next( out );
+		});
+	}
+};
 
 
-Nut.prototype.serie = function (callback) {
+
+
+Nut.prototype.serie = function (data, callback) {
 	var limit = this.renders.length,
 		count = 0,
 		self = this;
@@ -268,9 +306,9 @@ Nut.prototype.serie = function (callback) {
 		if (count !== limit) {
 			return self.renders[ count++ ]( out, x, next );
 		}
-		callback( out );
+		callback( out, x );
 	};
-	next( this.start + '>', {} );
+	next( this.start + '>', data );
 };
 
 
@@ -279,7 +317,7 @@ Nut.prototype.render = function (data, callback, i) {
 	var self = this;
 
 	if (this.renders.length) {
-		this.serie( function (html) {
+		this.serie( data, function (html) {
 			callback( html + self.end, i );
 		});
 	} else {

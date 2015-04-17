@@ -67,13 +67,29 @@ var tag = function (next) {
 		}
 	}
 
+	if (this.scope) {
+		this.addRenderScope();
+	}
+
+
 	if (!this.voidElement) {
 		this.end = '</' + this.name + '>';
+
+		if (typeof this.model !== 'undefined') {
+			if (this.model === '') {
+				this.addRenderFullModel();
+			} else {
+				this.addRenderPartialModel();
+			}
+		} else {
+			if (this.children) {
+				this.renders.push( this.getPrintChildren( ));
+			}
+		}
 
 		if (this.children) {
 
 			var count = newCounter( this.children.length, function () {
-				renders.push( self.getPrintChildren() );
 				next();
 			});
 
