@@ -240,15 +240,6 @@ var Nut = function (dom, nuts) {
 	this.renders = [];
 };
 
-
-Nut.prototype.getPrintChildren = render.getPrintChildren;
-Nut.prototype.addRenderScope = render.addRenderScope;
-Nut.prototype.addRenderNuAtts = render.addRenderNuAtts;
-Nut.prototype.addRenderFullModel = render.addRenderFullModel;
-Nut.prototype.addRenderPartialModel = render.addRenderPartialModel;
-Nut.prototype.addRenderNamesakes = render.addRenderNamesakes;
-Nut.prototype.addRenderNuClass = render.addRenderNuClass;
-
 Nut.prototype.serie = function (data, callback) {
 	var limit = this.renders.length,
 		count = 0,
@@ -261,6 +252,41 @@ Nut.prototype.serie = function (data, callback) {
 	};
 	next( this.start, data );
 };
+
+Nut.prototype.renderNuif = function (x, callback, i) {
+	var end = this.end,
+		start = this.start;
+	if (x[this.nuif]) {
+		if (this.renders.length) {
+			return this.serie( x, function (html) {
+				callback( html + end, i );
+			});
+		}
+		return callback( start + '>' + end, i );
+	}
+	callback('');
+};
+
+Nut.prototype.renderNoNuif = function (x, callback, i) {
+	var end = this.end,
+		start = this.start;
+	if (this.renders.length) {
+		return this.serie( x, function (html) {
+			callback( html + end, i );
+		});
+	}
+	return callback( start + '>' + end, i );
+};
+
+Nut.prototype.getPrintChildren = render.getPrintChildren;
+Nut.prototype.addRenderScope = render.addRenderScope;
+Nut.prototype.addRenderNuAtts = render.addRenderNuAtts;
+Nut.prototype.addRenderFullModel = render.addRenderFullModel;
+Nut.prototype.addRenderPartialModel = render.addRenderPartialModel;
+Nut.prototype.addRenderNamesakes = render.addRenderNamesakes;
+Nut.prototype.addRenderNuClass = render.addRenderNuClass;
+Nut.prototype.addRenderNuifNoScope = render.addRenderNuifNoScope;
+Nut.prototype.addRenderNuifScope = render.addRenderNuifScope;
 
 
 

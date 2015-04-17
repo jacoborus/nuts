@@ -123,7 +123,7 @@ describe( 'Scope', function () {
 	});
 
 
-	it.skip( 'Inserts the element only when the value evaluates to true', function (done) {
+	it( 'Inserts the element only when the value evaluates to true', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="nuif" nu-if="color">hi</span>';
 		nuts
@@ -131,7 +131,7 @@ describe( 'Scope', function () {
 		.exec( function () {
 			nuts.render( 'nuif', {color: true}, function (err, html) {
 				expect( html ).to.equal( '<span>hi</span>' );
-				nuts.render('nuif', {}, function (err, html) {
+				nuts.render( 'nuif', {}, function (err, html) {
 					expect( html ).to.equal( '' );
 					done();
 				});

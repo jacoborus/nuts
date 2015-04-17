@@ -69,6 +69,12 @@ var tag = function (next) {
 		this.addRenderScope();
 	}
 
+	if (this.nuif) {
+		this.render = this.renderNuif;
+	} else {
+		this.render = this.renderNoNuif;
+	}
+
 	if (this.nuAtts) {
 		this.addRenderNuAtts();
 	}

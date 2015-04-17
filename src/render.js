@@ -21,6 +21,27 @@ renders.addRenderScope = function () {
 	});
 };
 
+renders.addRenderNuifScope = function () {
+	var nuif = this.nuif;
+	this.renders.push( function (out, x, next) {
+		if (x[nuif]) {
+			next( out, x );
+		} else {
+			next();
+		}
+	});
+};
+
+renders.addRenderNuifNoScope = function () {
+	this.renders.push( function (out, x, next) {
+		if (x) {
+			next( out, x );
+		} else {
+			next();
+		}
+	});
+};
+
 renders.addRenderNuAtts = function () {
 	var atts = this.nuAtts;
 	this.renders.push( function (out, x, next) {
