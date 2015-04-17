@@ -12,7 +12,7 @@ describe( 'API', function () {
 			nuts
 			.addNuts( tmpl )
 			.exec( function (err) {
-				expect( err ).to.not.be.ok;
+				expect( err ).to.be.falsy;
 				expect( nuts.getNut('add1').nutName ).to.equal( 'add1' );
 				expect( nuts.getNut('add2').nutName ).to.equal( 'add2' );
 				done();

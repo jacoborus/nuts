@@ -1,23 +1,14 @@
 'use strict';
 
-var setRenders = require('./renders.js'),
-	doctypes = require('./doctypes.json'),
+var doctypes = require('./doctypes.json'),
+	//setRenders = require('./renders.js'),
 	newCounter = require('./loop.js').newCounter;
 
-var newCounter = function (limit, callback) {
-	var count = 0;
-	return function (err) {
-		if (err) { return callback( err );}
-		if (++count === limit) {
-			callback();
-		}
-	};
-};
 
 var text = function (next) {
 	this.out = this.data;
-	this.render = function () {
-		return this.out;
+	this.render = function (x, next, i) {
+		next( this.out, i );
 	};
 	next();
 };
@@ -25,24 +16,24 @@ var text = function (next) {
 
 var comment = function (next) {
 	this.out = '<!--' + this.data + '-->';
-	this.render = function () {
-		return this.out;
+	this.render = function (x, next, i) {
+		next( this.out, i );
 	};
 	next();
 };
 
 var cdata = function (next) {
 	this.out = '<!' + this.data + '>';
-	this.render = function () {
-		return this.out;
+	this.render = function (x, next, i) {
+		next( this.out, i );
 	};
 	next();
 };
 
 var directive = function (next) {
 	this.out = '<' + this.data + '>';
-	this.render = function () {
-		return this.out;
+	this.render = function (x, next, i) {
+		next( this.out, i );
 	};
 	next();
 };
@@ -52,6 +43,7 @@ var tag = function (next) {
 	this.start = '';
 	this.end = '';
 	var self = this, i;
+	var renders = this.renders;
 
 	if (this.doctype) {
 		// add doctype to string
@@ -79,20 +71,20 @@ var tag = function (next) {
 		this.end = '</' + this.name + '>';
 
 		if (this.children) {
-			var count = newCounter( this.children.length, function (err) {
-				if (err) { return next( err );}
-				setRenders( self, next );
+
+			var count = newCounter( this.children.length, function () {
+				renders.push( self.getPrintChildren() );
+				next();
 			});
 
 			return this.children.forEach( function (child) {
 				child.compile( count );
 			});
+
 		}
-
 	}
-	setRenders( this, next );
+	next();
 };
-
 
 
 module.exports = function (nut) {

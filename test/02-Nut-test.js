@@ -16,7 +16,7 @@ describe( 'Nut', function () {
 			var nut = new Nut( parsed[0], 5 );
 			expect( nut.nuts ).to.equal( 5 );
 			expect( nut.nutName ).to.equal( 'simpleTag' );
-			expect( nut.render ).to.equal( false );
+			expect( nut.render ).to.be.a( 'function' );
 			expect( nut.compile ).to.be.a( 'function' );
 			done();
 		});

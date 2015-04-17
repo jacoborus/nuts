@@ -1,5 +1,30 @@
 'use strict';
 
+
+var treatScopeModel = function (out, x) {
+	this.treatModel( out, x[ this.scope ]);
+};
+
+var treatScopeNoModel = function (out, x) {
+	this.closeTag( out );
+};
+
+var treatModelChildren = function (x, out) {
+	if (typeof x[this.model] !== 'undefined') {
+		out += x[this.model];
+	} else {
+		out += this.printChildren( y );
+	}
+	this.closeTag( out );
+};
+
+var treatModelNoChildren = function (x, out) {
+	if (typeof x[this.model] !== 'undefined') {
+		out += x[this.model];
+	}
+	this.closeTag( out );
+};
+
 var renders = {
 	scope: {
 		model: {

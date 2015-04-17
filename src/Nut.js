@@ -67,14 +67,6 @@ var getBooleans = function (attribs) {
 	return bools;
 };
 
-var printChildren = function (x) {
-	var out = '';
-	this.children.forEach( function (child) {
-		out += child.render( x );
-	});
-	return out;
-};
-
 var renderAtts = function (x) {
 	var out = '', i;
 	for (i in this.nuAtts) {
@@ -238,9 +230,62 @@ var Nut = function (dom, nuts) {
 		this.children = this.nutChildren;
 		delete this.nutChildren;
 	}
-	this.render = false;
-	this.printChildren = this.children ? printChildren : false;
 	this.renderAtts = renderAtts;
+	this.renders = [];
 };
+
+
+var childrenCounter = function (limit, callback) {
+	var count = 0,
+		res = [];
+
+	return function (html, i) {
+		res[i] = html;
+		if (++count === limit) {
+			callback( res.join( '' ));
+		}
+	};
+};
+
+Nut.prototype.getPrintChildren = function () {
+	var children = this.children;
+	return function (start, x, next) {
+		var count = childrenCounter( children.length, function (out) {
+			next( start + out, x );
+		});
+		children.forEach( function (child, i) {
+			child.render( x, count, i );
+		});
+	};
+}
+
+
+Nut.prototype.serie = function (callback) {
+	var limit = this.renders.length,
+		count = 0,
+		self = this;
+	var next = function (out, x) {
+		if (count !== limit) {
+			return self.renders[ count++ ]( out, x, next );
+		}
+		callback( out );
+	};
+	next( this.start + '>', {} );
+};
+
+
+
+Nut.prototype.render = function (data, callback, i) {
+	var self = this;
+
+	if (this.renders.length) {
+		this.serie( function (html) {
+			callback( html + self.end, i );
+		});
+	} else {
+		callback( self.start + '>' + self.end, i );
+	}
+};
+
 
 module.exports = Nut;

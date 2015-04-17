@@ -170,15 +170,22 @@ Nuts.prototype.addFilter = function (keyname, filter) {
 	return this;
 };
 
-Nuts.prototype.render = function (keyname, data) {
+Nuts.prototype.render = function (keyname, data, callback) {
 	if (!this.compiled) {
-		throw new Error( 'compile before render please' );
+		callback( 'compile before render please' );
 	}
 	var nut = this.items[ keyname ];
 	if (nut) {
-		return nut.render( data );
+		return nut.render( data, function (out) {
+			callback( null, out );
+		});
 	}
-	return '';
+	callback( null, '' );
+};
+
+
+Nuts.prototype.get = function (keyname) {
+	return this.items[ keyname ];
 };
 
 module.exports = Nuts;

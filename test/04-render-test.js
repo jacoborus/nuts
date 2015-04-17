@@ -5,98 +5,108 @@ var expect = require('chai').expect,
 
 
 describe( 'nuts.render', function () {
-	it('render simple tag and text nodes', function (done) {
+	it( 'render simple tag and text nodes', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="sample">hola</span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect( nuts.render( 'sample', {} )).to.equal( '<span>hola</span>' );
-			done();
+			nuts.render( 'sample', {}, function (err, html) {
+				expect( err ).to.be.falsy;
+				expect( html ).to.equal( '<span>hola</span>' );
+				done();
+			});
 		});
 	});
 
 
-	it('render comment nodes', function (done) {
+	it( 'render comment nodes', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="tmplComment"><!--this is a comment--></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect( nuts.render( 'tmplComment', {} )).to.equal(
-				'<span><!--this is a comment--></span>'
-			);
-			done();
+			nuts.render( 'tmplComment', {}, function (err, html) {
+				expect( err ).to.be.falsy;
+				expect( html ).to.equal(
+					'<span><!--this is a comment--></span>'
+				);
+				done();
+			})
 		});
 	});
 
-	it('render CDATA nodes', function (done) {
+	it( 'render CDATA nodes', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="tmplCdata"><![CDATA[ This is a CDATA block ]]></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect( nuts.render( 'tmplCdata', {} )).to.equal(
-				'<span><![CDATA[ This is a CDATA block ]]></span>'
-			);
-			done();
+			nuts.render( 'tmplCdata', {}, function (err, html) {
+				expect( html ).to.equal(
+					'<span><![CDATA[ This is a CDATA block ]]></span>'
+				);
+				done();
+			});
 		});
 	});
 
-	it('render through parent scope', function () {
+	it( 'render through parent scope', function () {
 		var nuts = new Nuts(),
 			tmpl = '<ul nut="simpleScope"><li>hola</li></ul>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
-			expect( err ).to.be.falsy;
-			expect( nuts.render( 'simpleScope', {} )).to.equal( '<ul><li>hola</li></ul>' );
+			nuts.render( 'simpleScope', {}, function (err, html) {
+				expect( err ).to.be.falsy;
+				expect( html ).to.equal( '<ul><li>hola</li></ul>' );
+			});
 		});
 	});
 
-	it('render regular attributes', function () {
+	it( 'render regular attributes', function () {
 		var nuts = new Nuts(),
 			tmpl = '<span nut="regularAttribs" id="id" other="other"></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render('regularAttribs')
-			).to.equal( '<span id="id" other="other"></span>' );
+			nuts.render( 'regularAttribs', {}, function (err, html) {
+				expect( html ).to.equal( '<span id="id" other="other"></span>' );
+			});
 		});
 	});
 
-	it('render simple className', function () {
+	it( 'render simple className', function () {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="simpleClass" class="featured"></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render('simpleClass')
-			).to.equal( '<span class="featured"></span>' );
+			nuts.render( 'simpleClass', {}, function (err, html) {
+				expect( html ).to.equal( '<span class="featured"></span>' );
+			});
 		});
 	});
 
-	it('render doctype', function () {
+	it( 'render doctype', function () {
 		var nuts = new Nuts();
 		var tmpl = '<html nut="doctype" nu-doctype></html>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render('doctype')
-			).to.equal( '<!DOCTYPE html><html></html>' );
+			nuts.render( 'doctype', {}, function (err, html) {
+				expect( html ).to.equal( '<!DOCTYPE html><html></html>' );
+			});
 		});
 	});
 
-	it('render void elements', function () {
+	it( 'render void elements', function () {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="voidElements">' +
 				'<area>' +
@@ -119,29 +129,29 @@ describe( 'nuts.render', function () {
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render('voidElements')
-			).to.equal( '<span>' +
-				'<area>' +
-				'<base>' +
-				'<br>' +
-				'<col>' +
-				'<embed>' +
-				'<hr>' +
-				'<img>' +
-				'<input>' +
-				'<keygen>' +
-				'<link>' +
-				'<meta>' +
-				'<param>' +
-				'<source>' +
-				'<track>' +
-				'<wbr>' +
-			'</span>' );
+			nuts.render( 'voidElements', {}, function (err, html) {
+				expect( html ).to.equal( '<span>' +
+					'<area>' +
+					'<base>' +
+					'<br>' +
+					'<col>' +
+					'<embed>' +
+					'<hr>' +
+					'<img>' +
+					'<input>' +
+					'<keygen>' +
+					'<link>' +
+					'<meta>' +
+					'<param>' +
+					'<source>' +
+					'<track>' +
+					'<wbr>' +
+				'</span>' );
+			});
 		});
 	});
 
-	it('render SVG elements', function () {
+	it( 'render SVG elements', function () {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="svgElements">' +
 				'<path>' +
@@ -158,19 +168,19 @@ describe( 'nuts.render', function () {
 		.addNuts( tmpl )
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
-			expect(
-				nuts.render('svgElements')
-			).to.equal( '<span>' +
-				'<path>' +
-				'<circle>' +
-				'<ellipse>' +
-				'<line>' +
-				'<rect>' +
-				'<use>' +
-				'<stop>' +
-				'<polyline>' +
-				'<polygone>' +
-			'</span>' );
+			nuts.render( 'svgElements', {}, function (err, html) {
+				expect( html ).to.equal( '<span>' +
+					'<path>' +
+					'<circle>' +
+					'<ellipse>' +
+					'<line>' +
+					'<rect>' +
+					'<use>' +
+					'<stop>' +
+					'<polyline>' +
+					'<polygone>' +
+				'</span>' );
+			});
 		});
 	});
 });
