@@ -78,14 +78,16 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render attributes from data', function () {
+	it( 'render attributes from data', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<span nut="nuAtts" nu-id="color"></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function () {
-			expect(
-				nuts.render('nuAtts', {color: 'white'})
-			).to.equal( '<span id="white"></span>' );
+			nuts.render( 'nuAtts', { color: 'white' }, function (err, html) {
+				expect( html ).to.equal( '<span id="white"></span>' );
+				done();
+			});
 		});
 	});
 
@@ -96,48 +98,53 @@ describe( 'Scope', function () {
 		.exec( function (err) {
 			expect( err ).to.be.falsy;
 			expect(
-				nuts.render('classData', {nuclass: 'white'})
+				nuts.render( 'classData', { nuclass: 'white' })
 			).to.equal( '<span class="featured white">bye</span>' );
 		});
 	});
 
-	it.skip( 'render attributes with namesake', function () {
+	it.skip( 'render attributes with namesake', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<span nut="nuSakes" id="id" nu-id="nuid"></span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function () {
-			expect(
-				nuts.render('nuSakes', {nuclass: 'white'})
-			).to.equal( '<span id="nuid"></span>' );
+			nuts.render( 'nuSakes', {nuclass: 'white'}, function (err, html) {
+				expect( html ).to.equal( '<span id="nuid"></span>' );
+				done();
+			});
 		});
 	});
 
 
-	it.skip( 'Inserts the element only when the value evaluates to true', function () {
+	it.skip( 'Inserts the element only when the value evaluates to true', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<span nut="nuif" nu-if="color">hi</span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function () {
-			expect(
-				nuts.render('nuif', {color: true})
-			).to.equal( '<span>hi</span>' );
-			expect(
-				nuts.render('nuif')
-			).to.equal( '' );
+			nuts.render( 'nuif', {color: true}, function (err, html) {
+				expect( html ).to.equal( '<span>hi</span>' );
+				nuts.render('nuif', {}, function (err, html) {
+					expect( html ).to.equal( '' );
+					done();
+				});
+			});
 		});
 	});
 
-	it.skip( 'Inserts the loop only when the value evaluates to true', function () {
+	it.skip( 'Inserts the loop only when the value evaluates to true', function (done) {
+		var nuts = new Nuts();
 		var tmpl = '<span nut="ifloop" nu-if="color" nu-repeat="colors">hi</span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function () {
-			expect(
-				nuts.render('ifloop', {color: true, colors:[1,2]})
-			).to.equal( '<span>hi</span><span>hi</span>' );
-			expect(
-				nuts.render('ifloop')
-			).to.equal( '' );
+			nuts.render( 'ifloop', {color: true, colors:[1,2]}, function (err, html) {
+				expect( html ).to.equal( '<span>hi</span><span>hi</span>' );
+				nuts.render( 'ifloop', {}, function (err, html) {
+					expect( html ).to.equal( '' );
+				});
+			});
 		});
 	});
 

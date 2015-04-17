@@ -71,6 +71,9 @@ var tag = function (next) {
 		this.addRenderScope();
 	}
 
+	if (this.nuAtts) {
+		this.addRenderNuAtts();
+	}
 
 	if (!this.voidElement) {
 		this.end = '</' + this.name + '>';
@@ -84,6 +87,10 @@ var tag = function (next) {
 		} else {
 			if (this.children) {
 				this.renders.push( this.getPrintChildren( ));
+			} else {
+				this.renders.push( function (out, x, next) {
+					next( out + '>' );
+				});
 			}
 		}
 
@@ -98,6 +105,10 @@ var tag = function (next) {
 			});
 
 		}
+	} else {
+		this.renders.push( function (out, x, next) {
+			next( out + '>' );
+		});
 	}
 	next();
 };
