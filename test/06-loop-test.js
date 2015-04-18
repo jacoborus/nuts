@@ -35,7 +35,7 @@ describe( 'Loop:', function () {
 		});
 	});
 
-	describe( 'Each:', function () {
+	describe.skip( 'Each:', function () {
 
 		it('render simple array loops', function (done) {
 			var nuts = new Nuts();
@@ -57,7 +57,8 @@ describe( 'Loop:', function () {
 
 		it('render loops through repeat scope array', function (done) {
 			var nuts = new Nuts();
-			var tmpl = '<ul nu-each="nums" nut="eachLoopScoped"><li nu-model></li></ul>';
+			var tmpl = '<ul nu-each="nums" nut="eachLoopScoped">'+
+				'<li nu-model></li></ul>';
 			nuts
 			.addNuts( tmpl )
 			.exec( function () {

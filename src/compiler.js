@@ -1,7 +1,7 @@
 'use strict';
 
 var doctypes = require('./doctypes.json'),
-	//setRenders = require('./renders.js'),
+	renders = require('./renders.js'),
 	newCounter = require('./loop.js').newCounter;
 
 
@@ -39,7 +39,7 @@ var directive = function (next) {
 };
 
 
-var getRenderLink = function (props, fn, next) {
+var getRenderLink = function (fn, next, props) {
 	var r = {},
 		i;
 
@@ -108,205 +108,76 @@ var tag = function (next) {
 			}
 		};
 		if (typeof this.model !== 'undefined') {
-			if (!this.children) {
-				render = getRenderLink(
-					{ model: this.model	},
-					function (out, x, cb, pos) {
-						if (this.model === '') {
-							this.next.render( out + '>' + x, undefined, cb, pos );
-						} else {
-							if (typeof x[this.model] !== 'undefined') {
-								this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
-							} else {
-								this.next.render( out + '>', undefined, cb, pos );
-							}
-						}
-					},
-					render
-				);
-			} else {
-				render = getRenderLink(
-					{
-						model: this.model,
-						children: this.children,
-						renderChildren: renderChildren
-					},
-					function (out, x, cb, pos) {
-						if (typeof x[this.model] !== 'undefined') {
-							this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
-						} else {
-							this.renderChildren( this.children, out, x, this.next, cb, pos );
-						}
-					},
-					render
-				);
-			}
-		} else if (this.children) {
-			render = getRenderLink(
-				{
+			if (!this.children) { // model, no children
+				render = getRenderLink( renders.modelNoChildren, render, {
+					model: this.model
+				});
+			} else { // model, children
+				render = getRenderLink( renders.modelChildren, render, {
+					model: this.model,
 					children: this.children,
 					renderChildren: renderChildren
-				},
-				function (out, x, cb, pos) {
-					this.renderChildren( this.children, out, x, this.next, cb, pos );
-				},
-				render
-			);
+				});
+			}
+		} else if (this.children) { // no model, children
+			render = getRenderLink( renders.NoModelChildren, render, {
+				children: this.children,
+				renderChildren: renderChildren
+			});
 		} else { // no model, no children
-			render = getRenderLink({}, function (out, x, cb, pos) {
-				this.next.render( out + '>', undefined, cb, pos );
-			}, render);
+			render = getRenderLink( renders.noModelNoChildren, render, {});
 		}
 
 		if (this.nuSakes) {
-			render = getRenderLink(
-				{
-					nuSakes: this.nuSakes,
-					namesakes: this.namesakes
-				},
-				function (out, x, cb, pos) {
-					var i;
-					for (i in this.nuSakes) {
-						if (typeof x[this.nuSakes[i]] !== 'undefined') {
-							out += ' ' + i + '="' + x[this.nuSakes[i]] + '"';
-						} else {
-							out += ' ' + i + '="' + this.namesakes[i] + '"';
-						}
-					}
-					this.next.render( out, x, cb, pos );
-				},
-				render
-			);
+			render = getRenderLink( renders.nuSakes, render, {
+				nuSakes: this.nuSakes,
+				namesakes: this.namesakes
+			});
 		}
-
 
 		if (this.nuClass) {
-			render = getRenderLink(
-				{
-					nuClass: this.nuClass,
-					classes: this.classes || ''
-				},
-				function (out, x, cb, pos) {
-					var pre = ' class="';
-					if (typeof x[this.nuClass] !== 'undefined') {
-						if (this.classes) {
-							out += pre + this.classes + ' ' + x[this.nuClass] + '"';
-						} else {
-							out += pre + x[this.nuClass] + '"';
-						}
-					} else {
-						if (this.classes) {
-							out += pre + this.classes + '"';
-						}
-					}
-					this.next.render( out, x, cb, pos );
-				},
-				render
-			);
+			render = getRenderLink( renders.nuClass, render, {
+				nuClass: this.nuClass,
+				classes: this.classes || ''
+			});
 		}
-
 
 		if (this.nuAtts) {
-			render = getRenderLink(
-				{ nuAtts : this.nuAtts },
-				function (out, x, cb, pos) {
-					var i;
-					for (i in this.nuAtts) {
-						if (typeof this.nuAtts[i] !== 'undefined') {
-							out += ' ' + i + '="' + x[this.nuAtts[i]] + '"';
-						}
-					}
-					this.next.render( out, x, cb, pos );
-				},
-				render
-			);
+			render = getRenderLink( renders.nuAtts, render, { nuAtts : this.nuAtts });
 		}
-
 
 		if (this.attribs) {
-			render = getRenderLink(
-				{ attribs: this.attribs },
-				function (out, x, cb, pos) {
-					var i;
-					for (i in this.attribs) {
-						out += ' ' + i + '="' + this.attribs[i] + '"';
-					}
-					this.next.render( out, x, cb, pos );
-				},
-				render
-			);
+			render = getRenderLink( renders.attribs, render, { attribs: this.attribs });
 		}
 	}
 
+
 	if (this.doctype) {
-		render = getRenderLink(
-			{ out: doctypes[ this.doctype ] + this.start },
-			function (out, x, cb, pos) {
-				// add doctype to string
-				this.next.render( this.out , x, cb, pos );
-			},
-			render
-		);
+		render = getRenderLink( renders.doctype, render, { out: doctypes[ this.doctype ] + this.start });
 	} else {
-		render = getRenderLink(
-			{ start: this.start	},
-			function (out, x, cb, pos) {
-				this.next.render( this.start, x, cb, pos );
-			},
-			render
-		);
+		render = getRenderLink( renders.noDoctype, render, { start: this.start	});
 	}
+
 
 	if (this.nuif) {
-		render = getRenderLink(
-			{ nuif: this.nuif },
-			function (out, x, cb, pos) {
-				if (x[ this.nuif ]) {
-					this.next.render( out, x, cb, pos );
-				} else {
-					cb( out, pos );
-				}
-			},
-			render
-		);
+		render = getRenderLink( renders.nuif, render, { nuif: this.nuif });
 	}
 
 
-	if (this.repeat || this.repeat === '') {
+	if (typeof this.repeat !== 'undefined') {
 		if (this.repeat) {
-			render = getRenderLink(
-				{
-					repeat: this.repeat,
-					renderRepeat: renderRepeat
-				},
-				function (out, x, cb, pos) {
-					var y = x[ this.repeat ];
-					this.renderRepeat( this.next, out, y, cb, pos );
-				},
-				render
-			);
+			render = getRenderLink( renders.repeatAll, render, {
+				repeat: this.repeat,
+				renderRepeat: renderRepeat
+			});
 		} else {
-			render = getRenderLink(
-				{
-					renderRepeat: renderRepeat
-				},
-				function (out, x, cb, pos) {
-					this.renderRepeat( this.next, out, x, cb, pos );
-				},
-				render
-			);
+			render = getRenderLink( renders.repeatPart, render, { renderRepeat: renderRepeat });
 		}
 	}
 
 
 	if (this.scope) {
-		render = getRenderLink(
-			{ scope: this.scope },
-			function (out, x, cb, pos) {
-				this.next.render( '', x[ this.scope ], cb, pos );
-			},
-			render
-		);
+		render = getRenderLink( renders.scope, render, { scope: this.scope });
 	}
 
 	this.renders = render;
