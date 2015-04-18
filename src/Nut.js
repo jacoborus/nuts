@@ -1,9 +1,9 @@
 'use strict';
 
+
 // private dependencies
 var getCompiler = require('./compiler.js'),
-	voidElements = require('./void-elements.json'),
-	render = require('./render.js');
+	voidElements = require('./void-elements.json');
 
 /* - Utils */
 // detect if an attribute name is prefixed with nu-
@@ -80,6 +80,8 @@ var renderAtts = function (x) {
 	}
 	return out;
 };
+
+
 /*!
  * nuts schema constructor
  * Get nuts formatted dom object info from parsed html
@@ -226,6 +228,14 @@ var Nut = function (dom, nuts) {
 
 	// assign attributes
 	this.attribs = atts || {};
+
+	// add classlit to regular attributes when no nuClass
+	if (this.classes && !this.nuClass) {
+		this.attribs = this.attribs || {};
+		this.attribs.class = this.classes;
+		delete this.classes;
+	}
+
 	this.compile = getCompiler( this );
 	if (this.children) {
 		this.nutChildren = [];
@@ -240,7 +250,7 @@ var Nut = function (dom, nuts) {
 	this.renders = [];
 };
 
-Nut.prototype.serie = function (data, callback) {
+Nut.prototype.serie = function (data, callback, i) {
 	var limit = this.renders.length,
 		count = 0,
 		self = this;
@@ -248,59 +258,24 @@ Nut.prototype.serie = function (data, callback) {
 		if (count !== limit) {
 			return self.renders[ count++ ]( out, x, next );
 		}
-		callback( out, x );
+		callback( out, i );
 	};
 	next( this.start, data );
 };
 
-Nut.prototype.renderNuif = function (x, callback, i) {
-	var end = this.end,
-		start = this.start;
-	if (x[this.nuif]) {
-		if (this.renders.length) {
-			return this.serie( x, function (html) {
-				callback( html + end, i );
-			});
-		}
-		return callback( start + '>' + end, i );
-	}
-	callback('');
-};
-
-Nut.prototype.renderNoNuif = function (x, callback, i) {
-	var end = this.end,
-		start = this.start;
-	if (this.renders.length) {
-		return this.serie( x, function (html) {
-			callback( html + end, i );
-		});
-	}
-	return callback( start + '>' + end, i );
-};
-
-Nut.prototype.getPrintChildren = render.getPrintChildren;
-Nut.prototype.addRenderScope = render.addRenderScope;
-Nut.prototype.addRenderNuAtts = render.addRenderNuAtts;
-Nut.prototype.addRenderFullModel = render.addRenderFullModel;
-Nut.prototype.addRenderPartialModel = render.addRenderPartialModel;
-Nut.prototype.addRenderNamesakes = render.addRenderNamesakes;
-Nut.prototype.addRenderNuClass = render.addRenderNuClass;
-Nut.prototype.addRenderNuifNoScope = render.addRenderNuifNoScope;
-Nut.prototype.addRenderNuifScope = render.addRenderNuifScope;
-
-
 
 Nut.prototype.render = function (data, callback, i) {
-	var self = this;
-
-	if (this.renders.length) {
-		this.serie( data, function (html) {
-			callback( html + self.end, i );
-		});
+	var tagEnd = '</' + this.name + '>';
+	if (this.voidElement) {
+		this.renders[0] = function (out) {
+			callback( out + '>', i );
+		};
 	} else {
-		callback( self.start + '>' + self.end, i );
+		this.renders[0] = function (out) {
+			callback( out + tagEnd, i );
+		};
 	}
+	this.renders[ this.renders.length -1 ]( '', data );
 };
-
 
 module.exports = Nut;

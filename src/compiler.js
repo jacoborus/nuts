@@ -39,32 +39,105 @@ var directive = function (next) {
 };
 
 
+var getRender = function (renders, n, fn) {
+	return function (out, x) {
+		fn( out, x, renders[ --n ]);
+	};
+};
+
+
+var childrenCounter = function (limit, callback) {
+	var count = 0,
+		res = [];
+
+	return function (html, i) {
+		res[i] = html;
+		if (++count === limit) {
+			callback( res.join( '' ));
+		}
+	};
+};
+
+
+var renderChildren = function (children, out, x, next) {
+	var count = childrenCounter( children.length, function (html) {
+		next( out + '>' + html );
+	});
+	children.forEach( function (child, i) {
+		child.render( x, count, i );
+	});
+};
+
 var tag = function (next) {
-	this.start = '';
-	this.end = '';
-	var self = this, i;
-	var renders = this.renders;
+	var n = 1,
+		model = this.model,
+		start = '<' + this.name,
+		children = this.children,
+		doctype = this.doctype,
+		attribs = this.attribs;
+
+	if (!this.voidElement) {
+		if (this.model || this.model === '') {
+			if (!this.children) {
+				this.renders[n] = getRender( this.renders, n++, function (out, x, next) {
+					if (typeof x[model] !== 'undefined') {
+						next( out + '>' + x[ model ]);
+					} else {
+						next( out + '>' );
+					}
+				});
+			} else {
+				this.renders[n] = getRender( this.renders, n++, function (out, x, next) {
+					if (typeof x[model] !== 'undefined') {
+						next( out + '>' + x[ model ]);
+					} else {
+						renderChildren( children, out + '>', x, next );
+					}
+				});
+			}
+		} else if (this.children) {
+			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+				renderChildren( children, out, x, next );
+			});
+		} else {
+			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+				next( out + '>' );
+			});
+		}
+	}
+
+	if (attribs) {
+		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+			var i;
+			for (i in attribs) {
+				out += ' ' + i + '="' + attribs[i] + '"';
+			}
+			next( out, x );
+		});
+	}
 
 	if (this.doctype) {
-		// add doctype to string
-		this.start += doctypes[ this.doctype ];
+		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+			// add doctype to string
+			next( doctypes[ doctype ] + start, x );
+		});
+	} else {
+		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+			next( start, x );
+		});
 	}
 
-	this.start += '<' + this.name;
-
-	var attribs = this.attribs;
-	if (attribs) {
-		for (i in attribs) {
-			this.start += ' ' + i + '="' + attribs[i] + '"';
-		}
+	if (this.children) {
+		var count = newCounter( this.children.length, next );
+		this.children.forEach( function (child) {
+			child.compile( count );
+		});
+	} else {
+		next();
 	}
+};
 
-	if (this.classes) {
-		if (!this.nuClass) {
-			this.start += ' class="' + this.classes + '"';
-		}
-	}
-
+/*
 	if (this.scope) {
 		this.addRenderScope();
 	}
@@ -72,7 +145,15 @@ var tag = function (next) {
 	if (this.nuif) {
 		this.render = this.renderNuif;
 	} else {
-		this.render = this.renderNoNuif;
+		if (typeof this.repeat !== 'undefined') {
+			if (this.repeat === '') {
+				this.render = this.renderNoNuifLoopScope;
+			} else  {
+				this.render = this.renderNoNuifLoopField;
+			}
+		}  else {
+			this.render = this.renderNoNuif;
+		}
 	}
 
 	if (this.nuAtts) {
@@ -86,44 +167,8 @@ var tag = function (next) {
 	if (this.nuSakes) {
 		this.addRenderNamesakes();
 	}
+*/
 
-	if (!this.voidElement) {
-		this.end = '</' + this.name + '>';
-
-		if (typeof this.model !== 'undefined') {
-			if (this.model === '') {
-				this.addRenderFullModel();
-			} else {
-				this.addRenderPartialModel();
-			}
-		} else {
-			if (this.children) {
-				this.renders.push( this.getPrintChildren( ));
-			} else {
-				this.renders.push( function (out, x, next) {
-					next( out + '>' );
-				});
-			}
-		}
-
-		if (this.children) {
-
-			var count = newCounter( this.children.length, function () {
-				next();
-			});
-
-			return this.children.forEach( function (child) {
-				child.compile( count );
-			});
-
-		}
-	} else {
-		this.renders.push( function (out, x, next) {
-			next( out + '>' );
-		});
-	}
-	next();
-};
 
 
 module.exports = function (nut) {

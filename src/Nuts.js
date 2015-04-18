@@ -19,6 +19,11 @@ var Nuts = function () {
 	this.errors = [];
 };
 
+/**
+ * Add a new promise in te stack
+ * @param  {Function} fn method
+ * @return {Object}      nuts
+ */
 Nuts.prototype.then = function (fn) {
 	if (typeof fn !== 'function') {
 		this.errors.push( 'nuts.then requires a function as param' );
@@ -61,6 +66,12 @@ Nuts.prototype.getNut = function (keyname) {
 	return this.items[keyname];
 };
 
+
+/*!
+ * Add templates to archive
+ * @param {String}   html text with nuts
+ * @param {Function} next launch next function in the stack
+ */
 var addNuts = function (html, next) {
 	var self = this;
 	this.compiled = false;

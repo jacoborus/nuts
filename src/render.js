@@ -21,27 +21,6 @@ renders.addRenderScope = function () {
 	});
 };
 
-renders.addRenderNuifScope = function () {
-	var nuif = this.nuif;
-	this.renders.push( function (out, x, next) {
-		if (x[nuif]) {
-			next( out, x );
-		} else {
-			next();
-		}
-	});
-};
-
-renders.addRenderNuifNoScope = function () {
-	this.renders.push( function (out, x, next) {
-		if (x) {
-			next( out, x );
-		} else {
-			next();
-		}
-	});
-};
-
 renders.addRenderNuAtts = function () {
 	var atts = this.nuAtts;
 	this.renders.push( function (out, x, next) {
@@ -129,6 +108,68 @@ renders.getPrintChildren = function () {
 		});
 	};
 };
+
+
+renders.renderNuif = function (x, callback, i) {
+	var end = this.end,
+		start = this.start;
+	if (x[this.nuif]) {
+		if (this.renders.length) {
+			return this.serie( x, function (html) {
+				callback( html + end, i );
+			});
+		}
+		return callback( start + '>' + end, i );
+	}
+	callback('');
+};
+
+renders.renderNoNuif = function (x, callback, i) {
+	var end = this.end,
+		start = this.start;
+	if (this.renders.length) {
+		return this.serie( x, function (html) {
+			callback( html + end, i );
+		});
+	}
+	return callback( start + '>' + end, i );
+};
+
+
+renders.renderNoNuifLoopField = function (x, callback, i) {
+	var rep = x[ this.repeat ],
+		self = this;
+	var count = childrenCounter( rep.length, function (out) {
+		callback( out, i );
+	});
+	rep.forEach( function (r, index) {
+		self.serie( r, count, index );
+	});
+};
+
+/*
+var childrenCounter = function (limit, callback) {
+	var count = 0,
+		res = [];
+
+	return function (html, i) {
+		res[i] = html;
+		if (++count === limit) {
+			callback( res.join( '' ));
+		}
+	};
+};
+*/
+renders.renderNoNuifLoopScope = function (x, callback, i) {
+	var count = childrenCounter( x.length, function (out) {
+		callback( out, i );
+	});
+	var self = this;
+	x.forEach( function (r, index) {
+		self.serie( r, count, index );
+	});
+};
+
 
 module.exports = renders;
 
