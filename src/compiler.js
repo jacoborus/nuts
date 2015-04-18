@@ -74,7 +74,11 @@ var tag = function (next) {
 		start = '<' + this.name,
 		children = this.children,
 		doctype = this.doctype,
-		attribs = this.attribs;
+		attribs = this.attribs,
+		scope = this.scope,
+		nuAtts = this.nuAtts,
+		nuSakes = this.nuSakes,
+		namesakes = this.namesakes;
 
 	if (!this.voidElement) {
 		if (this.model || this.model === '') {
@@ -91,7 +95,7 @@ var tag = function (next) {
 					if (typeof x[model] !== 'undefined') {
 						next( out + '>' + x[ model ]);
 					} else {
-						renderChildren( children, out + '>', x, next );
+						renderChildren( children, out, x, next );
 					}
 				});
 			}
@@ -104,17 +108,32 @@ var tag = function (next) {
 				next( out + '>' );
 			});
 		}
+
+
+		if (this.nuAtts) {
+			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+				var i;
+				for (i in nuAtts) {
+					if (typeof nuAtts[i] !== 'undefined') {
+						out += ' ' + i + '="' + x[nuAtts[i]] + '"';
+					}
+				}
+				next( out, x );
+			});
+		}
+
+
+		if (this.attribs) {
+			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+				var i;
+				for (i in attribs) {
+					out += ' ' + i + '="' + attribs[i] + '"';
+				}
+				next( out, x );
+			});
+		}
 	}
 
-	if (attribs) {
-		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-			var i;
-			for (i in attribs) {
-				out += ' ' + i + '="' + attribs[i] + '"';
-			}
-			next( out, x );
-		});
-	}
 
 	if (this.doctype) {
 		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
@@ -127,6 +146,13 @@ var tag = function (next) {
 		});
 	}
 
+	if (this.scope) {
+		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
+			next( '', x[ scope ]);
+		});
+	}
+
+	// compile children
 	if (this.children) {
 		var count = newCounter( this.children.length, next );
 		this.children.forEach( function (child) {
@@ -154,10 +180,6 @@ var tag = function (next) {
 		}  else {
 			this.render = this.renderNoNuif;
 		}
-	}
-
-	if (this.nuAtts) {
-		this.addRenderNuAtts();
 	}
 
 	if (this.nuClass) {

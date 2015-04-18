@@ -34,7 +34,7 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render data passed through scope', function (done) {
+	it( 'render data passed through scope', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>';
 		nuts
@@ -48,7 +48,7 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'use children dom elem if there is no model in data', function (done) {
+	it( 'use children dom elem if there is no model in data', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>';
 		nuts
@@ -61,7 +61,7 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render data passed through multiple scopes', function (done) {
+	it( 'render data passed through multiple scopes', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<div  nut="doubleScope">' +
 			'<ul nu-scope="card">'+
@@ -78,7 +78,7 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'render attributes from data', function (done) {
+	it( 'render attributes from data', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="nuAtts" nu-id="color"></span>';
 		nuts
