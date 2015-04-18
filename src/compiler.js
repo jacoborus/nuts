@@ -140,6 +140,54 @@ var tag = function (next) {
 			}, render);
 		}
 
+		if (this.nuSakes) {
+			render = getRenderLink(
+				{
+					nuSakes: this.nuSakes,
+					namesakes: this.namesakes
+				},
+				function (out, x, cb) {
+					var i;
+					for (i in this.nuSakes) {
+						if (typeof x[this.nuSakes[i]] !== 'undefined') {
+							out += ' ' + i + '="' + x[this.nuSakes[i]] + '"';
+						} else {
+							out += ' ' + i + '="' + this.namesakes[i] + '"';
+						}
+					}
+					this.next.render( out, x, cb );
+				},
+				render
+			);
+		}
+
+
+		if (this.nuClass) {
+			render = getRenderLink(
+				{
+					nuClass: this.nuClass,
+					classes: this.classes || ''
+				},
+				function (out, x, cb) {
+					var pre = ' class="';
+					if (typeof x[this.nuClass] !== 'undefined') {
+						if (this.classes) {
+							out += pre + this.classes + ' ' + x[this.nuClass] + '"';
+						} else {
+							out += pre + x[this.nuClass] + '"';
+						}
+					} else {
+						if (this.classes) {
+							out += pre + this.classes + '"';
+						}
+					}
+					this.next.render( out, x, cb );
+				},
+				render
+			);
+		}
+
+
 		if (this.nuAtts) {
 			render = getRenderLink(
 				{
@@ -199,6 +247,21 @@ var tag = function (next) {
 		);
 	}
 
+	if (this.nuif) {
+		render = getRenderLink(
+			{ nuif: this.nuif },
+			function (out, x, cb) {
+				if (x[ this.nuif ]) {
+					this.next.render( out, x, cb);
+				} else {
+					cb( out, cb.i );
+				}
+			},
+			render
+		);
+	}
+
+
 	if (this.scope) {
 		render = getRenderLink(
 			{ scope: this.scope },
@@ -220,35 +283,6 @@ var tag = function (next) {
 		next();
 	}
 };
-
-/*
-	if (this.scope) {
-		this.addRenderScope();
-	}
-
-	if (this.nuif) {
-		this.render = this.renderNuif;
-	} else {
-		if (typeof this.repeat !== 'undefined') {
-			if (this.repeat === '') {
-				this.render = this.renderNoNuifLoopScope;
-			} else  {
-				this.render = this.renderNoNuifLoopField;
-			}
-		}  else {
-			this.render = this.renderNoNuif;
-		}
-	}
-
-	if (this.nuClass) {
-		this.addRenderNuClass();
-	}
-
-	if (this.nuSakes) {
-		this.addRenderNamesakes();
-	}
-*/
-
 
 
 module.exports = function (nut) {

@@ -4,7 +4,7 @@ var expect = require('chai').expect,
 	Nuts = require('../src/Nuts.js');
 
 
-describe.skip( 'Scope', function () {
+describe( 'Scope', function () {
 
 	it( 'render simple data', function (done) {
 		var nuts = new Nuts();
@@ -92,7 +92,7 @@ describe.skip( 'Scope', function () {
 	});
 
 
-	it.skip( 'render attributes with namesake', function (done) {
+	it( 'render attributes with namesake', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="nuSakes" id="id" nu-id="nuid"></span>';
 		nuts
@@ -109,7 +109,7 @@ describe.skip( 'Scope', function () {
 	});
 
 
-	it.skip( 'render className from data', function () {
+	it( 'render className from data', function () {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>';
 		nuts
@@ -123,7 +123,7 @@ describe.skip( 'Scope', function () {
 	});
 
 
-	it.skip( 'Inserts the element only when the value evaluates to true', function (done) {
+	it( 'Inserts the element only when nuif value evaluates to true', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<span nut="nuif" nu-if="color">hi</span>';
 		nuts
