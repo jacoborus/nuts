@@ -39,10 +39,17 @@ var directive = function (next) {
 };
 
 
-var getRender = function (renders, n, fn) {
-	return function (out, x) {
-		fn( out, x, renders[ --n ]);
-	};
+var getRenderLink = function (props, fn, next) {
+	var r = {},
+		i;
+
+	for (i in props) {
+		r[i] = props[i];
+	}
+	r.render = fn;
+	r.next = next;
+
+	return r;
 };
 
 
@@ -59,9 +66,9 @@ var childrenCounter = function (limit, callback) {
 };
 
 
-var renderChildren = function (children, out, x, next) {
+var renderChildren = function (children, out, x, next, cb) {
 	var count = childrenCounter( children.length, function (html) {
-		next( out + '>' + html );
+		next.render( out + '>' + html, undefined, cb );
 	});
 	children.forEach( function (child, i) {
 		child.render( x, count, i );
@@ -69,88 +76,139 @@ var renderChildren = function (children, out, x, next) {
 };
 
 var tag = function (next) {
-	var n = 1,
-		model = this.model,
-		start = '<' + this.name,
-		children = this.children,
-		doctype = this.doctype,
-		attribs = this.attribs,
-		scope = this.scope,
-		nuAtts = this.nuAtts,
-		nuSakes = this.nuSakes,
-		namesakes = this.namesakes;
+	var render;
+	this.start = '<' + this.name;
+	this.end = '<' + this.name;
+	var tagEnd =  '</' + this.name + '>';
 
-	if (!this.voidElement) {
+	if (this.voidElement) {
+		render = {
+			render: function (out, x, cb) {
+				cb( out + '>', cb.i );
+			}
+		};
+	} else {
+		render = {
+			render: function (out, x, cb) {
+				cb( out + tagEnd, cb.i );
+			}
+		};
 		if (this.model || this.model === '') {
 			if (!this.children) {
-				this.renders[n] = getRender( this.renders, n++, function (out, x, next) {
-					if (typeof x[model] !== 'undefined') {
-						next( out + '>' + x[ model ]);
-					} else {
-						next( out + '>' );
-					}
-				});
+				render = getRenderLink(
+					{ model: this.model	},
+					function (out, x, cb) {
+						if (typeof x[this.model] !== 'undefined') {
+							this.next.render( out + '>' + x[ this.model ], undefined, cb);
+						} else {
+							this.next.render( out + '>', 'undefined', cb );
+						}
+					},
+					render
+				);
 			} else {
-				this.renders[n] = getRender( this.renders, n++, function (out, x, next) {
-					if (typeof x[model] !== 'undefined') {
-						next( out + '>' + x[ model ]);
-					} else {
-						renderChildren( children, out, x, next );
-					}
-				});
+				render = getRenderLink(
+					{
+						model: this.model,
+						children: this.children,
+						renderChildren: renderChildren
+					},
+					function (out, x, cb) {
+						if (typeof x[this.model] !== 'undefined') {
+							this.next.render( out + '>' + x[ this.model ], undefined, cb );
+						} else {
+							this.renderChildren( this.children, out, x, this.next, cb );
+						}
+					},
+					render
+				);
 			}
 		} else if (this.children) {
-			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-				renderChildren( children, out, x, next );
-			});
-		} else {
-			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-				next( out + '>' );
-			});
+			render = getRenderLink(
+				{
+					children: this.children,
+					renderChildren: renderChildren
+				},
+				function (out, x, cb) {
+					this.renderChildren( this.children, out, x, this.next, cb );
+				},
+				render
+			);
+		} else { // no model, no children
+			render = getRenderLink({}, function (out, x, cb) {
+				this.next.render( out + '>', undefined, cb );
+			}, render);
 		}
 
-
 		if (this.nuAtts) {
-			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-				var i;
-				for (i in nuAtts) {
-					if (typeof nuAtts[i] !== 'undefined') {
-						out += ' ' + i + '="' + x[nuAtts[i]] + '"';
+			render = getRenderLink(
+				{
+					nuAtts : this.nuAtts
+				},
+				function (out, x, cb) {
+					var i;
+					for (i in this.nuAtts) {
+						if (typeof this.nuAtts[i] !== 'undefined') {
+							out += ' ' + i + '="' + x[this.nuAtts[i]] + '"';
+						}
 					}
-				}
-				next( out, x );
-			});
+					this.next.render( out, x, cb );
+				},
+				render
+			);
 		}
 
 
 		if (this.attribs) {
-			this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-				var i;
-				for (i in attribs) {
-					out += ' ' + i + '="' + attribs[i] + '"';
-				}
-				next( out, x );
-			});
+			render = getRenderLink(
+				{
+					attribs: this.attribs
+				},
+				function (out, x, cb) {
+					var i;
+					for (i in this.attribs) {
+						out += ' ' + i + '="' + this.attribs[i] + '"';
+					}
+					this.next.render( out, x, cb );
+				},
+				render
+			);
 		}
 	}
 
-
 	if (this.doctype) {
-		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-			// add doctype to string
-			next( doctypes[ doctype ] + start, x );
-		});
+		render = getRenderLink(
+			{
+				out: doctypes[ this.doctype ] + this.start
+			},
+			function (out, x, cb) {
+				// add doctype to string
+				this.next.render( this.out , x, cb );
+			},
+			render
+		);
 	} else {
-		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-			next( start, x );
-		});
+		render = getRenderLink(
+			{
+				start: this.start
+			},
+			function (out, x, cb) {
+				this.next.render( this.start, x, cb );
+			},
+			render
+		);
 	}
 
 	if (this.scope) {
-		this.renders[ n ] = getRender( this.renders, n++, function (out, x, next) {
-			next( '', x[ scope ]);
-		});
+		render = getRenderLink(
+			{ scope: this.scope },
+			function (out, x, cb) {
+				this.next.render( '', x[ this.scope ], cb);
+			},
+			render
+		);
 	}
+	this.renders = render;
 
 	// compile children
 	if (this.children) {

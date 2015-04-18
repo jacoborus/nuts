@@ -265,17 +265,8 @@ Nut.prototype.serie = function (data, callback, i) {
 
 
 Nut.prototype.render = function (data, callback, i) {
-	var tagEnd = '</' + this.name + '>';
-	if (this.voidElement) {
-		this.renders[0] = function (out) {
-			callback( out + '>', i );
-		};
-	} else {
-		this.renders[0] = function (out) {
-			callback( out + tagEnd, i );
-		};
-	}
-	this.renders[ this.renders.length -1 ]( '', data );
+	callback.i = i;
+	this.renders.render( '', data, callback );
 };
 
 module.exports = Nut;
