@@ -66,14 +66,28 @@ var childrenCounter = function (limit, callback) {
 };
 
 
-var renderChildren = function (children, out, x, next, cb) {
+
+
+var renderChildren = function (children, out, x, next, cb, pos) {
 	var count = childrenCounter( children.length, function (html) {
-		next.render( out + '>' + html, undefined, cb );
+		next.render( out + '>' + html, undefined, cb, pos );
 	});
 	children.forEach( function (child, i) {
 		child.render( x, count, i );
 	});
 };
+
+
+
+var renderRepeat = function (render, out, x, cb, pos) {
+	var count = childrenCounter( x.length, function (html) {
+		cb( out + html, pos );
+	});
+	x.forEach( function (y, i) {
+		render.render( '', y, count, i );
+	});
+};
+
 
 var tag = function (next) {
 	var render;
@@ -83,25 +97,29 @@ var tag = function (next) {
 
 	if (this.voidElement) {
 		render = {
-			render: function (out, x, cb) {
-				cb( out + '>', cb.i );
+			render: function (out, x, cb, pos) {
+				cb( out + '>', pos );
 			}
 		};
 	} else {
 		render = {
-			render: function (out, x, cb) {
-				cb( out + tagEnd, cb.i );
+			render: function (out, x, cb, pos) {
+				cb( out + tagEnd, pos );
 			}
 		};
-		if (this.model || this.model === '') {
+		if (typeof this.model !== 'undefined') {
 			if (!this.children) {
 				render = getRenderLink(
 					{ model: this.model	},
-					function (out, x, cb) {
-						if (typeof x[this.model] !== 'undefined') {
-							this.next.render( out + '>' + x[ this.model ], undefined, cb);
+					function (out, x, cb, pos) {
+						if (this.model === '') {
+							this.next.render( out + '>' + x, undefined, cb, pos );
 						} else {
-							this.next.render( out + '>', 'undefined', cb );
+							if (typeof x[this.model] !== 'undefined') {
+								this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
+							} else {
+								this.next.render( out + '>', undefined, cb, pos );
+							}
 						}
 					},
 					render
@@ -113,11 +131,11 @@ var tag = function (next) {
 						children: this.children,
 						renderChildren: renderChildren
 					},
-					function (out, x, cb) {
+					function (out, x, cb, pos) {
 						if (typeof x[this.model] !== 'undefined') {
-							this.next.render( out + '>' + x[ this.model ], undefined, cb );
+							this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
 						} else {
-							this.renderChildren( this.children, out, x, this.next, cb );
+							this.renderChildren( this.children, out, x, this.next, cb, pos );
 						}
 					},
 					render
@@ -129,14 +147,14 @@ var tag = function (next) {
 					children: this.children,
 					renderChildren: renderChildren
 				},
-				function (out, x, cb) {
-					this.renderChildren( this.children, out, x, this.next, cb );
+				function (out, x, cb, pos) {
+					this.renderChildren( this.children, out, x, this.next, cb, pos );
 				},
 				render
 			);
 		} else { // no model, no children
-			render = getRenderLink({}, function (out, x, cb) {
-				this.next.render( out + '>', undefined, cb );
+			render = getRenderLink({}, function (out, x, cb, pos) {
+				this.next.render( out + '>', undefined, cb, pos );
 			}, render);
 		}
 
@@ -146,7 +164,7 @@ var tag = function (next) {
 					nuSakes: this.nuSakes,
 					namesakes: this.namesakes
 				},
-				function (out, x, cb) {
+				function (out, x, cb, pos) {
 					var i;
 					for (i in this.nuSakes) {
 						if (typeof x[this.nuSakes[i]] !== 'undefined') {
@@ -155,7 +173,7 @@ var tag = function (next) {
 							out += ' ' + i + '="' + this.namesakes[i] + '"';
 						}
 					}
-					this.next.render( out, x, cb );
+					this.next.render( out, x, cb, pos );
 				},
 				render
 			);
@@ -168,7 +186,7 @@ var tag = function (next) {
 					nuClass: this.nuClass,
 					classes: this.classes || ''
 				},
-				function (out, x, cb) {
+				function (out, x, cb, pos) {
 					var pre = ' class="';
 					if (typeof x[this.nuClass] !== 'undefined') {
 						if (this.classes) {
@@ -181,7 +199,7 @@ var tag = function (next) {
 							out += pre + this.classes + '"';
 						}
 					}
-					this.next.render( out, x, cb );
+					this.next.render( out, x, cb, pos );
 				},
 				render
 			);
@@ -190,17 +208,15 @@ var tag = function (next) {
 
 		if (this.nuAtts) {
 			render = getRenderLink(
-				{
-					nuAtts : this.nuAtts
-				},
-				function (out, x, cb) {
+				{ nuAtts : this.nuAtts },
+				function (out, x, cb, pos) {
 					var i;
 					for (i in this.nuAtts) {
 						if (typeof this.nuAtts[i] !== 'undefined') {
 							out += ' ' + i + '="' + x[this.nuAtts[i]] + '"';
 						}
 					}
-					this.next.render( out, x, cb );
+					this.next.render( out, x, cb, pos );
 				},
 				render
 			);
@@ -209,15 +225,13 @@ var tag = function (next) {
 
 		if (this.attribs) {
 			render = getRenderLink(
-				{
-					attribs: this.attribs
-				},
-				function (out, x, cb) {
+				{ attribs: this.attribs },
+				function (out, x, cb, pos) {
 					var i;
 					for (i in this.attribs) {
 						out += ' ' + i + '="' + this.attribs[i] + '"';
 					}
-					this.next.render( out, x, cb );
+					this.next.render( out, x, cb, pos );
 				},
 				render
 			);
@@ -226,22 +240,18 @@ var tag = function (next) {
 
 	if (this.doctype) {
 		render = getRenderLink(
-			{
-				out: doctypes[ this.doctype ] + this.start
-			},
-			function (out, x, cb) {
+			{ out: doctypes[ this.doctype ] + this.start },
+			function (out, x, cb, pos) {
 				// add doctype to string
-				this.next.render( this.out , x, cb );
+				this.next.render( this.out , x, cb, pos );
 			},
 			render
 		);
 	} else {
 		render = getRenderLink(
-			{
-				start: this.start
-			},
-			function (out, x, cb) {
-				this.next.render( this.start, x, cb );
+			{ start: this.start	},
+			function (out, x, cb, pos) {
+				this.next.render( this.start, x, cb, pos );
 			},
 			render
 		);
@@ -250,11 +260,11 @@ var tag = function (next) {
 	if (this.nuif) {
 		render = getRenderLink(
 			{ nuif: this.nuif },
-			function (out, x, cb) {
+			function (out, x, cb, pos) {
 				if (x[ this.nuif ]) {
-					this.next.render( out, x, cb);
+					this.next.render( out, x, cb, pos );
 				} else {
-					cb( out, cb.i );
+					cb( out, pos );
 				}
 			},
 			render
@@ -262,15 +272,43 @@ var tag = function (next) {
 	}
 
 
+	if (this.repeat || this.repeat === '') {
+		if (this.repeat) {
+			render = getRenderLink(
+				{
+					repeat: this.repeat,
+					renderRepeat: renderRepeat
+				},
+				function (out, x, cb, pos) {
+					var y = x[ this.repeat ];
+					this.renderRepeat( this.next, out, y, cb, pos );
+				},
+				render
+			);
+		} else {
+			render = getRenderLink(
+				{
+					renderRepeat: renderRepeat
+				},
+				function (out, x, cb, pos) {
+					this.renderRepeat( this.next, out, x, cb, pos );
+				},
+				render
+			);
+		}
+	}
+
+
 	if (this.scope) {
 		render = getRenderLink(
 			{ scope: this.scope },
-			function (out, x, cb) {
-				this.next.render( '', x[ this.scope ], cb);
+			function (out, x, cb, pos) {
+				this.next.render( '', x[ this.scope ], cb, pos );
 			},
 			render
 		);
 	}
+
 	this.renders = render;
 
 	// compile children

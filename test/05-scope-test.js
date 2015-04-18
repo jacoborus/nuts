@@ -139,18 +139,28 @@ describe( 'Scope', function () {
 		});
 	});
 
-	it.skip( 'Inserts the loop only when the value evaluates to true', function (done) {
+	it( 'Inserts the loop when the value evaluates to true', function (done) {
 		var nuts = new Nuts();
-		var tmpl = '<span nut="ifloop" nu-if="color" nu-repeat="colors">hi</span>';
+		var tmpl = '<span nut="ifloop" nu-if="featured" nu-repeat="colors" nu-model="name">hi</span>';
 		nuts
 		.addNuts( tmpl )
 		.exec( function () {
-			nuts.render( 'ifloop', {color: true, colors:[1,2]}, function (err, html) {
-				expect( html ).to.equal( '<span>hi</span><span>hi</span>' );
-				nuts.render( 'ifloop', {}, function (err, html) {
-					expect( html ).to.equal( '' );
-				});
-			});
+			nuts.render(
+				'ifloop',
+				{ colors: [
+					{
+						name:'blue',
+						featured: true
+					}, {
+						name:'red',
+						featured: false
+					}
+				]},
+				function (err, html) {
+					expect( html ).to.equal( '<span>blue</span>' );
+					done();
+				}
+			);
 		});
 	});
 

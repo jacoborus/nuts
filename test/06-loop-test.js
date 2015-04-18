@@ -4,7 +4,7 @@ var expect = require('chai').expect,
 	Nuts = require('../src/Nuts.js');
 
 
-describe.skip( 'Loop:', function () {
+describe( 'Loop:', function () {
 	describe( 'Repeat:', function () {
 
 		it('render simple array loops', function (done) {
@@ -21,7 +21,7 @@ describe.skip( 'Loop:', function () {
 			});
 		});
 
-		it.skip('render loops through repeat scope array', function (done) {
+		it('render loops through repeat scope array', function (done) {
 			var nuts = new Nuts();
 			var tmpl = '<ul nut="arrLoopScoped"><li nu-repeat="nums" nu-model></li></ul>';
 			nuts
@@ -35,7 +35,7 @@ describe.skip( 'Loop:', function () {
 		});
 	});
 
-	describe.skip( 'Each:', function () {
+	describe( 'Each:', function () {
 
 		it('render simple array loops', function (done) {
 			var nuts = new Nuts();

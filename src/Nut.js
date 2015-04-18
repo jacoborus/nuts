@@ -116,7 +116,7 @@ var Nut = function (dom, nuts) {
 			this.scope = atts['nu-scope'];
 			delete atts['nu-scope'];
 		}
-		if (atts['nu-model'] || atts['nu-model'] === '') {
+		if (typeof atts['nu-model'] !== 'undefined') {
 			this.model = atts['nu-model'];
 			delete atts['nu-model'];
 		}
@@ -264,9 +264,8 @@ Nut.prototype.serie = function (data, callback, i) {
 };
 
 
-Nut.prototype.render = function (data, callback, i) {
-	callback.i = i;
-	this.renders.render( '', data, callback );
+Nut.prototype.render = function (data, callback, pos) {
+	this.renders.render( '', data, callback, pos );
 };
 
 module.exports = Nut;
