@@ -13,7 +13,6 @@ var text = function (next) {
 	next();
 };
 
-
 var comment = function (next) {
 	this.out = '<!--' + this.data + '-->';
 	this.render = function (x, next, i) {
@@ -39,54 +38,18 @@ var directive = function (next) {
 };
 
 
+
 var getRenderLink = function (fn, next, props) {
 	var r = {},
 		i;
-
 	for (i in props) {
 		r[i] = props[i];
 	}
 	r.render = fn;
 	r.next = next;
-
 	return r;
 };
 
-
-var childrenCounter = function (limit, callback) {
-	var count = 0,
-		res = [];
-
-	return function (html, i) {
-		res[i] = html;
-		if (++count === limit) {
-			callback( res.join( '' ));
-		}
-	};
-};
-
-
-
-
-var renderChildren = function (children, out, x, next, cb, pos) {
-	var count = childrenCounter( children.length, function (html) {
-		next.render( out + '>' + html, undefined, cb, pos );
-	});
-	children.forEach( function (child, i) {
-		child.render( x, count, i );
-	});
-};
-
-
-
-var renderRepeat = function (render, out, x, cb, pos) {
-	var count = childrenCounter( x.length, function (html) {
-		cb( out + html, pos );
-	});
-	x.forEach( function (y, i) {
-		render.render( '', y, count, i );
-	});
-};
 
 
 var tag = function (next) {
@@ -95,38 +58,53 @@ var tag = function (next) {
 	this.end = '<' + this.name;
 	var tagEnd =  '</' + this.name + '>';
 
+
 	if (this.voidElement) {
 		render = {
 			render: function (out, x, cb, pos) {
 				cb( out + '>', pos );
 			}
 		};
+
 	} else {
 		render = {
 			render: function (out, x, cb, pos) {
 				cb( out + tagEnd, pos );
 			}
 		};
+
 		if (typeof this.model !== 'undefined') {
 			if (!this.children) { // model, no children
 				render = getRenderLink( renders.modelNoChildren, render, {
 					model: this.model
 				});
+
 			} else { // model, children
-				render = getRenderLink( renders.modelChildren, render, {
-					model: this.model,
+				if (typeof this.each !== 'undefined') { // model, children, each
+					
+				} else { // model, children, no each
+					render = getRenderLink( renders.modelChildren, render, {
+						model: this.model,
+						children: this.children,
+						renderChildren: renders.renderChildren
+					});
+				}
+			}
+
+		} else if (this.children) { // no model, children
+			if (typeof this.each !== 'undefined') { // no model, children, each
+				
+			} else { // no model, children, no each
+				render = getRenderLink( renders.NoModelChildren, render, {
 					children: this.children,
-					renderChildren: renderChildren
+					renderChildren: renders.renderChildren
 				});
 			}
-		} else if (this.children) { // no model, children
-			render = getRenderLink( renders.NoModelChildren, render, {
-				children: this.children,
-				renderChildren: renderChildren
-			});
+
 		} else { // no model, no children
 			render = getRenderLink( renders.noModelNoChildren, render, {});
 		}
+
 
 		if (this.nuSakes) {
 			render = getRenderLink( renders.nuSakes, render, {
@@ -135,6 +113,7 @@ var tag = function (next) {
 			});
 		}
 
+
 		if (this.nuClass) {
 			render = getRenderLink( renders.nuClass, render, {
 				nuClass: this.nuClass,
@@ -142,9 +121,11 @@ var tag = function (next) {
 			});
 		}
 
+
 		if (this.nuAtts) {
 			render = getRenderLink( renders.nuAtts, render, { nuAtts : this.nuAtts });
 		}
+
 
 		if (this.attribs) {
 			render = getRenderLink( renders.attribs, render, { attribs: this.attribs });
@@ -168,10 +149,10 @@ var tag = function (next) {
 		if (this.repeat) {
 			render = getRenderLink( renders.repeatAll, render, {
 				repeat: this.repeat,
-				renderRepeat: renderRepeat
+				renderRepeat: renders.renderRepeat
 			});
 		} else {
-			render = getRenderLink( renders.repeatPart, render, { renderRepeat: renderRepeat });
+			render = getRenderLink( renders.repeatPart, render, { renderRepeat: renders.renderRepeat });
 		}
 	}
 
@@ -181,6 +162,7 @@ var tag = function (next) {
 	}
 
 	this.renders = render;
+
 
 	// compile children
 	if (this.children) {
@@ -217,3 +199,4 @@ module.exports = function (nut) {
 	}
 	return compile;
 };
+
