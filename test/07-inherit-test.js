@@ -4,7 +4,7 @@ var expect = require('chai').expect,
 	nuts = require('../index.js');
 
 
-describe.skip( 'Inherit', function () {
+describe( 'Inherit', function () {
 
 	it('extend data with parent', function (done) {
 		var tmpl = '<article nu-scope="person" nut="directExtend">' +

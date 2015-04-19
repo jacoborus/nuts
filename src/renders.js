@@ -15,6 +15,50 @@ var childrenCounter = function (limit, callback) {
 
 var renders = {};
 
+renders.inheritFull = function (out, x, cb, pos) {
+	var pre = {},
+		i;
+
+	for (i in x) {
+		pre[i] = x[i];
+	}
+
+	if (x[this.scope]) {
+		x = x[this.scope];
+	} else {
+		x = {};
+	}
+
+	for (i in pre) {
+		x[i] = pre[i];
+	}
+
+	this.next.render( '', x, cb, pos );
+};
+
+renders.inheritPart = function (out, x, cb, pos) {
+	var pre = {},
+		props, i;
+
+	props = this.inherit.split(' ');
+	for (i in props) {
+		pre[props[i]] = x[props[i]];
+	}
+
+	if (x[this.scope]) {
+		x = x[this.scope];
+	} else {
+		x = {};
+	}
+
+	for (i in pre) {
+		x[i] = pre[i];
+	}
+
+	this.next.render( '', x, cb, pos );
+};
+
+
 renders.scope = function (out, x, cb, pos) {
 	this.next.render( '', x[ this.scope ], cb, pos );
 };
@@ -232,11 +276,6 @@ renders.NoModelChildrenEachPart = function (out, x, cb, pos) {
 		count, i );
 	});
 };
-/*
-renders.NoModelChildren = function (out, x, cb, pos) {
-	this.renderChildren( this.children, out, x, this.next, cb, pos );
-};
-*/
 
 module.exports = renders;
 

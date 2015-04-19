@@ -176,10 +176,21 @@ var tag = function (next) {
 		}
 	}
 
-
-	if (this.scope) {
+	if (typeof this.inherit !== 'undefined') {
+		var inheritProps = {
+			scope: this.scope,
+			inherit: this.inherit
+		};
+		if (this.inherit === '') {
+			render = getRenderLink( renders.inheritFull, render, inheritProps );
+		} else {
+			render = getRenderLink( renders.inheritPart, render, inheritProps );
+		}
+	} else if (this.scope) {
 		render = getRenderLink( renders.scope, render, { scope: this.scope });
 	}
+
+
 
 	this.renders = render;
 
