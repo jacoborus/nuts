@@ -99,7 +99,7 @@ renders.nuSakes = function (out, x, cb, pos) {
 
 renders.modelChildren = function (out, x, cb, pos) {
 	if (typeof x[this.model] !== 'undefined') {
-		this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
+		this.next.render( out + x[ this.model ], undefined, cb, pos );
 	} else {
 		this.renderChildren( this.children, out, x, this.next, cb, pos );
 	}
@@ -107,18 +107,18 @@ renders.modelChildren = function (out, x, cb, pos) {
 
 renders.modelNoChildren = function (out, x, cb, pos) {
 	if (this.model === '') {
-		this.next.render( out + '>' + x, undefined, cb, pos );
+		this.next.render( out + x, undefined, cb, pos );
 	} else {
 		if (typeof x[this.model] !== 'undefined') {
-			this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
+			this.next.render( out + x[ this.model ], undefined, cb, pos );
 		} else {
-			this.next.render( out + '>', undefined, cb, pos );
+			this.next.render( out, undefined, cb, pos );
 		}
 	}
 };
 
 renders.noModelNoChildren = function (out, x, cb, pos) {
-	this.next.render( out + '>', undefined, cb, pos );
+	this.next.render( out + '>', x, cb, pos );
 };
 
 renders.NoModelChildren = function (out, x, cb, pos) {
@@ -128,7 +128,7 @@ renders.NoModelChildren = function (out, x, cb, pos) {
 
 renders.renderChildren = function (children, out, x, next, cb, pos) {
 	var count = childrenCounter( children.length, function (html) {
-		next.render( out + '>' + html, undefined, cb, pos );
+		next.render( out + html, undefined, cb, pos );
 	});
 	children.forEach( function (child, i) {
 		child.render( x, count, i );
@@ -147,17 +147,28 @@ renders.renderRepeat = function (render, out, x, cb, pos) {
 
 renders.modelChildrenEach = function (out, x, cb, pos) {
 	if (typeof x[this.model] !== 'undefined') {
-		this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
+		this.next.render( out + x[ this.model ], undefined, cb, pos );
 	} else {
 		this.renderChildren( this.children, out, x, this.next, cb, pos );
 	}
 };
 
-
-renders.noModelNoChildrenEach = function (out, x, cb, pos) {
-	this.next.render( out + '>', undefined, cb, pos );
+renders.NoModelChildrenEach = function (out, x, cb, pos) {
+	var count = childrenCounter( x.length, function (html) {
+		cb( out + html, pos );
+	});
+	var children = this.children,
+		renderChildren = this.renderChildren,
+		next = this.next;
+	x.forEach( function (y, i) {
+		renderChildren( children, '', y, next, count, i );
+	});
 };
-
+/*
+renders.NoModelChildren = function (out, x, cb, pos) {
+	this.renderChildren( this.children, out, x, this.next, cb, pos );
+};
+*/
 
 module.exports = renders;
 

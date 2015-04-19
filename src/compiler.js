@@ -86,6 +86,7 @@ var tag = function (next) {
 						children: this.children,
 						renderChildren: renders.renderChildren
 					});
+
 				} else { // model, children, no each
 					render = getRenderLink( renders.modelChildren, render, {
 						model: this.model,
@@ -101,6 +102,7 @@ var tag = function (next) {
 					children: this.children,
 					renderChildren: renders.renderChildren
 				});
+
 			} else { // no model, children, no each
 				render = getRenderLink( renders.NoModelChildren, render, {
 					children: this.children,
@@ -108,11 +110,10 @@ var tag = function (next) {
 				});
 			}
 
-		} else { // no model, no children
-			render = getRenderLink( renders.noModelNoChildren, render, {});
 		}
+		render = getRenderLink( renders.noModelNoChildren, render, { });
 
-
+		/* --- TAG ATTRIBUTES --- */
 		if (this.nuSakes) {
 			render = getRenderLink( renders.nuSakes, render, {
 				nuSakes: this.nuSakes,
@@ -137,6 +138,7 @@ var tag = function (next) {
 		if (this.attribs) {
 			render = getRenderLink( renders.attribs, render, { attribs: this.attribs });
 		}
+
 	}
 
 
