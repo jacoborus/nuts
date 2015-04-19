@@ -4,8 +4,8 @@ var childrenCounter = function (limit, callback) {
 	var count = 0,
 		res = [];
 
-	return function (html, i) {
-		res[i] = html;
+	return function (text, i) {
+		res[i] = text;
 		if (++count === limit) {
 			callback( res.join( '' ));
 		}
@@ -99,7 +99,7 @@ renders.nuSakes = function (out, x, cb, pos) {
 
 renders.modelChildren = function (out, x, cb, pos) {
 	if (typeof x[this.model] !== 'undefined') {
-		this.next.render( out + x[ this.model ], undefined, cb, pos );
+		this.next.render( out + x[ this.model ], x, cb, pos );
 	} else {
 		this.renderChildren( this.children, out, x, this.next, cb, pos );
 	}
@@ -107,12 +107,12 @@ renders.modelChildren = function (out, x, cb, pos) {
 
 renders.modelNoChildren = function (out, x, cb, pos) {
 	if (this.model === '') {
-		this.next.render( out + x, undefined, cb, pos );
+		this.next.render( out + x, x, cb, pos );
 	} else {
 		if (typeof x[this.model] !== 'undefined') {
-			this.next.render( out + x[ this.model ], undefined, cb, pos );
+			this.next.render( out + x[ this.model ], x, cb, pos );
 		} else {
-			this.next.render( out, undefined, cb, pos );
+			this.next.render( out, x, cb, pos );
 		}
 	}
 };
@@ -127,8 +127,8 @@ renders.NoModelChildren = function (out, x, cb, pos) {
 
 
 renders.renderChildren = function (children, out, x, next, cb, pos) {
-	var count = childrenCounter( children.length, function (html) {
-		next.render( out + html, undefined, cb, pos );
+	var count = childrenCounter( children.length, function (text) {
+		next.render( out + text, x, cb, pos );
 	});
 	children.forEach( function (child, i) {
 		child.render( x, count, i );
@@ -137,34 +137,96 @@ renders.renderChildren = function (children, out, x, next, cb, pos) {
 
 
 renders.renderRepeat = function (render, out, x, cb, pos) {
-	var count = childrenCounter( x.length, function (html) {
-		cb( out + html, pos );
+	var count = childrenCounter( x.length, function (text) {
+		cb( out + text, pos );
 	});
 	x.forEach( function (y, i) {
 		render.render( '', y, count, i );
 	});
 };
 
-renders.modelChildrenEach = function (out, x, cb, pos) {
+renders.modelChildrenEachFull = function (out, x, cb, pos) {
 	if (typeof x[this.model] !== 'undefined') {
-		this.next.render( out + x[ this.model ], undefined, cb, pos );
-	} else {
-		this.renderChildren( this.children, out, x, this.next, cb, pos );
+		return this.next.render( out + x[ this.model ], x, cb, pos );
 	}
-};
-
-renders.NoModelChildrenEach = function (out, x, cb, pos) {
 	var children = this.children,
 		renderChildren = this.renderChildren,
 		tagEnd = this.tagEnd,
-		count = childrenCounter( x.length, function (html) {
-			cb( out + html + tagEnd, pos );
+		count = childrenCounter( x.length, function (text) {
+			cb( out + text + tagEnd, pos );
 		});
 
 	x.forEach( function (y, i) {
 		renderChildren( children, '', y, {
-			render: function (html) {
-				count( html , i );
+			render: function (text) {
+				count( text , i );
+			},
+		},
+		count, i );
+	});
+};
+
+
+renders.modelChildrenEachPart = function (out, x, cb, pos) {
+	if (typeof x[this.model] !== 'undefined') {
+		return this.next.render( out + x[ this.model ], x, cb, pos );
+	}
+	var y = x[this.each];
+
+	if (!Array.isArray( y )) {
+		return cb( out + this.tagEnd, pos );
+	}
+	var children = this.children,
+		renderChildren = this.renderChildren,
+		tagEnd = this.tagEnd,
+		count = childrenCounter( y.length, function (text) {
+			cb( out + text + tagEnd, pos );
+		});
+
+	y.forEach( function (z, i) {
+		renderChildren( children, '', z, {
+			render: function (text) {
+				count( text , i );
+			},
+		},
+		count, i );
+	});
+};
+renders.NoModelChildrenEachFull = function (out, x, cb, pos) {
+	var children = this.children,
+		renderChildren = this.renderChildren,
+		tagEnd = this.tagEnd,
+		count = childrenCounter( x.length, function (text) {
+			cb( out + text + tagEnd, pos );
+		});
+
+	x.forEach( function (y, i) {
+		renderChildren( children, '', y, {
+			render: function (text) {
+				count( text , i );
+			},
+		},
+		count, i );
+	});
+};
+
+renders.NoModelChildrenEachPart = function (out, x, cb, pos) {
+	var y = x[this.each];
+
+	if (!Array.isArray( y )) {
+		return cb( out + this.tagEnd, pos );
+	}
+	var children = this.children,
+		renderChildren = this.renderChildren,
+		tagEnd = this.tagEnd,
+		count = childrenCounter( y.length, function (text) {
+			cb( out + text + tagEnd, pos );
+		});
+
+	y.forEach( function (z, i) {
+		renderChildren( children, '', z, {
+			render: function (text) {
+				count( text , i );
 			},
 		},
 		count, i );

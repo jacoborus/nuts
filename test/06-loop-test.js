@@ -55,7 +55,7 @@ describe( 'Loop:', function () {
 			});
 		});
 
-		it.skip('render loops through repeat scope array', function (done) {
+		it('render loops through repeat scope array', function (done) {
 			var nuts = new Nuts();
 			var tmpl = '<ul nu-each="nums" nut="eachLoopScoped">'+
 				'<li nu-model></li></ul>';
