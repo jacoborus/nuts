@@ -35,7 +35,7 @@ describe( 'Loop:', function () {
 		});
 	});
 
-	describe.skip( 'Each:', function () {
+	describe( 'Each:', function () {
 
 		it('render simple array loops', function (done) {
 			var nuts = new Nuts();

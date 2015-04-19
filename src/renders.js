@@ -154,14 +154,20 @@ renders.modelChildrenEach = function (out, x, cb, pos) {
 };
 
 renders.NoModelChildrenEach = function (out, x, cb, pos) {
-	var count = childrenCounter( x.length, function (html) {
-		cb( out + html, pos );
-	});
 	var children = this.children,
 		renderChildren = this.renderChildren,
-		next = this.next;
+		tagEnd = this.tagEnd,
+		count = childrenCounter( x.length, function (html) {
+			cb( out + html + tagEnd, pos );
+		});
+
 	x.forEach( function (y, i) {
-		renderChildren( children, '', y, next, count, i );
+		renderChildren( children, '', y, {
+			render: function (html) {
+				count( html , i );
+			},
+		},
+		count, i );
 	});
 };
 /*

@@ -100,7 +100,8 @@ var tag = function (next) {
 			if (typeof this.each !== 'undefined') { // no model, children, each
 				render = getRenderLink( renders.NoModelChildrenEach, render, {
 					children: this.children,
-					renderChildren: renders.renderChildren
+					renderChildren: renders.renderChildren,
+					tagEnd: tagEnd
 				});
 
 			} else { // no model, children, no each
