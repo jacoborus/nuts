@@ -120,46 +120,46 @@ var Nut = function (dom, nuts) {
 			this.model = atts['nu-model'];
 			delete atts['nu-model'];
 		}
-		if (atts['nu-inherit'] || atts['nu-inherit'] === '') {
+		if (typeof atts['nu-inherit'] !== 'undefined') {
 			this.inherit = atts['nu-inherit'];
 			delete atts['nu-inherit'];
 		}
 		// iterations
-		if (atts['nu-repeat'] || atts['nu-repeat'] === '') {
+		if (typeof atts['nu-repeat'] !== 'undefined') {
 			this.repeat = atts['nu-repeat'];
 			delete atts['nu-repeat'];
 		}
-		if (atts['nu-each'] || atts['nu-each'] === '') {
+		if (typeof atts['nu-each'] !== 'undefined') {
 			this.each = atts['nu-each'];
 			delete atts['nu-each'];
 		}
 		// conditionals
-		if (atts['nu-if'] || atts['nu-if'] === '') {
+		if (typeof atts['nu-if'] !== 'undefined') {
 			if (atts['nu-if']) {
 				this.nuif = atts['nu-if'];
 			}
 			delete atts['nu-if'];
 		}
-		if (atts['nu-unless'] || atts['nu-unless'] === '') {
+		if (typeof atts['nu-unless'] !== 'undefined') {
 			if (atts['nu-unless']) {
 				this.unless = atts['nu-unless'];
 			}
 			delete atts['nu-unless'];
 		}
 		// layouts and extensions
-		if (atts['nu-block'] || atts['nu-block'] === '') {
+		if (typeof atts['nu-block'] !== 'undefined') {
 			this.block = atts['nu-block'];
 			delete atts['nu-block'];
 		}
-		if (atts['nu-layout'] || atts['nu-layout'] === '') {
+		if (typeof atts['nu-layout'] !== 'undefined') {
 			this.layout = atts['nu-layout'];
 			delete atts['nu-layout'];
 		}
-		if (atts['nu-extend'] || atts['nu-extend'] === '') {
+		if (typeof atts['nu-extend'] !== 'undefined') {
 			this.extend = atts['nu-extend'];
 			delete atts['nu-extend'];
 		}
-		if (atts['nu-as'] || atts['nu-as'] === '') {
+		if (typeof atts['nu-as'] !== 'undefined') {
 			if (atts['nu-as']) {
 				this.as = atts['nu-as'];
 			}
@@ -167,7 +167,7 @@ var Nut = function (dom, nuts) {
 		}
 
 		// doctypes
-		if (atts['nu-doctype'] || atts['nu-doctype'] === '') {
+		if (typeof atts['nu-doctype'] !== 'undefined') {
 			// HTML5
 			if (atts['nu-doctype'] === '' || atts['nu-doctype'] === '5') {
 				this.doctype = '5';

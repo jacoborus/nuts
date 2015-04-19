@@ -1,6 +1,6 @@
 {
   "name": "nuts",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "description": "New Unique Templates System",
   "main": "index.js",
   "scripts": {
