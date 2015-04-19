@@ -145,6 +145,19 @@ renders.renderRepeat = function (render, out, x, cb, pos) {
 	});
 };
 
+renders.modelChildrenEach = function (out, x, cb, pos) {
+	if (typeof x[this.model] !== 'undefined') {
+		this.next.render( out + '>' + x[ this.model ], undefined, cb, pos );
+	} else {
+		this.renderChildren( this.children, out, x, this.next, cb, pos );
+	}
+};
+
+
+renders.noModelNoChildrenEach = function (out, x, cb, pos) {
+	this.next.render( out + '>', undefined, cb, pos );
+};
+
 
 module.exports = renders;
 

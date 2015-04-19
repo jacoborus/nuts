@@ -81,7 +81,11 @@ var tag = function (next) {
 
 			} else { // model, children
 				if (typeof this.each !== 'undefined') { // model, children, each
-					
+					render = getRenderLink( renders.modelChildrenEach, render, {
+						model: this.model,
+						children: this.children,
+						renderChildren: renders.renderChildren
+					});
 				} else { // model, children, no each
 					render = getRenderLink( renders.modelChildren, render, {
 						model: this.model,
@@ -93,7 +97,10 @@ var tag = function (next) {
 
 		} else if (this.children) { // no model, children
 			if (typeof this.each !== 'undefined') { // no model, children, each
-				
+				render = getRenderLink( renders.NoModelChildrenEach, render, {
+					children: this.children,
+					renderChildren: renders.renderChildren
+				});
 			} else { // no model, children, no each
 				render = getRenderLink( renders.NoModelChildren, render, {
 					children: this.children,

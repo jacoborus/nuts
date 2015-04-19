@@ -103,7 +103,7 @@ describe( 'Nut', function () {
 			expect( nut.nuAtts.extend ).to.not.exist;
 			// nut
 			expect( nut.nutName ).to.equal( 'specialNuTs' );
-			expect( nut.attribs.nut ).to.not.exist;
+			expect( nut.attribs ).to.not.exist;
 			// as
 			expect( nut.nuAtts.as ).to.not.exist;
 			// doctype
@@ -131,7 +131,7 @@ describe( 'Nut', function () {
 		parser( tmpl, function (err, parsed) {
 			var schema = new Nut( parsed[0] );
 			expect( err ).to.not.be.ok;
-			expect( schema.attribs.id ).to.not.exist;
+			expect( schema.attribs ).to.not.exist;
 			expect( schema.namesakes.id ).to.equal( 'id' );
 			expect( schema.nuSakes.id ).to.equal( 'nuid' );
 			expect( schema.nuAtts.id ).to.not.exist;

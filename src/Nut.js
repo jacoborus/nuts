@@ -204,8 +204,10 @@ var Nut = function (dom, nuts) {
 		// separate nuAttributes from the regular ones
 		this.nuAtts = getNuAtts( atts );
 		var ns = getNamesakes( atts, this.nuAtts );
-		this.namesakes = ns.names;
-		this.nuSakes = ns.sakes;
+		if (Object.keys( ns.names ).length) {
+			this.namesakes = ns.names;
+			this.nuSakes = ns.sakes;
+		}
 		this.booleans = getBooleans( this.nuAtts );
 	}
 
@@ -227,7 +229,9 @@ var Nut = function (dom, nuts) {
 	}
 
 	// assign attributes
-	this.attribs = atts || {};
+	if (atts && Object.keys( atts ).length) {
+		this.attribs = atts;
+	}
 
 	// add classlit to regular attributes when no nuClass
 	if (this.classes && !this.nuClass) {
