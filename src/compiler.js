@@ -1,40 +1,34 @@
 'use strict';
 
 var doctypes = require('./doctypes.json'),
-	renders = require('./renders.js'),
-	newCounter = require('./loop.js').newCounter;
+	renders = require('./renders.js');
 
 
-var text = function (next) {
-	this.out = this.data;
-	this.render = function (x, next, i) {
-		next( this.out, i );
+var text = function (elData) {
+	return function (x, callback, i) {
+		callback( elData, i );
 	};
-	next();
 };
 
-var comment = function (next) {
-	this.out = '<!--' + this.data + '-->';
-	this.render = function (x, next, i) {
-		next( this.out, i );
+var comment = function (elData) {
+	var out = '<!--' + elData + '-->';
+	return function (x, callback, i) {
+		callback( out, i );
 	};
-	next();
 };
 
-var cdata = function (next) {
-	this.out = '<!' + this.data + '>';
-	this.render = function (x, next, i) {
-		next( this.out, i );
+var cdata = function (elData) {
+	var out = '<!' + elData + '>';
+	return function (x, callback, i) {
+		callback( out, i );
 	};
-	next();
 };
 
-var directive = function (next) {
-	this.out = '<' + this.data + '>';
-	this.render = function (x, next, i) {
-		next( this.out, i );
+var directive = function (elData) {
+	var out = '<' + elData + '>';
+	return function (x, callback, i) {
+		callback( out, i );
 	};
-	next();
 };
 
 
@@ -52,14 +46,11 @@ var getRenderLink = function (fn, next, props) {
 
 
 
-var tag = function (next) {
-	var render;
-	this.start = '<' + this.name;
-	this.end = '<' + this.name;
-	var tagEnd =  '</' + this.name + '>';
+var tag = function (precompiled, children) {
+	var tagEnd =  '</' + precompiled.name + '>',
+		render, rData;
 
-
-	if (this.voidElement) {
+	if (precompiled.voidElement) {
 		render = {
 			render: function (out, x, cb, pos) {
 				cb( out + '>', pos );
@@ -73,42 +64,42 @@ var tag = function (next) {
 			}
 		};
 
-		if (typeof this.model !== 'undefined') {
-			if (!this.children) { // model, no children
+		if (typeof precompiled.model !== 'undefined') {
+			if (!children) { // model, no children
 				render = getRenderLink( renders.modelNoChildren, render, {
-					model: this.model
+					model: precompiled.model
 				});
 
 			} else { // model, children
-				if (typeof this.each !== 'undefined') { // model, children, each
-					var rData = {
-						model: this.model,
-						children: this.children,
+				if (typeof precompiled.each !== 'undefined') { // model, children, each
+					rData = {
+						model: precompiled.model,
+						children: children,
 						renderChildren: renders.renderChildren
 					};
-					if (this.each !== '') {
+					if (precompiled.each !== '') {
 						render = getRenderLink( renders.modelChildrenEachFull, render, rData );
 					} else {
 						render = getRenderLink( renders.modelChildrenEachPart, render, rData );
 					}
 				} else { // model, children, no each
 					render = getRenderLink( renders.modelChildren, render, {
-						model: this.model,
-						children: this.children,
+						model: precompiled.model,
+						children: children,
 						renderChildren: renders.renderChildren
 					});
 				}
 			}
 
-		} else if (this.children) { // no model, children
-			if (typeof this.each !== 'undefined') { // no model, children, each
-				var rData = {
-					children: this.children,
+		} else if (children) { // no model, children
+			if (typeof precompiled.each !== 'undefined') { // no model, children, each
+				rData = {
+					children: children,
 					renderChildren: renders.renderChildren,
 					tagEnd: tagEnd,
-					each: this.each
+					each: precompiled.each
 				};
-				if (this.each !== '') {
+				if (precompiled.each !== '') {
 					render = getRenderLink( renders.NoModelChildrenEachPart, render, rData );
 				} else {
 					render = getRenderLink( renders.NoModelChildrenEachFull, render, rData );
@@ -116,7 +107,7 @@ var tag = function (next) {
 
 			} else { // no model, children, no each
 				render = getRenderLink( renders.NoModelChildren, render, {
-					children: this.children,
+					children: children,
 					renderChildren: renders.renderChildren
 				});
 			}
@@ -125,50 +116,50 @@ var tag = function (next) {
 		render = getRenderLink( renders.noModelNoChildren, render, { });
 
 		/* --- TAG ATTRIBUTES --- */
-		if (this.nuSakes) {
+		if (precompiled.nuSakes) {
 			render = getRenderLink( renders.nuSakes, render, {
-				nuSakes: this.nuSakes,
-				namesakes: this.namesakes
+				nuSakes: precompiled.nuSakes,
+				namesakes: precompiled.namesakes
 			});
 		}
 
 
-		if (this.nuClass) {
+		if (precompiled.nuClass) {
 			render = getRenderLink( renders.nuClass, render, {
-				nuClass: this.nuClass,
-				classes: this.classes || ''
+				nuClass: precompiled.nuClass,
+				classes: precompiled.class || ''
 			});
 		}
 
 
-		if (this.nuAtts) {
-			render = getRenderLink( renders.nuAtts, render, { nuAtts : this.nuAtts });
+		if (precompiled.nuAtts) {
+			render = getRenderLink( renders.nuAtts, render, { nuAtts : precompiled.nuAtts });
 		}
 
 
-		if (this.attribs) {
-			render = getRenderLink( renders.attribs, render, { attribs: this.attribs });
+		if (precompiled.attribs) {
+			render = getRenderLink( renders.attribs, render, { attribs: precompiled.attribs });
 		}
 
 	}
 
 
-	if (this.doctype) {
-		render = getRenderLink( renders.doctype, render, { out: doctypes[ this.doctype ] + this.start });
+	if (precompiled.doctype) {
+		render = getRenderLink( renders.doctype, render, { out: doctypes[ precompiled.doctype ] + precompiled.start });
 	} else {
-		render = getRenderLink( renders.noDoctype, render, { start: this.start	});
+		render = getRenderLink( renders.noDoctype, render, { start: precompiled.start	});
 	}
 
 
-	if (this.nuif) {
-		render = getRenderLink( renders.nuif, render, { nuif: this.nuif });
+	if (precompiled.nuif) {
+		render = getRenderLink( renders.nuif, render, { nuif: precompiled.nuif });
 	}
 
 
-	if (typeof this.repeat !== 'undefined') {
-		if (this.repeat) {
+	if (typeof precompiled.repeat !== 'undefined') {
+		if (precompiled.repeat) {
 			render = getRenderLink( renders.repeatAll, render, {
-				repeat: this.repeat,
+				repeat: precompiled.repeat,
 				renderRepeat: renders.renderRepeat
 			});
 		} else {
@@ -176,58 +167,49 @@ var tag = function (next) {
 		}
 	}
 
-	if (typeof this.inherit !== 'undefined') {
+	if (typeof precompiled.inherit !== 'undefined') {
 		var inheritProps = {
-			scope: this.scope,
-			inherit: this.inherit
+			scope: precompiled.scope,
+			inherit: precompiled.inherit
 		};
-		if (this.inherit === '') {
+		if (precompiled.inherit === '') {
 			render = getRenderLink( renders.inheritFull, render, inheritProps );
 		} else {
 			render = getRenderLink( renders.inheritPart, render, inheritProps );
 		}
-	} else if (this.scope) {
-		render = getRenderLink( renders.scope, render, { scope: this.scope });
+	} else if (precompiled.scope) {
+		render = getRenderLink( renders.scope, render, { scope: precompiled.scope });
 	}
 
 
-
-	this.renders = render;
-
-
-	// compile children
-	if (this.children) {
-		var count = newCounter( this.children.length, next );
-		this.children.forEach( function (child) {
-			child.compile( count );
-		});
-	} else {
-		next();
-	}
+	return function (x, callback, i) {
+		render.render( '', x, callback, i );
+	};
 };
 
 
-module.exports = function (nut) {
-	var compile;
-	switch (nut.type) {
+var compiler = function (precompiled, children) {
+	// compile children
+	if (children) {
+		children.forEach( function (child) {
+			child.render = compiler( child.precompiled, child.children );
+		});
+	}
+
+	switch (precompiled.type) {
 		case 'tag':
-			compile = tag;
-			break;
+			return tag( precompiled, children );
 		case 'text':
-			compile = text;
-			break;
+			return text( precompiled.data );
 		case 'comment':
-			if (nut.data.slice(0, 7) !== '[CDATA[') {
-				compile = comment;
-				break;
+			if (precompiled.data.slice(0, 7) !== '[CDATA[') {
+				return comment( precompiled.data );
 			}
-			compile = cdata;
-			break;
+			return cdata( precompiled.data );
 
 		case 'directive':
-			compile = directive;
-			break;
+			return directive( precompiled.data );
 	}
-	return compile;
 };
 
+module.exports = compiler;

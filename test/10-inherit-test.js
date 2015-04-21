@@ -17,7 +17,7 @@ describe( 'Inherit', function () {
 			'</article>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function () {
+		.compile( function () {
 			nuts.render( 'directExtend', { person:{
 				name: 'Jacobo',
 				city: 'DF',
@@ -51,7 +51,7 @@ describe( 'Inherit', function () {
 				'</article>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function () {
+		.compile( function () {
 			nuts.render( 'selectExtend', { person:{
 				name: 'Jacobo',
 				city: 'DF',

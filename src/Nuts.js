@@ -8,6 +8,33 @@ var Nut = require('./Nut.js'),
 	newCounter = require('./loop.js').newCounter,
 	sequence = require('./loop.js').sequence;
 
+
+var compile = function (next) {
+	var keys = Object.keys( this.items ),
+	len = keys.length,
+	i;
+
+	if (!len) {
+		return next();
+	}
+
+	for (i in this.items) {
+		this.items[i].schema = this.items[i].getSchema( );
+	}
+
+	for (i in this.items) {
+		this.items[i].precompiled = this.items[i].getPrecompiled( );
+	}
+
+	for (i in this.items) {
+		this.items[i].render = this.items[i].getRender( );
+	}
+	this.compiled = true;
+	next();
+};
+
+
+
 // nuts constructor
 var Nuts = function () {
 	this.compiled = false;
@@ -20,7 +47,7 @@ var Nuts = function () {
 };
 
 /**
- * Add a new promise in te stack
+ * Add a new promise in the stack
  * @param  {Function} fn method
  * @return {Object}      nuts
  */
@@ -34,28 +61,9 @@ Nuts.prototype.then = function (fn) {
 };
 
 
-Nuts.prototype.compile = function (next) {
-	var self = this;
-	var len = Object.keys( this.items ).length;
-	if (!len) {
-		return next();
-	}
-	var count = newCounter( len, function (err) {
-		if (err) {return next( err );}
-		self.compiled = true;
-		next();
-	});
-
-	var i;
-	for (i in this.items) {
-		this.items[i].compile.call( this.items[i], count );
-	}
-};
-
 
 Nuts.prototype.exec = function (callback) {
 	callback = callback || function () {};
-	this.promises.push( this.compile );
 	var fns = this.promises.slice();
 	this.promises = [];
 	sequence( this, fns, callback );
@@ -193,6 +201,16 @@ Nuts.prototype.render = function (keyname, data, callback) {
 	}
 	callback( null, '' );
 };
+
+
+Nuts.prototype.compile = function (callback) {
+	callback = callback || function () {};
+	this.promises.push( compile );
+	var fns = this.promises.slice();
+	this.promises = [];
+	sequence( this, fns, callback );
+};
+
 
 
 Nuts.prototype.get = function (keyname) {

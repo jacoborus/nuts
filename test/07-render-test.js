@@ -10,10 +10,10 @@ describe( 'nuts.render', function () {
 		var tmpl = '<span nut="sample">hola</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'sample', {}, function (err, html) {
-				expect( err ).to.be.falsy;
+				expect( err ).to.not.be.ok;
 				expect( html ).to.equal( '<span>hola</span>' );
 				done();
 			});
@@ -26,10 +26,10 @@ describe( 'nuts.render', function () {
 		var tmpl = '<span nut="tmplComment"><!--this is a comment--></span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'tmplComment', {}, function (err, html) {
-				expect( err ).to.be.falsy;
+				expect( err ).to.not.be.ok;
 				expect( html ).to.equal(
 					'<span><!--this is a comment--></span>'
 				);
@@ -43,8 +43,8 @@ describe( 'nuts.render', function () {
 		var tmpl = '<span nut="tmplCdata"><![CDATA[ This is a CDATA block ]]></span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'tmplCdata', {}, function (err, html) {
 				expect( html ).to.equal(
 					'<span><![CDATA[ This is a CDATA block ]]></span>'
@@ -59,9 +59,9 @@ describe( 'nuts.render', function () {
 			tmpl = '<ul nut="simpleScope"><li>hola</li></ul>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
+		.compile( function (err) {
 			nuts.render( 'simpleScope', {}, function (err, html) {
-				expect( err ).to.be.falsy;
+				expect( err ).to.not.be.ok;
 				expect( html ).to.equal( '<ul><li>hola</li></ul>' );
 			});
 		});
@@ -72,8 +72,8 @@ describe( 'nuts.render', function () {
 			tmpl = '<span nut="regularAttribs" id="id" other="other"></span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'regularAttribs', {}, function (err, html) {
 				expect( html ).to.equal( '<span id="id" other="other"></span>' );
 			});
@@ -85,8 +85,8 @@ describe( 'nuts.render', function () {
 		var tmpl = '<span nut="simpleClass" class="featured"></span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'simpleClass', {}, function (err, html) {
 				expect( html ).to.equal( '<span class="featured"></span>' );
 			});
@@ -98,8 +98,8 @@ describe( 'nuts.render', function () {
 		var tmpl = '<html nut="doctype" nu-doctype></html>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'doctype', {}, function (err, html) {
 				expect( html ).to.equal( '<!DOCTYPE html><html></html>' );
 			});
@@ -127,8 +127,8 @@ describe( 'nuts.render', function () {
 			'</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'voidElements', {}, function (err, html) {
 				expect( html ).to.equal( '<span>' +
 					'<area>' +
@@ -166,8 +166,8 @@ describe( 'nuts.render', function () {
 			'</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'svgElements', {}, function (err, html) {
 				expect( html ).to.equal( '<span>' +
 					'<path>' +

@@ -11,8 +11,8 @@ describe( 'Scope', function () {
 		var tmpl = '<span nut="simpleData" nu-model="word">hi</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'simpleData', { word: 'bye' }, function (err, html) {
 				expect( html ).to.equal( '<span>bye</span>' );
 				done();
@@ -25,8 +25,8 @@ describe( 'Scope', function () {
 		var tmpl = '<ul nut="dataThrough"><li nu-model="word">hi</li></ul>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'dataThrough', { word:'bye' }, function (err, html) {
 				expect( html ).to.equal( '<ul><li>bye</li></ul>' );
 				done();
@@ -39,8 +39,8 @@ describe( 'Scope', function () {
 		var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'basicScope', { card: { name: 'Name' }}, function (err, html) {
 				expect( html ).to.equal( '<ul><li>Name</li></ul>' );
 				done();
@@ -53,7 +53,7 @@ describe( 'Scope', function () {
 		var tmpl = '<ul nut="basicScope" nu-scope="card"><li nu-model="name">no name</li></ul>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
+		.compile( function (err) {
 			nuts.render( 'basicScope', { card: { }}, function (err, html) {
 				expect( html ).to.equal( '<ul><li>no name</li></ul>' );
 				done();
@@ -69,8 +69,8 @@ describe( 'Scope', function () {
 			'</ul></div>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'doubleScope', { card: { name: 'Name' }}, function (err, html) {
 				expect( html ).to.equal( '<div><ul><li>Name</li></ul></div>' );
 				done();
@@ -83,7 +83,7 @@ describe( 'Scope', function () {
 		var tmpl = '<span nut="nuAtts" nu-id="color"></span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function () {
+		.compile( function () {
 			nuts.render( 'nuAtts', { color: 'white' }, function (err, html) {
 				expect( html ).to.equal( '<span id="white"></span>' );
 				done();
@@ -97,7 +97,7 @@ describe( 'Scope', function () {
 		var tmpl = '<span nut="nuSakes" id="id" nu-id="nuid"></span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function () {
+		.compile( function () {
 			nuts.render( 'nuSakes', {nuid: 'white'}, function (err, html) {
 				expect( html ).to.equal( '<span id="white"></span>' );
 				nuts.render( 'nuSakes', {}, function (err, html) {
@@ -114,8 +114,8 @@ describe( 'Scope', function () {
 		var tmpl = '<span nut="classData" class="featured" nu-class="nuclass">bye</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function (err) {
-			expect( err ).to.be.falsy;
+		.compile( function (err) {
+			expect( err ).to.not.be.ok;
 			nuts.render( 'classData', { nuclass: 'white' }, function (err, html) {
 				expect( html ).to.equal( '<span class="featured white">bye</span>' );
 			});
@@ -128,10 +128,11 @@ describe( 'Scope', function () {
 		var tmpl = '<span nut="nuif" nu-if="color">hi</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function () {
+		.compile( function () {
 			nuts.render( 'nuif', {color: true}, function (err, html) {
 				expect( html ).to.equal( '<span>hi</span>' );
 				nuts.render( 'nuif', {}, function (err, html) {
+					expect( err ).to.not.be.ok;
 					expect( html ).to.equal( '' );
 					done();
 				});
@@ -144,7 +145,7 @@ describe( 'Scope', function () {
 		var tmpl = '<span nut="ifloop" nu-if="featured" nu-repeat="colors" nu-model="name">hi</span>';
 		nuts
 		.addNuts( tmpl )
-		.exec( function () {
+		.compile( function () {
 			nuts.render(
 				'ifloop',
 				{ colors: [

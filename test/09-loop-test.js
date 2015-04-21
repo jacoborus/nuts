@@ -13,7 +13,7 @@ describe( 'Loop:', function () {
 			var tmpl = '<ul nut="arrLoop" nu-scope="nums"><li nu-repeat nu-model></li></ul>';
 			nuts
 			.addNuts( tmpl )
-			.exec( function () {
+			.compile( function () {
 				nuts.render( 'arrLoop', { nums: [1,2,3]}, function (err, html) {
 					expect( html ).to.equal( '<ul><li>1</li><li>2</li><li>3</li></ul>' );
 					done();
@@ -26,7 +26,7 @@ describe( 'Loop:', function () {
 			var tmpl = '<ul nut="arrLoopScoped"><li nu-repeat="nums" nu-model></li></ul>';
 			nuts
 			.addNuts( tmpl )
-			.exec( function () {
+			.compile( function () {
 				nuts.render( 'arrLoopScoped', { nums: [1,2,3]}, function (err, html) {
 					expect( html ).to.equal( '<ul><li>1</li><li>2</li><li>3</li></ul>' );
 					done();
@@ -45,7 +45,7 @@ describe( 'Loop:', function () {
 				'</ul>';
 			nuts
 			.addNuts( tmpl )
-			.exec( function () {
+			.compile( function () {
 				nuts.render( 'eachLoop', { nums: [1,2,3]}, function (err, html) {
 					expect( html ).to.equal(
 						'<ul><li>1</li><li>2</li><li>3</li></ul>'
@@ -61,7 +61,7 @@ describe( 'Loop:', function () {
 				'<li nu-model></li></ul>';
 			nuts
 			.addNuts( tmpl )
-			.exec( function () {
+			.compile( function () {
 				nuts.render( 'eachLoopScoped', { nums: [1,2,3]}, function (err, html) {
 					expect( html ).to.equal(
 						'<ul><li>1</li><li>2</li><li>3</li></ul>'

@@ -13,7 +13,29 @@ var childrenCounter = function (limit, callback) {
 };
 
 
+
 var renders = {};
+
+
+renders.renderChildren = function (children, out, x, next, cb, pos) {
+	var count = childrenCounter( children.length, function (text) {
+		next.render( out + text, x, cb, pos );
+	});
+	children.forEach( function (child, i) {
+		child.render( x, count, i );
+	});
+};
+
+
+renders.renderRepeat = function (render, out, x, cb, pos) {
+	var count = childrenCounter( x.length, function (text) {
+		cb( out + text, pos );
+	});
+	x.forEach( function (y, i) {
+		render.render( '', y, count, i );
+	});
+};
+
 
 renders.inheritFull = function (out, x, cb, pos) {
 	var pre = {},
@@ -141,14 +163,6 @@ renders.nuSakes = function (out, x, cb, pos) {
 };
 
 
-renders.modelChildren = function (out, x, cb, pos) {
-	if (typeof x[this.model] !== 'undefined') {
-		this.next.render( out + x[ this.model ], x, cb, pos );
-	} else {
-		this.renderChildren( this.children, out, x, this.next, cb, pos );
-	}
-};
-
 renders.modelNoChildren = function (out, x, cb, pos) {
 	if (this.model === '') {
 		this.next.render( out + x, x, cb, pos );
@@ -169,24 +183,12 @@ renders.NoModelChildren = function (out, x, cb, pos) {
 	this.renderChildren( this.children, out, x, this.next, cb, pos );
 };
 
-
-renders.renderChildren = function (children, out, x, next, cb, pos) {
-	var count = childrenCounter( children.length, function (text) {
-		next.render( out + text, x, cb, pos );
-	});
-	children.forEach( function (child, i) {
-		child.render( x, count, i );
-	});
-};
-
-
-renders.renderRepeat = function (render, out, x, cb, pos) {
-	var count = childrenCounter( x.length, function (text) {
-		cb( out + text, pos );
-	});
-	x.forEach( function (y, i) {
-		render.render( '', y, count, i );
-	});
+renders.modelChildren = function (out, x, cb, pos) {
+	if (typeof x[this.model] !== 'undefined') {
+		this.next.render( out + x[ this.model ], x, cb, pos );
+	} else {
+		this.renderChildren( this.children, out, x, this.next, cb, pos );
+	}
 };
 
 renders.modelChildrenEachFull = function (out, x, cb, pos) {
@@ -276,6 +278,7 @@ renders.NoModelChildrenEachPart = function (out, x, cb, pos) {
 		count, i );
 	});
 };
+
 
 module.exports = renders;
 
