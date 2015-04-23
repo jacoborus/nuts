@@ -55,8 +55,8 @@ var Schema = function (source, extension) {
 	}
 
 	if (extension.children) {
-		extension.children.forEach( function (child, i, parent) {
-			extension.children[i] = new Schema( child );
+		extension.children.forEach( function (child, i) {
+			extension.finalChildren[i] = new Schema( child );
 		});
 	}
 

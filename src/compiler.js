@@ -192,7 +192,7 @@ var compiler = function (precompiled, children) {
 	// compile children
 	if (children) {
 		children.forEach( function (child) {
-			child.render = compiler( child.precompiled, child.children );
+			child.render = compiler( child.precompiled, child.finalChildren );
 		});
 	}
 

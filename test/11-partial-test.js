@@ -4,7 +4,7 @@ var expect = require('chai').expect,
 	Nuts = require('../src/Nuts.js');
 
 
-describe.skip( 'Partial', function () {
+describe( 'Partial', function () {
 	it('render simple partials', function (done) {
 		var nuts = new Nuts();
 		var tmpl = '<ul nut="simplePartialUl"><li nu-as="simplePartialLi"></li></ul>' +
@@ -12,6 +12,7 @@ describe.skip( 'Partial', function () {
 		nuts
 		.addNuts( tmpl )
 		.compile( function () {
+			//console.log(nuts.items.simplePartialUl.children[0]);
 			nuts.render( 'simplePartialUl', {}, function (err, html) {
 				expect( html ).to.equal( '<ul><li yeah="yeah">nuts</li></ul>' );
 				done();
@@ -33,7 +34,12 @@ describe.skip( 'Partial', function () {
 					title: 'you are a nut'
 				}]
 			}, function (err, html) {
-				expect( html ).to.equal( '<section><article><h1>you are a nut</h1></article><article><h1>you are a nut</h1></article></section>' );
+				expect( html ).to.equal(
+					'<section>' +
+						'<article><h1>you are a nut</h1></article>' +
+						'<article><h1>you are a nut</h1></article>' +
+					'</section>'
+				);
 				done();
 			});
 		});

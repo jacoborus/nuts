@@ -55,8 +55,7 @@ var getBooleans = function (attribs) {
  * @param {Object} parent [description]
  */
 var Schema = function (dom) {
-	var atts = dom.attribs,
-		self = this;
+	var atts = dom.attribs;
 	this.type = dom.type;
 	this.data = dom.data;
 	this.name = dom.name;

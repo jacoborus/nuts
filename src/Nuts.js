@@ -8,29 +8,64 @@ var Nut = require('./Nut.js'),
 	newCounter = require('./loop.js').newCounter,
 	sequence = require('./loop.js').sequence;
 
+var hasSchemas = function (item) {
+	var templates = item.nuts.templates,
+		partials = item.partials,
+		i;
+
+	if (item.partial && !templates[ item.partial ].schema) {
+		return false;
+	}
+
+	for (i in partials) {
+		if (!templates[ partials[ i ]].schema ) {
+			return false;
+		}
+	}
+	return true;
+};
+
+var makeSchemas = function (list, items, callback) {
+	list.forEach( function () {
+		var key = list.shift(),
+			item = items[key];
+
+		if (hasSchemas( item )) {
+			item.schema = item.getSchema( );
+		} else {
+			list.push( key );
+		}
+	});
+
+	if (list.length) {
+		return makeSchemas( list, items, callback );
+	}
+	callback();
+};
+
 
 var compile = function (next) {
-	var keys = Object.keys( this.items ),
-	len = keys.length,
-	i;
+	var keys = Object.keys( this.templates ),
+		nut = this,
+		len = keys.length,
+		i;
 
 	if (!len) {
 		return next();
 	}
 
-	for (i in this.items) {
-		this.items[i].schema = this.items[i].getSchema( );
-	}
+	makeSchemas( keys, this.templates, function () {
 
-	for (i in this.items) {
-		this.items[i].precompiled = this.items[i].getPrecompiled( );
-	}
+		for (i in nut.items) {
+			nut.items[i].precompiled = nut.items[i].getPrecompiled( );
+		}
 
-	for (i in this.items) {
-		this.items[i].render = this.items[i].getRender( );
-	}
-	this.compiled = true;
-	next();
+		for (i in nut.items) {
+			nut.items[i].render = nut.items[i].getRender( );
+		}
+		nut.compiled = true;
+		next();
+	});
 };
 
 
@@ -44,6 +79,7 @@ var Nuts = function () {
 	this.filters = {};
 	this.promises = [];
 	this.errors = [];
+	this.templates = {};
 };
 
 /**
@@ -81,12 +117,12 @@ Nuts.prototype.getNut = function (keyname) {
  * @param {Function} next launch next function in the stack
  */
 var addNuts = function (html, next) {
-	var self = this;
+	var nuts = this;
 	this.compiled = false;
 
 	parser( html, function (err, parsed) {
 		if (err) {
-			return self.errors.push( err );
+			return nuts.errors.push( err );
 		}
 		if (!parsed.length) {
 			return next();
@@ -96,11 +132,11 @@ var addNuts = function (html, next) {
 			if (parsedNut.type === 'text' && parsedNut.data.trim() === '') {
 				return count();
 			}
-			var nut = new Nut( parsedNut, self );
+			var nut = new Nut( parsedNut, nuts );
 			if (!nut.nutName) {
 				return next( 'Nuts templates requires nut attribute' );
 			}
-			self.items[ nut.nutName ] = nut;
+			nuts.items[ nut.nutName ] = nut;
 			count();
 		});
 	});
@@ -109,21 +145,21 @@ var addNuts = function (html, next) {
 };
 
 Nuts.prototype.addNuts = function (html) {
-	var self = this;
+	var nuts = this;
 	this.promises.push( function (next) {
-		addNuts.call( self, html, next );
+		addNuts.call( nuts, html, next );
 	});
 	return this;
 };
 
 Nuts.prototype.setTemplate = function (keyname, tmpl) {
-	var self = this;
+	var nuts = this;
 	this.compiled = false;
 	this.promises.push( function (next) {
 		parser( tmpl, function (err, parsed) {
-			var nut = new Nut( parsed[0], self );
+			var nut = new Nut( parsed[0], nuts );
 			nut.name = keyname;
-			self.items[ keyname ] = nut;
+			nuts.items[ keyname ] = nut;
 			next();
 		});
 	});
@@ -139,13 +175,12 @@ Nuts.prototype.setTemplates = function (tmpls) {
 };
 
 Nuts.prototype.addFile = function (filePath) {
-	var self = this;
-	self.addNuts( fs.readFileSync( filePath, { encoding: 'utf8' }));
+	this.addNuts( fs.readFileSync( filePath, { encoding: 'utf8' }));
 	return this;
 };
 
 Nuts.prototype.addFolder = function (folderPath) {
-	var self = this;
+	var nuts = this;
 	this.compiled = false;
 	this.promises.push( function (next) {
 		// get all files inside folderPath
@@ -162,7 +197,7 @@ Nuts.prototype.addFolder = function (folderPath) {
 				if (path.extname(filePath) !== '.html') {
 					return count();
 				}
-				addNuts.call( self, fs.readFileSync( filePath, { encoding: 'utf8' }), count );
+				addNuts.call( nuts, fs.readFileSync( filePath, { encoding: 'utf8' }), count );
 			});
 		});
 	});
@@ -170,20 +205,20 @@ Nuts.prototype.addFolder = function (folderPath) {
 };
 
 Nuts.prototype.addFormat = function (keyname, formatter) {
-	var self = this;
+	var nuts = this;
 	this.compiled = false;
 	this.promises.push( function (next) {
-		self.formats[keyname] = formatter;
+		nuts.formats[keyname] = formatter;
 		next();
 	});
 	return this;
 };
 
 Nuts.prototype.addFilter = function (keyname, filter) {
-	var self = this;
+	var nuts = this;
 	this.compiled = false;
 	this.promises.push( function (next) {
-		self.filters[keyname] = filter;
+		nuts.filters[keyname] = filter;
 		next();
 	});
 	return this;
