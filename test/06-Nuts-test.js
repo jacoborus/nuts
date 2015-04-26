@@ -120,5 +120,27 @@ describe( 'API', function () {
 				done();
 			});
 		});
+
+		it('add multiple filters', function (done) {
+			var nuts = new Nuts();
+			nuts.addFilters({
+				multiFilter1: {
+					word: function (field, scope) {
+						return 'get ' + field + '!';
+					}
+				},
+				multiFilter2: {
+					word: function (field, scope) {
+						return 'get ' + field + '!';
+					}
+				}
+			})
+			.exec( function (err) {
+				expect( err ).to.not.be.ok;
+				expect( nuts.filters['multiFilter1'] ).to.be.a( 'object' );
+				expect( nuts.filters['multiFilter2'] ).to.be.a( 'object' );
+				done();
+			});
+		});
 	});
 });

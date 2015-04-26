@@ -86,6 +86,26 @@ renders.scope = function (out, x, cb, pos) {
 };
 
 
+renders.filter = function (out, x, cb, pos) {
+	var y = {},
+		i;
+
+	if (this.filter._global) {
+		x = this.filter._global(x);
+	}
+
+	for (i in x) {
+		if (!this.filter[i]) {
+			y[i] = x[i];
+		} else {
+			y[i] = this.filter[i]( x[i], x );
+		}
+	}
+	this.next.render( '', y, cb, pos );
+};
+
+
+
 renders.repeatAll = function (out, x, cb, pos) {
 	var y = x[ this.repeat ];
 	this.renderRepeat( this.next, out, y, cb, pos );
@@ -238,6 +258,7 @@ renders.modelChildrenEachPart = function (out, x, cb, pos) {
 		count, i );
 	});
 };
+
 renders.NoModelChildrenEachFull = function (out, x, cb, pos) {
 	var children = this.children,
 		renderChildren = this.renderChildren,

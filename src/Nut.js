@@ -106,7 +106,7 @@ Nut.prototype.getRender = function () {
 			nut.renders = nut.getRender();
 		});
 	}
-	return new Compiled( this.precompiled, this.finalChildren );
+	return new Compiled( this.precompiled, this.finalChildren, this.nuts.filters );
 };
 
 module.exports = Nut;

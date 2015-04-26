@@ -224,6 +224,21 @@ Nuts.prototype.addFilter = function (keyname, filter) {
 	return this;
 };
 
+
+Nuts.prototype.addFilters = function (filters) {
+	var nuts = this,
+		i;
+
+	this.compiled = false;
+
+	for (i in filters) {
+		this.addFilter( i, filters[i] );
+	}
+	return this;
+};
+
+
+
 Nuts.prototype.render = function (keyname, data, callback) {
 	if (!this.compiled) {
 		callback( 'compile before render please' );

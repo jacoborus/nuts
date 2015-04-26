@@ -46,7 +46,7 @@ var getRenderLink = function (fn, next, props) {
 
 
 
-var tag = function (precompiled, children) {
+var tag = function (precompiled, children, filters) {
 	var tagEnd =  '</' + precompiled.name + '>',
 		render, rData;
 
@@ -116,6 +116,7 @@ var tag = function (precompiled, children) {
 		render = getRenderLink( renders.noModelNoChildren, render, { });
 
 		/* --- TAG ATTRIBUTES --- */
+		// Attributes with namesakes
 		if (precompiled.nuSakes) {
 			render = getRenderLink( renders.nuSakes, render, {
 				nuSakes: precompiled.nuSakes,
@@ -123,7 +124,7 @@ var tag = function (precompiled, children) {
 			});
 		}
 
-
+		// variable classlist
 		if (precompiled.nuClass) {
 			render = getRenderLink( renders.nuClass, render, {
 				nuClass: precompiled.nuClass,
@@ -132,30 +133,31 @@ var tag = function (precompiled, children) {
 		}
 
 
+		// variable attributes
 		if (precompiled.nuAtts) {
 			render = getRenderLink( renders.nuAtts, render, { nuAtts : precompiled.nuAtts });
 		}
 
-
+		// Regular attributes
 		if (precompiled.attribs) {
 			render = getRenderLink( renders.attribs, render, { attribs: precompiled.attribs });
 		}
 
 	}
 
-
+	// Doctype
 	if (precompiled.doctype) {
 		render = getRenderLink( renders.doctype, render, { out: doctypes[ precompiled.doctype ] + precompiled.start });
 	} else {
 		render = getRenderLink( renders.noDoctype, render, { start: precompiled.start	});
 	}
 
-
+	// If
 	if (precompiled.nuif) {
 		render = getRenderLink( renders.nuif, render, { nuif: precompiled.nuif });
 	}
 
-
+	// Repeat
 	if (typeof precompiled.repeat !== 'undefined') {
 		if (precompiled.repeat) {
 			render = getRenderLink( renders.repeatAll, render, {
@@ -167,6 +169,14 @@ var tag = function (precompiled, children) {
 		}
 	}
 
+	// Filter
+	if (precompiled.nutName && filters[ precompiled.nutName ]) {
+		render = getRenderLink( renders.filter, render, {
+			filter: filters[ precompiled.nutName ]
+		});
+	}
+
+	// Inherit + Scope
 	if (typeof precompiled.inherit !== 'undefined') {
 		var inheritProps = {
 			scope: precompiled.scope,
@@ -181,24 +191,23 @@ var tag = function (precompiled, children) {
 		render = getRenderLink( renders.scope, render, { scope: precompiled.scope });
 	}
 
-
+	// Launch render
 	return function (x, callback, i) {
 		render.render( '', x, callback, i );
 	};
 };
 
 
-var compiler = function (precompiled, children) {
+var compiler = function (precompiled, children, filters) {
 	// compile children
 	if (children) {
 		children.forEach( function (child) {
-			child.render = compiler( child.precompiled, child.finalChildren );
+			child.render = compiler( child.precompiled, child.finalChildren, filters );
 		});
 	}
-
 	switch (precompiled.type) {
 		case 'tag':
-			return tag( precompiled, children );
+			return tag( precompiled, children, filters );
 		case 'text':
 			return text( precompiled.data );
 		case 'comment':
