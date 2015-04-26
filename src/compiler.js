@@ -1,227 +1,224 @@
 'use strict';
 
-var getRender = require('./render.js'),
-	partial = require('./partial.js'),
-	templates = {},
-	layouts = {},
-	filters = {};
-
-/* - Generate compiled tags - */
-var compileTag;
+var doctypes = require('./doctypes.json'),
+	renders = require('./renders.js');
 
 
-var filter = function (x, tmp) {
-	if (!tmp.filters) {
-		return x;
-	}
-	var f = tmp.filters,
-		y = {},
+var text = function (elData) {
+	return function (x, callback, i) {
+		callback( elData, i );
+	};
+};
+
+var comment = function (elData) {
+	var out = '<!--' + elData + '-->';
+	return function (x, callback, i) {
+		callback( out, i );
+	};
+};
+
+var cdata = function (elData) {
+	var out = '<!' + elData + '>';
+	return function (x, callback, i) {
+		callback( out, i );
+	};
+};
+
+var directive = function (elData) {
+	var out = '<' + elData + '>';
+	return function (x, callback, i) {
+		callback( out, i );
+	};
+};
+
+
+
+var getRenderLink = function (fn, next, props) {
+	var r = {},
 		i;
+	for (i in props) {
+		r[i] = props[i];
+	}
+	r.render = fn;
+	r.next = next;
+	return r;
+};
 
-	if (f._global) {
-		x = f._global(x);
+
+
+var tag = function (precompiled, children, filters) {
+	var tagEnd =  '</' + precompiled.name + '>',
+		render, rData;
+
+	if (precompiled.voidElement) {
+		render = {
+			render: function (out, x, cb, pos) {
+				cb( out + '>', pos );
+			}
+		};
+
+	} else {
+		render = {
+			render: function (out, x, cb, pos) {
+				cb( out + tagEnd, pos );
+			}
+		};
+
+		if (typeof precompiled.model !== 'undefined') {
+			if (!children) { // model, no children
+				render = getRenderLink( renders.modelNoChildren, render, {
+					model: precompiled.model
+				});
+
+			} else { // model, children
+				if (typeof precompiled.each !== 'undefined') { // model, children, each
+					rData = {
+						model: precompiled.model,
+						children: children,
+						renderChildren: renders.renderChildren
+					};
+					if (precompiled.each !== '') {
+						render = getRenderLink( renders.modelChildrenEachFull, render, rData );
+					} else {
+						render = getRenderLink( renders.modelChildrenEachPart, render, rData );
+					}
+				} else { // model, children, no each
+					render = getRenderLink( renders.modelChildren, render, {
+						model: precompiled.model,
+						children: children,
+						renderChildren: renders.renderChildren
+					});
+				}
+			}
+
+		} else if (children) { // no model, children
+			if (typeof precompiled.each !== 'undefined') { // no model, children, each
+				rData = {
+					children: children,
+					renderChildren: renders.renderChildren,
+					tagEnd: tagEnd,
+					each: precompiled.each
+				};
+				if (precompiled.each !== '') {
+					render = getRenderLink( renders.NoModelChildrenEachPart, render, rData );
+				} else {
+					render = getRenderLink( renders.NoModelChildrenEachFull, render, rData );
+				}
+
+			} else { // no model, children, no each
+				render = getRenderLink( renders.NoModelChildren, render, {
+					children: children,
+					renderChildren: renders.renderChildren
+				});
+			}
+
+		}
+		render = getRenderLink( renders.noModelNoChildren, render, { });
+
+		/* --- TAG ATTRIBUTES --- */
+		// Attributes with namesakes
+		if (precompiled.nuSakes) {
+			render = getRenderLink( renders.nuSakes, render, {
+				nuSakes: precompiled.nuSakes,
+				namesakes: precompiled.namesakes
+			});
+		}
+
+		// variable classlist
+		if (precompiled.nuClass) {
+			render = getRenderLink( renders.nuClass, render, {
+				nuClass: precompiled.nuClass,
+				classes: precompiled.class || ''
+			});
+		}
+
+
+		// variable attributes
+		if (precompiled.nuAtts) {
+			render = getRenderLink( renders.nuAtts, render, { nuAtts : precompiled.nuAtts });
+		}
+
+		// Regular attributes
+		if (precompiled.attribs) {
+			render = getRenderLink( renders.attribs, render, { attribs: precompiled.attribs });
+		}
+
 	}
 
-	for (i in x) {
-		if (!f[i]) {
-			y[i] = x[i];
+	// Doctype
+	if (precompiled.doctype) {
+		render = getRenderLink( renders.doctype, render, { out: doctypes[ precompiled.doctype ] + precompiled.start });
+	} else {
+		render = getRenderLink( renders.noDoctype, render, { start: precompiled.start	});
+	}
+
+	// If
+	if (precompiled.nuif) {
+		render = getRenderLink( renders.nuif, render, { nuif: precompiled.nuif });
+	}
+
+	// Repeat
+	if (typeof precompiled.repeat !== 'undefined') {
+		if (precompiled.repeat) {
+			render = getRenderLink( renders.repeatAll, render, {
+				repeat: precompiled.repeat,
+				renderRepeat: renders.renderRepeat
+			});
 		} else {
-			y[i] = f[i]( x[i], x );
-		}
-	}
-	return y;
-};
-
-var newCompiledText = function (tmp) {
-	// FIX THIS!!
-	var out = tmp.data === ' ' ? '' : tmp.data;
-	return function () {
-		return out;
-	};
-};
-
-
-var newCompiledComment = function (tmp) {
-	var out = '<!--' + tmp.data + '-->';
-	return function () {
-		return out;
-	};
-};
-
-var newCompiledCdata = function (tmp) {
-	var out = '<!' + tmp.data + '>';
-	return function () {
-		return out;
-	};
-};
-
-
-var newCompiledDirective = function (tmp) {
-	var out = '<' + tmp.data + '>';
-	return function () {
-		return out;
-	};
-};
-
-
-var newCompiledTag = function (tmp) {
-	var nuas;
-	if (tmp.as) {
-		nuas = tmp.as;
-		delete tmp.as;
-		tmp = partial( tmp, templates[nuas].schema );
-	}
-	// open and close tag strings
-	var preTag = '<' + tmp.name,
-		atts = tmp.attribs,
-		nuif = tmp.nuif;
-
-	var i, className, classAtt;
-
-	// preprint doctype
-	if (tmp.doctype) {
-		preTag = '<!DOCTYPE html>' + preTag;
-	}
-	// render regular attributes
-	for (i in atts) {
-		preTag += ' ' + i + '="' + atts[i] + '"';
-	}
-
-	// prepare className tag
-	if (tmp.class || tmp.nuClass) {
-		classAtt = ' class="';
-	}
-	if (tmp.class) {
-		className = tmp.class;
-		classAtt += className;
-		if (!tmp.nuClass) {
-			classAtt += '"';
-			preTag += classAtt;
+			render = getRenderLink( renders.repeatPart, render, { renderRepeat: renders.renderRepeat });
 		}
 	}
 
-	var	children = tmp.children;
-	for (i in children) {
-		children[i].render = compileTag( children[i] );
+	// Filter
+	if (precompiled.nutName && filters[ precompiled.nutName ]) {
+		render = getRenderLink( renders.filter, render, {
+			filter: filters[ precompiled.nutName ]
+		});
 	}
-	var str = {
-		classAtt: classAtt,
-		postTag: '</' + tmp.name + '>',
-		preTag: preTag
-	};
 
-	var render = getRender.direct( tmp, str );
-	var renderLoop = getRender.loop( render, tmp );
-	var renderLoopScope = getRender.loopScope( render, tmp );
-
-
-	/* - return compiled function - */
-
-	// with nuIf or nuUnless
-	if (nuif) {
-		// with no loop
-		if (!tmp.repeat && tmp.repeat !== '') {
-			return function (x) {
-				var y = filter( x, tmp );
-				if (y[nuif]) {
-					return render(y);
-				}
-				return '';
-			};
-		}
-		// scoped repeat loop
-		if (tmp.repeat) {
-			return function (x) {
-				var y = filter( x, tmp );
-				if (y[nuif]) {
-					return renderLoopScope(y);
-				}
-				return '';
-			};
-		}
-		// simple repeat
-		return function (x) {
-			var y = filter( x, tmp );
-			if (y[nuif]) {
-				return renderLoop(y);
-			}
-			return '';
+	// Inherit + Scope
+	if (typeof precompiled.inherit !== 'undefined') {
+		var inheritProps = {
+			scope: precompiled.scope,
+			inherit: precompiled.inherit
 		};
+		if (precompiled.inherit === '') {
+			render = getRenderLink( renders.inheritFull, render, inheritProps );
+		} else {
+			render = getRenderLink( renders.inheritPart, render, inheritProps );
+		}
+	} else if (precompiled.scope) {
+		render = getRenderLink( renders.scope, render, { scope: precompiled.scope });
 	}
 
-	// Without nuIf or nuUnless
-	// with no loop
-	if (!tmp.repeat && tmp.repeat !== '') {
-		return function (x) {
-			var y = filter( x, tmp );
-			return render(y);
-		};
-	}
-	// scoped repeat loop
-	if (tmp.repeat) {
-		return function (x) {
-			var y = filter( x, tmp );
-			return renderLoopScope(y);
-		};
-	}
-	// simple repeat
-	return function (x) {
-		var y = filter( x, tmp );
-		return renderLoop(y);
+	// Launch render
+	return function (x, callback, i) {
+		render.render( '', x, callback, i );
 	};
 };
 
-/*!
- * get a compiled template
- * @param  {Object} template template model
- * @return {Function}          compiled template
- */
-compileTag = function (template) {
-	var schema = template.schema;
-	switch (schema.type) {
+
+var compiler = function (precompiled, children, filters) {
+	// compile children
+	if (children) {
+		children.forEach( function (child) {
+			child.render = compiler( child.precompiled, child.finalChildren, filters );
+		});
+	}
+	switch (precompiled.type) {
 		case 'tag':
-			return newCompiledTag( schema );
+			return tag( precompiled, children, filters );
 		case 'text':
-			return newCompiledText( schema );
+			return text( precompiled.data );
 		case 'comment':
-			if (schema.data.slice(0, 7) !== '[CDATA[') {
-				return newCompiledComment( schema );
+			if (precompiled.data.slice(0, 7) !== '[CDATA[') {
+				return comment( precompiled.data );
 			}
-			return newCompiledCdata( schema );
+			return cdata( precompiled.data );
 
 		case 'directive':
-			return newCompiledDirective( schema );
+			return directive( precompiled.data );
 	}
 };
 
-
-var setBlocks = function (schema, blocks) {
-	var sch;
-	if (schema.block && blocks[schema.block]) {
-		sch = templates[blocks[schema.block].extend].schema;
-	} else {
-		sch = schema;
-	}
-	var i;
-	var children = sch.children;
-	for (i in children) {
-		children[i].schema = setBlocks( children[i].schema, blocks );
-	}
-	return sch;
-};
-
-var compileLayout = function (tmp) {
-	var schema = templates[tmp.layout].schema;
-	var blocks = tmp.schema.blocks;
-	var extended = setBlocks( schema, blocks );
-	return newCompiledTag( extended );
-};
-
-
-module.exports = {
-	compileTag: compileTag,
-	compileLayout: compileLayout,
-	templates: templates,
-	layouts: layouts,
-	filters: filters
-};
+module.exports = compiler;

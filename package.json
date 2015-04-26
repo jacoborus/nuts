@@ -1,12 +1,13 @@
 {
   "name": "nuts",
-  "version": "0.3.1",
+  "version": "0.23.0",
   "description": "New Unique Templates System",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "build-docs": "node ./docs/createdocs.js"
   },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git@github.com:jacoborus/nuts.git"
@@ -22,7 +23,7 @@
   },
   "dependencies": {
     "htmlparser2": "^3.8.2",
-    "recursive-readdir": "^1.2.0",
+    "recursive-readdir": "^1.2.1",
     "updox": "0.0.5"
   },
   "author": "Jacobo Tabernero - jacobo@xarope.eu",

@@ -16,28 +16,27 @@ describe( 'Inherit', function () {
 				'</div>' +
 			'</article>';
 		nuts
-		.addTemplate( tmpl )
-		.exec( function () {
-			expect(
-				nuts.render( 'directExtend', { person:{
-					name: 'Jacobo',
-					city: 'DF',
-					skills: {
-						js: 9,
-						html: 8
-					}
-
-				}})
-			).to.equal( '<article>' +
-				'<h1>Jacobo</h1>'+
-				'<div>' +
-				'<span>9</span>' +
-				'<span>DF</span>' +
-				'<span>Jacobo</span>' +
-				'</div>' +
-				'</article>'
-			);
-			done();
+		.addNuts( tmpl )
+		.compile( function () {
+			nuts.render( 'directExtend', { person:{
+				name: 'Jacobo',
+				city: 'DF',
+				skills: {
+					js: 9,
+					html: 8
+				}
+			}}, function (err, html) {
+				expect( html ).to.equal( '<article>' +
+					'<h1>Jacobo</h1>'+
+					'<div>' +
+					'<span>9</span>' +
+					'<span>DF</span>' +
+					'<span>Jacobo</span>' +
+					'</div>' +
+					'</article>'
+				);
+				done();
+			});
 		});
 	});
 
@@ -51,28 +50,27 @@ describe( 'Inherit', function () {
 					'</div>' +
 				'</article>';
 		nuts
-		.addTemplate( tmpl )
-		.exec( function () {
-			expect(
-				nuts.render( 'selectExtend', { person:{
-					name: 'Jacobo',
-					city: 'DF',
-					skills: {
-						js: 9,
-						html: 8
-					}
-
-				}})
-			).to.equal( '<article>' +
-				'<h1>Jacobo</h1>'+
-				'<div>' +
-				'<span>9</span>' +
-				'<span>DF</span>' +
-				'<span></span>' +
-				'</div>' +
-				'</article>'
-			);
-			done();
+		.addNuts( tmpl )
+		.compile( function () {
+			nuts.render( 'selectExtend', { person:{
+				name: 'Jacobo',
+				city: 'DF',
+				skills: {
+					js: 9,
+					html: 8
+				}
+			}}, function (err, html) {
+				expect( html ).to.equal( '<article>' +
+					'<h1>Jacobo</h1>'+
+					'<div>' +
+					'<span>9</span>' +
+					'<span>DF</span>' +
+					'<span></span>' +
+					'</div>' +
+					'</article>'
+				);
+				done();
+			});
 		});
 	});
 });
