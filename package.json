@@ -7,7 +7,6 @@
     "test": "mocha",
     "build-docs": "node ./docs/createdocs.js"
   },
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git@github.com:jacoborus/nuts.git"

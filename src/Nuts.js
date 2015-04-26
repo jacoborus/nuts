@@ -226,8 +226,7 @@ Nuts.prototype.addFilter = function (keyname, filter) {
 
 
 Nuts.prototype.addFilters = function (filters) {
-	var nuts = this,
-		i;
+	var i;
 
 	this.compiled = false;
 
