@@ -46,7 +46,22 @@ var getBooleans = function (attribs) {
 	return bools;
 };
 
-
+var getFormats = function (source) {
+	var model = source.model,
+		formats = [];
+	if (typeof source.model === 'undefined') {
+		return false;
+	}
+	formats = source.model.split( '|' );
+	if (formats.length === 1) {
+		return false;
+	}
+	source.model = formats.shift().trim();
+	formats.forEach( function (format, i) {
+		formats[i] = format.trim();
+	});
+	return formats;
+};
 
 /*!
  * nuts schema constructor
@@ -54,7 +69,7 @@ var getBooleans = function (attribs) {
  * @param {Object} dom    parsed HTML
  * @param {Object} parent [description]
  */
-var Schema = function (dom) {
+var Source = function (dom) {
 	var atts = dom.attribs;
 	this.type = dom.type;
 	this.data = dom.data;
@@ -171,6 +186,11 @@ var Schema = function (dom) {
 		this.booleans = getBooleans( this.nuAtts );
 	}
 
+	var formats = getFormats( this );
+	if (formats) {
+		this.formats = formats;
+	}
+
 	// assign attributes
 	if (atts && Object.keys( atts ).length) {
 		this.attribs = atts;
@@ -178,4 +198,4 @@ var Schema = function (dom) {
 };
 
 
-module.exports = Schema;
+module.exports = Source;

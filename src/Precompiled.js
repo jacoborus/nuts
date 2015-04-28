@@ -28,7 +28,7 @@ var getNamesakes = function (atts, nuAtts) {
 	return ns;
 };
 
-var Precompiled = function (schema) {
+var Precompiled = function (schema, formats) {
 	var i;
 	for (i in schema) {
 		this[i] = schema[i];
@@ -53,6 +53,12 @@ var Precompiled = function (schema) {
 	this.start = '<' + this.name;
 	if (this.class && !this.nuClass) {
 		this.start += ' class="' + this.class + '"';
+	}
+	// set formatter methods
+	if (this.formats) {
+		this.formats.forEach( function (format, i, arr) {
+			arr[i] = formats[ format ];
+		});
 	}
 };
 

@@ -60,5 +60,15 @@ describe( 'Schema:', function () {
 			});
 		expect( schema.nutName ).equals( 'test' );
 	});
+
+	it( 'extend formats', function () {
+		var schema = new Schema(
+			{
+				formats: ['test']
+			}, {
+				formats: ['other']
+			});
+		expect( schema.formats[0] ).equals( 'test' );
+	});
 });
 

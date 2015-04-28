@@ -96,7 +96,7 @@ Nut.prototype.getPrecompiled = function () {
 			nut.precompiled = nut.getPrecompiled();
 		});
 	}
-	return new Precompiled( this.schema );
+	return new Precompiled( this.schema, this.nuts.formats );
 };
 
 

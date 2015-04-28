@@ -17,7 +17,8 @@ var nuProps = [
 	'unless',
 	'checked',
 	'doctype',
-	'children'
+	'children',
+	'formats'
 ];
 
 var nuObjs = [

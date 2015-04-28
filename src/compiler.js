@@ -65,57 +65,70 @@ var tag = function (precompiled, children, filters) {
 		};
 
 		if (typeof precompiled.model !== 'undefined') {
+			rData = {
+				model: precompiled.model,
+				children: children,
+				formatters: precompiled.formats
+			};
 			if (!children) { // model, no children
-				render = getRenderLink( renders.modelNoChildren, render, {
-					model: precompiled.model
-				});
+				if (precompiled.model) {
+					render = getRenderLink( renders.partModelNoChildren, render, rData );
+				} else {
+					render = getRenderLink( renders.fullModelNoChildren, render, rData );
+				}
 
 			} else { // model, children
 				if (typeof precompiled.each !== 'undefined') { // model, children, each
-					rData = {
-						model: precompiled.model,
-						children: children,
-						renderChildren: renders.renderChildren
-					};
-					if (precompiled.each !== '') {
-						render = getRenderLink( renders.modelChildrenEachFull, render, rData );
+					if (precompiled.each) {
+						if (precompiled.model) {
+							render = getRenderLink( renders.partModelPartialEach, render, rData );
+						} else {
+							render = getRenderLink( renders.fullModelPartialEach, render, rData );
+						}
 					} else {
-						render = getRenderLink( renders.modelChildrenEachPart, render, rData );
+						if (precompiled.model) {
+							render = getRenderLink( renders.partModelFullEach, render, rData );
+						} else {
+							render = getRenderLink( renders.fullModelFullEach, render, rData );
+						}
 					}
 				} else { // model, children, no each
-					render = getRenderLink( renders.modelChildren, render, {
-						model: precompiled.model,
-						children: children,
-						renderChildren: renders.renderChildren
-					});
+					if (precompiled.model) { // partial model
+						if (precompiled.formats) {
+							render = getRenderLink( renders.partModelFormatChildren, render, rData );
+						} else {
+							render = getRenderLink( renders.partModelChildren, render, rData );
+						}
+					} else { // full model
+						if (precompiled.formats) {
+							render = getRenderLink( renders.fullModelFormatChildren, render, rData );
+						} else {
+							render = getRenderLink( renders.fullModelChildren, render, rData );
+						}
+					}
 				}
 			}
 
 		} else if (children) { // no model, children
+			rData = {
+				children: children,
+				tagEnd: tagEnd,
+				each: precompiled.each
+			};
 			if (typeof precompiled.each !== 'undefined') { // no model, children, each
-				rData = {
-					children: children,
-					renderChildren: renders.renderChildren,
-					tagEnd: tagEnd,
-					each: precompiled.each
-				};
-				if (precompiled.each !== '') {
-					render = getRenderLink( renders.NoModelChildrenEachPart, render, rData );
+				if (precompiled.each) {
+					render = getRenderLink( renders.NoModelPartialEach, render, rData );
 				} else {
-					render = getRenderLink( renders.NoModelChildrenEachFull, render, rData );
+					render = getRenderLink( renders.NoModelFullEach, render, rData );
 				}
 
 			} else { // no model, children, no each
-				render = getRenderLink( renders.NoModelChildren, render, {
-					children: children,
-					renderChildren: renders.renderChildren
-				});
+				render = getRenderLink( renders.NoModelChildren, render, rData );
 			}
-
 		}
-		render = getRenderLink( renders.noModelNoChildren, render, { });
 
-		/* --- TAG ATTRIBUTES --- */
+		render = getRenderLink( renders.closeTag, render, { });
+
 		// Attributes with namesakes
 		if (precompiled.nuSakes) {
 			render = getRenderLink( renders.nuSakes, render, {
@@ -132,7 +145,6 @@ var tag = function (precompiled, children, filters) {
 			});
 		}
 
-
 		// variable attributes
 		if (precompiled.nuAtts) {
 			render = getRenderLink( renders.nuAtts, render, { nuAtts : precompiled.nuAtts });
@@ -142,12 +154,13 @@ var tag = function (precompiled, children, filters) {
 		if (precompiled.attribs) {
 			render = getRenderLink( renders.attribs, render, { attribs: precompiled.attribs });
 		}
-
 	}
 
 	// Doctype
 	if (precompiled.doctype) {
-		render = getRenderLink( renders.doctype, render, { out: doctypes[ precompiled.doctype ] + precompiled.start });
+		render = getRenderLink( renders.doctype, render, {
+			out: doctypes[ precompiled.doctype ] + precompiled.start
+		});
 	} else {
 		render = getRenderLink( renders.noDoctype, render, { start: precompiled.start	});
 	}
@@ -161,11 +174,10 @@ var tag = function (precompiled, children, filters) {
 	if (typeof precompiled.repeat !== 'undefined') {
 		if (precompiled.repeat) {
 			render = getRenderLink( renders.repeatAll, render, {
-				repeat: precompiled.repeat,
-				renderRepeat: renders.renderRepeat
+				repeat: precompiled.repeat
 			});
 		} else {
-			render = getRenderLink( renders.repeatPart, render, { renderRepeat: renders.renderRepeat });
+			render = getRenderLink( renders.repeatPart, render, { });
 		}
 	}
 

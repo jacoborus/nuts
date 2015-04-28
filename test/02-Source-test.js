@@ -136,6 +136,17 @@ describe( 'Source', function () {
 		});
 	});
 
+	it( 'detect formatters', function (done) {
+		var tmpl = '<input nut="voidelem" nu-model=" model | format | other ">';
+		parser( tmpl, function (err, parsed) {
+			var schema0 = new Source( parsed[0], fn );
+			expect( err ).to.not.be.ok;
+			expect( schema0.formats[0] ).to.equal( 'format' );
+			expect( schema0.formats[1] ).to.equal( 'other' );
+			done();
+		});
+	});
+
 	describe( 'doctypes', function () {
 
 		it( 'detect HTML5', function (done) {

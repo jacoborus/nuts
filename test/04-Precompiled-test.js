@@ -31,4 +31,16 @@ describe( 'Precompiled', function () {
 		expect( pre.nuAtts.class ).to.equal('myclass');
 	});
 
+	it( 'add formatter methods', function () {
+		var formats = {
+			myformat: function (val) {
+				return val + '€';
+			}
+		};
+		var pre = new Precompiled({
+			formats: ['myformat']
+		}, formats );
+		expect( pre.formats[0] ).to.be.a('function');
+	});
+
 });

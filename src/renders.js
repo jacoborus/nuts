@@ -13,11 +13,7 @@ var childrenCounter = function (limit, callback) {
 };
 
 
-
-var renders = {};
-
-
-renders.renderChildren = function (children, out, x, next, cb, pos) {
+var renderChildren = function (children, out, x, next, cb, pos) {
 	var count = childrenCounter( children.length, function (text) {
 		next.render( out + text, x, cb, pos );
 	});
@@ -27,7 +23,7 @@ renders.renderChildren = function (children, out, x, next, cb, pos) {
 };
 
 
-renders.renderRepeat = function (render, out, x, cb, pos) {
+var renderRepeat = function (render, out, x, cb, pos) {
 	var count = childrenCounter( x.length, function (text) {
 		cb( out + text, pos );
 	});
@@ -36,6 +32,9 @@ renders.renderRepeat = function (render, out, x, cb, pos) {
 	});
 };
 
+
+
+var renders = {};
 
 renders.inheritFull = function (out, x, cb, pos) {
 	var pre = {},
@@ -108,11 +107,11 @@ renders.filter = function (out, x, cb, pos) {
 
 renders.repeatAll = function (out, x, cb, pos) {
 	var y = x[ this.repeat ];
-	this.renderRepeat( this.next, out, y, cb, pos );
+	renderRepeat( this.next, out, y, cb, pos );
 };
 
 renders.repeatPart = function (out, x, cb, pos) {
-	this.renderRepeat( this.next, out, x, cb, pos );
+	renderRepeat( this.next, out, x, cb, pos );
 };
 
 
@@ -183,40 +182,98 @@ renders.nuSakes = function (out, x, cb, pos) {
 };
 
 
-renders.modelNoChildren = function (out, x, cb, pos) {
-	if (this.model === '') {
-		this.next.render( out + x, x, cb, pos );
-	} else {
-		if (typeof x[this.model] !== 'undefined') {
-			this.next.render( out + x[ this.model ], x, cb, pos );
-		} else {
-			this.next.render( out, x, cb, pos );
+renders.fullModelNoChildren = function (out, x, cb, pos) {
+	if (typeof x !== 'undefined') {
+		if (this.formatters) {
+			x = this.formatters[0]( x );
 		}
+		return this.next.render( out + x, x, cb, pos );
 	}
+	this.next.render( out, x, cb, pos );
 };
 
-renders.noModelNoChildren = function (out, x, cb, pos) {
+
+renders.partModelNoChildren = function (out, x, cb, pos) {
+	var y;
+	if (typeof x[this.model] !== 'undefined') {
+		if (this.formatters) {
+			y = out + this.formatters[0]( x[ this.model ] );
+		} else {
+			y = out + x[ this.model ];
+		}
+		return this.next.render( y, x, cb, pos );
+	}
+	this.next.render( out, x, cb, pos );
+};
+
+renders.closeTag = function (out, x, cb, pos) {
 	this.next.render( out + '>', x, cb, pos );
 };
 
 renders.NoModelChildren = function (out, x, cb, pos) {
-	this.renderChildren( this.children, out, x, this.next, cb, pos );
+	renderChildren( this.children, out, x, this.next, cb, pos );
 };
 
-renders.modelChildren = function (out, x, cb, pos) {
-	if (typeof x[this.model] !== 'undefined') {
-		this.next.render( out + x[ this.model ], x, cb, pos );
-	} else {
-		this.renderChildren( this.children, out, x, this.next, cb, pos );
+renders.fullModelChildren = function (out, x, cb, pos) {
+	if (typeof x !== 'undefined') {
+		return this.next.render( out + x, x, cb, pos );
 	}
+	renderChildren( this.children, out, undefined, this.next, cb, pos );
 };
 
-renders.modelChildrenEachFull = function (out, x, cb, pos) {
+renders.fullModelFormatChildren = function (out, x, cb, pos) {
+	var y;
+	if (typeof x !== 'undefined') {
+		return this.next.render( out + this.formatters[0]( x ), x, cb, pos );
+	}
+	renderChildren( this.children, out, undefined, this.next, cb, pos );
+};
+
+renders.partModelChildren = function (out, x, cb, pos) {
 	if (typeof x[this.model] !== 'undefined') {
 		return this.next.render( out + x[ this.model ], x, cb, pos );
 	}
+	renderChildren( this.children, out, undefined, this.next, cb, pos );
+};
+
+renders.partModelFormatChildren = function (out, x, cb, pos) {
+	if (typeof x[this.model] !== 'undefined') {
+		return this.next.render( out + this.formatters[0]( x[ this.model ]), x, cb, pos );
+	}
+	renderChildren( this.children, out, undefined, this.next, cb, pos );
+};
+
+renders.fullModelFullEach = function (out, x, cb, pos) {
+	if (typeof x !== 'undefined') {
+		if (this.formatters) {
+			return this.next.render( out + this.formatters[0]( x ), undefined, cb, pos );
+		}
+		return this.next.render( out + x, undefined, cb, pos );
+	}
 	var children = this.children,
-		renderChildren = this.renderChildren,
+		tagEnd = this.tagEnd,
+		count = childrenCounter( x.length, function (text) {
+			cb( out + text + tagEnd, pos );
+		});
+
+	x.forEach( function (y, i) {
+		renderChildren( children, '', y, {
+			render: function (text) {
+				count( text , i );
+			},
+		},
+		count, i );
+	});
+};
+
+renders.partModelFullEach = function (out, x, cb, pos) {
+	if (typeof x[this.model] !== 'undefined') {
+		if (this.formatters) {
+			return this.next.render( out + this.formatters[0]( x[ this.model ]), undefined, cb, pos );
+		}
+		return this.next.render( out + x[ this.model ], undefined, cb, pos );
+	}
+	var children = this.children,
 		tagEnd = this.tagEnd,
 		count = childrenCounter( x.length, function (text) {
 			cb( out + text + tagEnd, pos );
@@ -233,9 +290,12 @@ renders.modelChildrenEachFull = function (out, x, cb, pos) {
 };
 
 
-renders.modelChildrenEachPart = function (out, x, cb, pos) {
-	if (typeof x[this.model] !== 'undefined') {
-		return this.next.render( out + x[ this.model ], x, cb, pos );
+renders.fullModelPartialEach = function (out, x, cb, pos) {
+	if (typeof x !== 'undefined') {
+		if (this.formatters) {
+			return this.next.render( out + this.formatters[0]( x ), x, cb, pos );
+		}
+		return this.next.render( out + x, x, cb, pos );
 	}
 	var y = x[this.each];
 
@@ -243,7 +303,6 @@ renders.modelChildrenEachPart = function (out, x, cb, pos) {
 		return cb( out + this.tagEnd, pos );
 	}
 	var children = this.children,
-		renderChildren = this.renderChildren,
 		tagEnd = this.tagEnd,
 		count = childrenCounter( y.length, function (text) {
 			cb( out + text + tagEnd, pos );
@@ -259,9 +318,36 @@ renders.modelChildrenEachPart = function (out, x, cb, pos) {
 	});
 };
 
-renders.NoModelChildrenEachFull = function (out, x, cb, pos) {
+renders.partModelPartialEach = function (out, x, cb, pos) {
+	if (typeof x[this.model] !== 'undefined') {
+		if (this.formatters) {
+			return this.next.render( out + this.formatters[0]( x[ this.model ]), x, cb, pos );
+		}
+		return this.next.render( out + x[ this.model ], x, cb, pos );
+	}
+	var y = x[this.each];
+
+	if (!Array.isArray( y )) {
+		return cb( out + this.tagEnd, pos );
+	}
 	var children = this.children,
-		renderChildren = this.renderChildren,
+		tagEnd = this.tagEnd,
+		count = childrenCounter( y.length, function (text) {
+			cb( out + text + tagEnd, pos );
+		});
+
+	y.forEach( function (z, i) {
+		renderChildren( children, '', z, {
+			render: function (text) {
+				count( text , i );
+			},
+		},
+		count, i );
+	});
+};
+
+renders.NoModelFullEach = function (out, x, cb, pos) {
+	var children = this.children,
 		tagEnd = this.tagEnd,
 		count = childrenCounter( x.length, function (text) {
 			cb( out + text + tagEnd, pos );
@@ -277,14 +363,13 @@ renders.NoModelChildrenEachFull = function (out, x, cb, pos) {
 	});
 };
 
-renders.NoModelChildrenEachPart = function (out, x, cb, pos) {
+renders.NoModelPartialEach = function (out, x, cb, pos) {
 	var y = x[this.each];
 
 	if (!Array.isArray( y )) {
 		return cb( out + this.tagEnd, pos );
 	}
 	var children = this.children,
-		renderChildren = this.renderChildren,
 		tagEnd = this.tagEnd,
 		count = childrenCounter( y.length, function (text) {
 			cb( out + text + tagEnd, pos );

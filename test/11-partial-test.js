@@ -12,7 +12,6 @@ describe( 'Partial', function () {
 		nuts
 		.addNuts( tmpl )
 		.compile( function () {
-			//console.log(nuts.items.simplePartialUl.children[0]);
 			nuts.render( 'simplePartialUl', {}, function (err, html) {
 				expect( html ).to.equal( '<ul><li yeah="yeah">nuts</li></ul>' );
 				done();
