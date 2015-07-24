@@ -26,7 +26,6 @@ New unique templates system
         - [attribute](#attribute)
         - [class](#class)
         - [data-attribute](#data-attribute)
-        - [x-attribute](#x-attribute)
         - [boolean attributes](#boolean-attributes)
     - [Doctypes](#doctypes)
     - [Layouts](#layouts)
@@ -425,23 +424,6 @@ Sets the value of an data-[attribute] as nud-[attribute] model.
 ```js
 nuts.render( 'demoD', { identif: 'veryNuts' });
 // => '<span data-language="veryNuts"></span>'
-```
-
-
-<a name="x-attribute"></a>
-#### `nux-[attribute]`
-
-Sets the value of an `x-[attribute]` as `nux-[attribute]` model.
-
-**Example:**
-
-```html
-<span nux-language="identif" nut="demoX"></span>
-```
-
-```js
-nuts.render( 'demoX', { identif: 'veryNuts' });
-// => '<span x-language="veryNuts"></span>'
 ```
 
 
