@@ -4,8 +4,9 @@
   "description": "New Unique Templates System",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "build-docs": "node ./docs/createdocs.js"
+    "test": "eslint src && mocha",
+    "build-docs": "node ./docs/createdocs.js",
+    "eslint": "eslint src"
   },
   "repository": {
     "type": "git",
@@ -17,13 +18,14 @@
     "engine"
   ],
   "devDependencies": {
-    "chai": "^1.10.0",
-    "mocha": "^2.0.1"
+    "chai": "^3.2.0",
+    "eslint": "^0.24.1",
+    "mocha": "^2.2.5",
+    "updox": "0.0.5"
   },
   "dependencies": {
-    "htmlparser2": "^3.8.2",
-    "recursive-readdir": "^1.2.1",
-    "updox": "0.0.5"
+    "htmlparser2": "^3.8.3",
+    "recursive-readdir": "^1.2.1"
   },
   "author": "Jacobo Tabernero - jacobo@xarope.eu",
   "license": "MIT",
