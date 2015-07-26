@@ -71,7 +71,7 @@ var Source = function (dom) {
   this.type = dom.type
   this.data = dom.data
   this.name = dom.name
-  this.voidElement = voidElements[ this.name ] || false
+  this.voidElement = voidElements.indexOf(this.name) < 0 ? false : true
   // assign attributes
   if (atts) {
     // separate special attributes

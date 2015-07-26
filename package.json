@@ -1,7 +1,7 @@
 {
   "name": "nuts",
-  "version": "0.24.0",
-  "description": "New Unique Templates System",
+  "version": "0.25.0",
+  "description": "New Unified Templates System",
   "main": "index.js",
   "scripts": {
     "test": "eslint src && mocha",
