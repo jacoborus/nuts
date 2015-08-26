@@ -6,60 +6,6 @@ const voidElements = require('./void-elements.json'),
 
 voidElements.forEach(e => voidElementsSet.add(e))
 
-/* - Utils */
-// detect if an attribute name is prefixed with nu-
-const startsWithNu = str => str.startsWith('nu-')
-
-// remove nu- prefix from attribute
-const getNuProp = prop => prop.substr(3, prop.length)
-
-// move attributes with nu- prefix to nuAtts property
-const extractNuAtts = function (atts) {
-  let nuAtts = {},
-      c = 0
-
-  for (let i in atts) {
-    if (startsWithNu(i)) {
-      nuAtts[getNuProp(i)] = atts[i]
-      delete atts[i]
-      c++
-    }
-  }
-  if (c > 0) {
-    return nuAtts
-  }
-  return false
-}
-
-// return a object with all boolean attributes
-// and remove them from regular ones
-const extractBooleans = function (attribs) {
-  let bools = {}
-
-  for (let i in attribs) {
-    if (i.endsWith('-')) {
-      bools[i.slice(0, -1)] = attribs[i]
-      delete attribs[i]
-    }
-  }
-  return bools
-}
-
-const getFormats = function (source) {
-  let formats = []
-  // skip operation if tag has no model
-  if (typeof source.model === 'undefined') {
-    return false
-  }
-  formats = source.model.split('|')
-  if (formats.length === 1) {
-    return false
-  }
-  source.model = formats.shift().trim()
-  formats.forEach((format, i) => formats[i] = format.trim())
-  return formats
-}
-
 /*!
  * nuts schema constructor
  * Get nuts formatted dom object info from parsed html
@@ -179,15 +125,46 @@ const getSource = function (dom) {
       src.doctype = false
     }
 
-    // separate nut specific attributes from the regular ones
-    src.nuAtts = extractNuAtts(atts)
+    // move attributes with nu- prefix to nuAtts property
+    src.nuAtts = {}
+    for (let i in atts) {
+      // detect if an attribute name is prefixed with nu-
+      if (i.startsWith('nu-')) {
+        // add nut specific attribute to nuAtts (without nu- prefix)
+        src.nuAtts[i.substr(3, i.length)] = atts[i]
+        delete atts[i]
+      }
+    }
+
     // separate boolean attributes from the regular ones
-    src.booleans = extractBooleans(src.nuAtts)
+    // and remove them from regular ones
+    src.booleans = {}
+    for (let i in src.nuAtts) {
+      if (i.endsWith('-')) {
+        src.booleans[i.slice(0, -1)] = src.nuAtts[i]
+        delete src.nuAtts[i]
+      }
+    }
   }
 
-  let formats = getFormats(src)
-  if (formats) {
-    src.formats = formats
+  {
+    // add formatters from piped model
+    let formats = []
+    // skip operation if tag has no model
+    if (typeof src.model !== 'undefined') {
+      formats = src.model.split('|')
+      // skip if tag has not formatters
+      if (formats.length !== 1) {
+        // extract model from formatters
+        src.model = formats.shift().trim()
+        // remove extra spaces form formatter names
+        formats.forEach((format, i) => formats[i] = format.trim())
+        // add formatters to source
+        if (formats) {
+          src.formats = formats
+        }
+      }
+    }
   }
 
   // assign attributes
