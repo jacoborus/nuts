@@ -4,9 +4,9 @@
   "description": "New Unified Templates System",
   "main": "index.js",
   "scripts": {
-    "test": "eslint src && mocha",
+    "test": "eslint index.js src && mocha --harmony_arrow_functions",
     "build-docs": "node ./docs/createdocs.js",
-    "eslint": "eslint src"
+    "eslint": "eslint index.js src"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
   ],
   "devDependencies": {
     "chai": "^3.2.0",
-    "eslint": "^0.24.1",
+    "eslint": "^1.2.1",
     "mocha": "^2.2.5",
     "updox": "0.0.5"
   },

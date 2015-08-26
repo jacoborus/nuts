@@ -1,4 +1,4 @@
-'use stric';
-var Nuts = require('./src/Nuts.js');
+'use stric'
+const Nuts = require('./src/Nuts.js')
 
-module.exports = new Nuts();
+module.exports = new Nuts()

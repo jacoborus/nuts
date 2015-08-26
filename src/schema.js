@@ -1,6 +1,6 @@
 'use strict'
 
-var nuProps = [
+const nuProps = [
   'voidElement',
   'nutName',
   'type',
@@ -21,14 +21,13 @@ var nuProps = [
   'formats'
 ]
 
-var nuObjs = [
+const nuObjs = [
   'attribs',
   'nuAtts'
 ]
 
-var Schema = function (source, extension) {
-  var i
-
+const getSchema = function (source, extension) {
+  let schema = {}
   extension = Object.create(extension || null)
   delete extension.nutName
 
@@ -38,31 +37,32 @@ var Schema = function (source, extension) {
     }
   })
 
-  nuObjs.forEach(function (o) {
+  nuObjs.forEach(o => {
     if (source[o]) {
       extension[o] = extension[o] || {}
-      for (i in source[o]) {
+      for (let i in source[o]) {
         extension[o][i] = source[o][i]
       }
     }
   })
 
   if (source.nutName) {
-    this.nutName = source.nutName
+    schema.nutName = source.nutName
   }
   if (source.children) {
     extension.children = source.children
   }
 
   if (extension.children) {
-    extension.children.forEach(function (child, i) {
-      extension.finalChildren[i] = new Schema(child)
+    extension.children.forEach((child, i) => {
+      extension.finalChildren[i] = getSchema(child)
     })
   }
 
-  for (i in extension) {
-    this[i] = extension[i]
+  for (let i in extension) {
+    schema[i] = extension[i]
   }
+  return schema
 }
 
-module.exports = Schema
+module.exports = getSchema

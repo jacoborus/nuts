@@ -1,8 +1,8 @@
 'use strict'
 
-var childrenCounter = function (limit, callback) {
-  var count = 0,
-    res = []
+const childrenCounter = function (limit, callback) {
+  let count = 0,
+      res = []
 
   return function (text, i) {
     res[i] = text
@@ -12,31 +12,24 @@ var childrenCounter = function (limit, callback) {
   }
 }
 
-var renderChildren = function (children, out, x, next, cb, pos) {
-  var count = childrenCounter(children.length, function (text) {
+const renderChildren = function (children, out, x, next, cb, pos) {
+  let count = childrenCounter(children.length, text => {
     next.render(out + text, x, cb, pos)
   })
-  children.forEach(function (child, i) {
-    child.render(x, count, i)
-  })
+  children.forEach((child, i) => child.render(x, count, i))
 }
 
-var renderRepeat = function (render, out, x, cb, pos) {
-  var count = childrenCounter(x.length, function (text) {
-    cb(out + text, pos)
-  })
-  x.forEach(function (y, i) {
-    render.render('', y, count, i)
-  })
+const renderRepeat = function (render, out, x, cb, pos) {
+  let count = childrenCounter(x.length, text => cb(out + text, pos))
+  x.forEach((y, i) => render.render('', y, count, i))
 }
 
-var renders = {}
+const renders = {}
 
 renders.inheritFull = function (out, x, cb, pos) {
-  var pre = {},
-      i
+  let pre = {}
 
-  for (i in x) {
+  for (let i in x) {
     pre[i] = x[i]
   }
 
@@ -46,7 +39,7 @@ renders.inheritFull = function (out, x, cb, pos) {
     x = {}
   }
 
-  for (i in pre) {
+  for (let i in pre) {
     x[i] = pre[i]
   }
 
@@ -54,11 +47,10 @@ renders.inheritFull = function (out, x, cb, pos) {
 }
 
 renders.inheritPart = function (out, x, cb, pos) {
-  var pre = {},
-    props, i
+  let pre = {},
+      props = this.inherit.split(' ')
 
-  props = this.inherit.split(' ')
-  for (i in props) {
+  for (let i in props) {
     pre[props[i]] = x[props[i]]
   }
 
@@ -68,7 +60,7 @@ renders.inheritPart = function (out, x, cb, pos) {
     x = {}
   }
 
-  for (i in pre) {
+  for (let i in pre) {
     x[i] = pre[i]
   }
 
@@ -80,14 +72,13 @@ renders.scope = function (out, x, cb, pos) {
 }
 
 renders.filter = function (out, x, cb, pos) {
-  var y = {},
-    i
+  let y = {}
 
   if (this.filter._global) {
     x = this.filter._global(x)
   }
 
-  for (i in x) {
+  for (let i in x) {
     if (!this.filter[i]) {
       y[i] = x[i]
     } else {
@@ -98,7 +89,7 @@ renders.filter = function (out, x, cb, pos) {
 }
 
 renders.repeatAll = function (out, x, cb, pos) {
-  var y = x[ this.repeat ]
+  let y = x[ this.repeat ]
   renderRepeat(this.next, out, y, cb, pos)
 }
 
@@ -124,16 +115,14 @@ renders.noDoctype = function (out, x, cb, pos) {
 }
 
 renders.attribs = function (out, x, cb, pos) {
-  var i
-  for (i in this.attribs) {
+  for (let i in this.attribs) {
     out += ' ' + i + '="' + this.attribs[i] + '"'
   }
   this.next.render(out, x, cb, pos)
 }
 
 renders.nuAtts = function (out, x, cb, pos) {
-  var i
-  for (i in this.nuAtts) {
+  for (let i in this.nuAtts) {
     if (typeof this.nuAtts[i] !== 'undefined') {
       out += ' ' + i + '="' + x[this.nuAtts[i]] + '"'
     }
@@ -142,7 +131,7 @@ renders.nuAtts = function (out, x, cb, pos) {
 }
 
 renders.nuClass = function (out, x, cb, pos) {
-  var pre = ' class="'
+  let pre = ' class="'
   if (typeof x[this.nuClass] !== 'undefined') {
     if (this.classes) {
       out += pre + this.classes + ' ' + x[this.nuClass] + '"'
@@ -158,8 +147,7 @@ renders.nuClass = function (out, x, cb, pos) {
 }
 
 renders.nuSakes = function (out, x, cb, pos) {
-  var i
-  for (i in this.nuSakes) {
+  for (let i in this.nuSakes) {
     if (typeof x[this.nuSakes[i]] !== 'undefined') {
       out += ' ' + i + '="' + x[this.nuSakes[i]] + '"'
     } else {
@@ -180,7 +168,7 @@ renders.fullModelNoChildren = function (out, x, cb, pos) {
 }
 
 renders.partModelNoChildren = function (out, x, cb, pos) {
-  var y
+  let y
   if (typeof x[this.model] !== 'undefined') {
     if (this.formatters) {
       y = out + this.formatters[0](x[this.model])
@@ -235,17 +223,13 @@ renders.fullModelFullEach = function (out, x, cb, pos) {
     }
     return this.next.render(out + x, undefined, cb, pos)
   }
-  var children = this.children,
-    tagEnd = this.tagEnd,
-    count = childrenCounter(x.length, function (text) {
-      cb(out + text + tagEnd, pos)
-    })
+  let children = this.children,
+      tagEnd = this.tagEnd,
+      count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
 
-  x.forEach(function (y, i) {
+  x.forEach((y, i) => {
     renderChildren(children, '', y, {
-      render: function (text) {
-        count(text, i)
-      }
+      render: text => count(text, i)
     },
     count, i)
   })
@@ -258,17 +242,13 @@ renders.partModelFullEach = function (out, x, cb, pos) {
     }
     return this.next.render(out + x[ this.model ], undefined, cb, pos)
   }
-  var children = this.children,
-    tagEnd = this.tagEnd,
-    count = childrenCounter(x.length, function (text) {
-      cb(out + text + tagEnd, pos)
-    })
+  let children = this.children,
+      tagEnd = this.tagEnd,
+      count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
 
-  x.forEach(function (y, i) {
+  x.forEach((y, i) => {
     renderChildren(children, '', y, {
-      render: function (text) {
-        count(text, i)
-      }
+      render: text => count(text, i)
     },
     count, i)
   })
@@ -281,22 +261,18 @@ renders.fullModelPartialEach = function (out, x, cb, pos) {
     }
     return this.next.render(out + x, x, cb, pos)
   }
-  var y = x[this.each]
+  let y = x[this.each]
 
   if (!Array.isArray(y)) {
     return cb(out + this.tagEnd, pos)
   }
-  var children = this.children,
-    tagEnd = this.tagEnd,
-    count = childrenCounter(y.length, function (text) {
-      cb(out + text + tagEnd, pos)
-    })
+  let children = this.children,
+      tagEnd = this.tagEnd,
+      count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
 
-  y.forEach(function (z, i) {
+  y.forEach((z, i) => {
     renderChildren(children, '', z, {
-      render: function (text) {
-        count(text, i)
-      }
+      render: text => count(text, i)
     },
     count, i)
   })
@@ -309,61 +285,49 @@ renders.partModelPartialEach = function (out, x, cb, pos) {
     }
     return this.next.render(out + x[ this.model ], x, cb, pos)
   }
-  var y = x[this.each]
+  let y = x[this.each]
 
   if (!Array.isArray(y)) {
     return cb(out + this.tagEnd, pos)
   }
-  var children = this.children,
-    tagEnd = this.tagEnd,
-    count = childrenCounter(y.length, function (text) {
-      cb(out + text + tagEnd, pos)
-    })
+  let children = this.children,
+      tagEnd = this.tagEnd,
+      count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
 
-  y.forEach(function (z, i) {
+  y.forEach((z, i) => {
     renderChildren(children, '', z, {
-      render: function (text) {
-        count(text, i)
-      }
+      render: text => count(text, i)
     },
     count, i)
   })
 }
 
 renders.NoModelFullEach = function (out, x, cb, pos) {
-  var children = this.children,
-    tagEnd = this.tagEnd,
-    count = childrenCounter(x.length, function (text) {
-      cb(out + text + tagEnd, pos)
-    })
+  let children = this.children,
+      tagEnd = this.tagEnd,
+      count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
 
-  x.forEach(function (y, i) {
+  x.forEach((y, i) => {
     renderChildren(children, '', y, {
-      render: function (text) {
-        count(text, i)
-      }
+      render: text => count(text, i)
     },
     count, i)
   })
 }
 
 renders.NoModelPartialEach = function (out, x, cb, pos) {
-  var y = x[this.each]
+  let y = x[this.each]
 
   if (!Array.isArray(y)) {
     return cb(out + this.tagEnd, pos)
   }
-  var children = this.children,
-    tagEnd = this.tagEnd,
-    count = childrenCounter(y.length, function (text) {
-      cb(out + text + tagEnd, pos)
-    })
+  let children = this.children,
+      tagEnd = this.tagEnd,
+      count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
 
-  y.forEach(function (z, i) {
+  y.forEach((z, i) => {
     renderChildren(children, '', z, {
-      render: function (text) {
-        count(text, i)
-      }
+      render: text => count(text, i)
     },
     count, i)
   })

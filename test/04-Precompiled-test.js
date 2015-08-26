@@ -1,12 +1,11 @@
-/*globals describe it*/
 'use strict'
 
 var expect = require('chai').expect,
-  Precompiled = require('../src/Precompiled.js')
+    getPrecompiled = require('../src/precompiled.js')
 
 describe('Precompiled', function () {
   it('separate regular attributes with nuNamesake', function () {
-    var pre = new Precompiled({
+    var pre = getPrecompiled({
       attribs: {
         id: 'id'
       },
@@ -23,7 +22,7 @@ describe('Precompiled', function () {
   })
 
   it('add nuClass to regular attributes when no classlist', function () {
-    var pre = new Precompiled({
+    var pre = getPrecompiled({
       nuClass: 'myclass'
     })
     expect(pre.nuAtts.class).to.equal('myclass')
@@ -35,7 +34,7 @@ describe('Precompiled', function () {
         return val + '€'
       }
     }
-    var pre = new Precompiled({
+    var pre = getPrecompiled({
       formats: ['myformat']
     }, formats)
     expect(pre.formats[0]).to.be.a('function')

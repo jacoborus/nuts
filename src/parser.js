@@ -1,6 +1,6 @@
 'use strict'
 
-var htmlparser = require('htmlparser2')
+const htmlparser = require('htmlparser2')
 
 /*!
  * generate a template object with its source and model as properties
@@ -8,12 +8,12 @@ var htmlparser = require('htmlparser2')
  * @param  {Function} callback Signature: error, parsedHTML
  */
 module.exports = function (src, callback) {
-  var handler = new htmlparser.DomHandler(function (error, dom) {
-    if (error) { return callback(error)}
+  let handler = new htmlparser.DomHandler((error, dom) => {
+    if (error) return callback(error)
     callback(null, dom)
   }, { normalizeWhitespace: true })
 
-  var parser = new htmlparser.Parser(handler)
+  let parser = new htmlparser.Parser(handler)
   parser.write(src)
   parser.done()
 }

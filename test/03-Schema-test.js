@@ -1,17 +1,16 @@
-/*globals describe it*/
 'use strict'
 
 var expect = require('chai').expect,
-  Schema = require('../src/Schema.js')
+    getSchema = require('../src/schema.js')
 
 describe('Schema:', function () {
   it('has same properties as source when no extension passed', function () {
-    var schema = new Schema({ scope: 'test' })
+    var schema = getSchema({ scope: 'test' })
     expect(schema.scope).equals('test')
   })
 
   it('extend nut properties', function () {
-    var schema = new Schema(
+    var schema = getSchema(
       {
         scope: 'test'
       }, {
@@ -23,7 +22,7 @@ describe('Schema:', function () {
   })
 
   it('extend attributes and variable attributes', function () {
-    var schema = new Schema(
+    var schema = getSchema(
       {
         attribs: {
           other: 'src'
@@ -48,7 +47,7 @@ describe('Schema:', function () {
   })
 
   it('extend nutName', function () {
-    var schema = new Schema(
+    var schema = getSchema(
       {
         nutName: 'test'
       }, {
@@ -58,7 +57,7 @@ describe('Schema:', function () {
   })
 
   it('extend formats', function () {
-    var schema = new Schema(
+    var schema = getSchema(
       {
         formats: ['test']
       }, {

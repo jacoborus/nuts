@@ -1,4 +1,3 @@
-/*globals describe it*/
 'use strict'
 
 var expect = require('chai').expect,
@@ -13,6 +12,7 @@ describe('Scope', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('simpleData', { word: 'bye' }, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span>bye</span>')
         done()
       })
@@ -26,7 +26,8 @@ describe('Scope', function () {
     .addNuts(tmpl)
     .compile(function (err) {
       expect(err).to.not.be.ok
-      nuts.render('dataThrough', { word:'bye' }, function (err, html) {
+      nuts.render('dataThrough', { word: 'bye' }, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<ul><li>bye</li></ul>')
         done()
       })
@@ -41,6 +42,7 @@ describe('Scope', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('basicScope', { card: { name: 'Name' }}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<ul><li>Name</li></ul>')
         done()
       })
@@ -53,8 +55,10 @@ describe('Scope', function () {
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
+      expect(err).to.not.be.ok
       nuts.render('basicScope', { card: { }}, function (err, html) {
         expect(html).to.equal('<ul><li>no name</li></ul>')
+        expect(err).to.not.be.ok
         done()
       })
     })
@@ -63,14 +67,15 @@ describe('Scope', function () {
   it('render data passed through multiple scopes', function (done) {
     var nuts = new Nuts()
     var tmpl = '<div  nut="doubleScope">' +
-      '<ul nu-scope="card">'+
-      '<li nu-model="name">no name</li>'+
+      '<ul nu-scope="card">' +
+      '<li nu-model="name">no name</li>' +
       '</ul></div>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('doubleScope', { card: { name: 'Name' }}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<div><ul><li>Name</li></ul></div>')
         done()
       })
@@ -85,6 +90,7 @@ describe('Scope', function () {
     .compile(function () {
       nuts.render('nuAtts', { color: 'white' }, function (err, html) {
         expect(html).to.equal('<span id="white"></span>')
+        expect(err).to.not.be.ok
         done()
       })
     })
@@ -97,8 +103,10 @@ describe('Scope', function () {
     .addNuts(tmpl)
     .compile(function () {
       nuts.render('nuSakes', {nuid: 'white'}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span id="white"></span>')
         nuts.render('nuSakes', {}, function (err, html) {
+          expect(err).to.not.be.ok
           expect(html).to.equal('<span id="id"></span>')
           done()
         })
@@ -114,6 +122,7 @@ describe('Scope', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('classData', { nuclass: 'white' }, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span class="featured white">bye</span>')
       })
     })
@@ -126,6 +135,7 @@ describe('Scope', function () {
     .addNuts(tmpl)
     .compile(function () {
       nuts.render('nuif', {color: true}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span>hi</span>')
         nuts.render('nuif', {}, function (err, html) {
           expect(err).to.not.be.ok
@@ -146,14 +156,15 @@ describe('Scope', function () {
         'ifloop',
         { colors: [
           {
-            name:'blue',
+            name: 'blue',
             featured: true
           }, {
-            name:'red',
+            name: 'red',
             featured: false
           }
         ]},
         function (err, html) {
+          expect(err).to.not.be.ok
           expect(html).to.equal('<span>blue</span>')
           done()
         }

@@ -3,7 +3,6 @@
 var expect = require('chai').expect,
   Nuts = require('../src/Nuts.js')
 
-
 describe('nuts.render', function () {
   it('render simple tag and text nodes', function (done) {
     var nuts = new Nuts()
@@ -19,7 +18,6 @@ describe('nuts.render', function () {
       })
     })
   })
-
 
   it('render comment nodes', function (done) {
     var nuts = new Nuts()
@@ -46,6 +44,7 @@ describe('nuts.render', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('tmplCdata', {}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal(
           '<span><![CDATA[ This is a CDATA block ]]></span>'
        )
@@ -60,6 +59,7 @@ describe('nuts.render', function () {
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
+      expect(err).to.not.be.ok
       nuts.render('simpleScope', {}, function (err, html) {
         expect(err).to.not.be.ok
         expect(html).to.equal('<ul><li>hola</li></ul>')
@@ -75,6 +75,7 @@ describe('nuts.render', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('regularAttribs', {}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span id="id" other="other"></span>')
       })
     })
@@ -89,6 +90,7 @@ describe('nuts.render', function () {
       expect(err).to.not.be.ok
       nuts.render('simpleClass', {}, function (err, html) {
         expect(html).to.equal('<span class="featured"></span>')
+        expect(err).to.not.be.ok
       })
     })
   })
@@ -101,6 +103,7 @@ describe('nuts.render', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('doctype', {}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<!DOCTYPE html><html></html>')
       })
     })
@@ -129,7 +132,9 @@ describe('nuts.render', function () {
     .addNuts(tmpl)
     .compile(function (err) {
       expect(err).to.not.be.ok
+      expect(err).to.not.be.ok
       nuts.render('voidElements', {}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span>' +
           '<area>' +
           '<base>' +
@@ -169,6 +174,7 @@ describe('nuts.render', function () {
     .compile(function (err) {
       expect(err).to.not.be.ok
       nuts.render('svgElements', {}, function (err, html) {
+        expect(err).to.not.be.ok
         expect(html).to.equal('<span>' +
           '<path>' +
           '<circle>' +

@@ -1,8 +1,7 @@
-/*globals describe it*/
 'use strict'
 
 var expect = require('chai').expect,
-  Nuts = require('../src/Nuts.js')
+    Nuts = require('../src/Nuts.js')
 
 describe('Constructor', function () {
   var nuts = new Nuts()

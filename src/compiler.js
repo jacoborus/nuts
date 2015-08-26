@@ -1,39 +1,39 @@
 'use strict'
 
-var doctypes = require('./doctypes.json'),
-  renders = require('./renders.js')
+const doctypes = require('./doctypes.json'),
+      renders = require('./renders.js')
 
-var text = function (elData) {
+const text = function (elData) {
   return function (x, callback, i) {
     callback(elData, i)
   }
 }
 
-var comment = function (elData) {
-  var out = '<!--' + elData + '-->'
+const comment = function (elData) {
+  let out = `<!--${elData}-->`
   return function (x, callback, i) {
     callback(out, i)
   }
 }
 
-var cdata = function (elData) {
-  var out = '<!' + elData + '>'
+const cdata = function (elData) {
+  let out = `<!${elData}>`
   return function (x, callback, i) {
     callback(out, i)
   }
 }
 
-var directive = function (elData) {
-  var out = '<' + elData + '>'
+const directive = function (elData) {
+  let out = `<!${elData}>`
   return function (x, callback, i) {
     callback(out, i)
   }
 }
 
-var getRenderLink = function (fn, next, props) {
-  var r = {},
-    i
-  for (i in props) {
+const getRenderLink = function (fn, next, props) {
+  let r = {}
+
+  for (let i in props) {
     r[i] = props[i]
   }
   r.render = fn
@@ -41,9 +41,9 @@ var getRenderLink = function (fn, next, props) {
   return r
 }
 
-var tag = function (precompiled, children, filters) {
-  var tagEnd = '</' + precompiled.name + '>',
-    render, rData
+const tag = function (precompiled, children, filters) {
+  let tagEnd = '</' + precompiled.name + '>',
+      render, rData
 
   if (precompiled.voidElement) {
     render = {
@@ -181,7 +181,7 @@ var tag = function (precompiled, children, filters) {
 
   // Inherit + Scope
   if (typeof precompiled.inherit !== 'undefined') {
-    var inheritProps = {
+    let inheritProps = {
       scope: precompiled.scope,
       inherit: precompiled.inherit
     }
@@ -200,7 +200,7 @@ var tag = function (precompiled, children, filters) {
   }
 }
 
-var compiler = function (precompiled, children, filters) {
+const compiler = function (precompiled, children, filters) {
   // compile children
   if (children) {
     children.forEach(function (child) {
