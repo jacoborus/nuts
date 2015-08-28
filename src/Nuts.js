@@ -8,28 +8,33 @@ const Nut = require('./Nut.js'),
       newCounter = require('./loop.js').newCounter,
       sequence = require('./loop.js').sequence
 
-const hasSchemas = function (item) {
+// TODO: rethink this
+const readyForGetSchema = function (item) {
   let templates = item.nuts.templates,
       partials = item.partials
 
+  // check if a template has partial and its schema ready
   if (item.partial && !templates[ item.partial ].schema) {
-    return false
+    return true
   }
 
-  for (let i in partials) {
-    if (!templates[ partials[ i ]].schema) {
-      return false
-    }
-  }
-  return true
+  // check if any partial of the tag has not its schema ready
+  return partials ? !partials.some(partial => !templates[partial].schema) : true
 }
 
+/*!
+ * Make all schemas of nuts
+ *
+ * @param {array} list names of the templates
+ * @param {object} items all the templates
+ * @param {function} callback
+ */
 const makeSchemas = function (list, items, callback) {
-  list.forEach(function () {
+  list.forEach(() => {
     let key = list.shift(),
         item = items[key]
 
-    if (hasSchemas(item)) {
+    if (readyForGetSchema(item)) {
       item.schema = item.getSchema()
     } else {
       list.push(key)
@@ -42,20 +47,22 @@ const makeSchemas = function (list, items, callback) {
   callback()
 }
 
+// compile action
 const compile = function (next) {
   let keys = Object.keys(this.templates),
-      nut = this,
-      len = keys.length
+      nut = this
 
-  if (!len) {
-    return next()
-  }
+  // if (!keys.length) {
+  //   return next()
+  // }
 
   makeSchemas(keys, this.templates, function () {
+    // optimize for compilation
     for (let i in nut.items) {
       nut.items[i].precompiled = nut.items[i].getPrecompiled()
     }
 
+    // compile all optimized schemas
     for (let i in nut.items) {
       nut.items[i].render = nut.items[i].getRender()
     }
@@ -109,8 +116,10 @@ class Nuts {
     this.errors = []
     this.templates = {}
   }
+
   /**
    * Add a new promise in the stack
+   *
    * @param  {Function} fn method
    * @return {Object}      nuts
    */
@@ -123,6 +132,11 @@ class Nuts {
     return this
   }
 
+  /**
+   * Run all promises and then the callback. exec method does not compile templates
+   *
+   * @param {function} callback actions to do after promises
+   */
   exec (callback) {
     callback = callback || function () {}
     let fns = this.promises.slice()
@@ -140,10 +154,17 @@ class Nuts {
     return this
   }
 
+  /**
+   * Add template from given string to templates archive with defined keyname
+   *
+   * @param {string} keyname tag nutName
+   * @param {string} tmpl html tag
+   * @return {object} nuts
+   */
   setTemplate (keyname, tmpl) {
     let nuts = this
     this.compiled = false
-    this.promises.push(function (next) {
+    this.promises.push(next => {
       parser(tmpl, function (err, parsed) {
         if (err) throw err
         let nut = new Nut(parsed[0], nuts)
@@ -155,6 +176,21 @@ class Nuts {
     return this
   }
 
+  /**
+   * Add templates from object to templates archive
+   *
+   * Example:
+   *
+   * ```
+   * nuts.setTemplates({
+   *   'aTemplateName': '<span>a single template</span>',
+   *   'otherTemplateName': '<span>other template</span>'
+   * })
+   * ```
+   *
+   * @param {object} tmpls dictionary with nut names as keynames and html templates as values
+   * @return {object} nuts
+   */
   setTemplates (tmpls) {
     for (let i in tmpls) {
       this.setTemplate(i, tmpls[i])
@@ -162,11 +198,33 @@ class Nuts {
     return this
   }
 
+  /**
+   * Add file with templates to templates archive
+   *
+   * ```
+   * nuts.addFile('path/to/file.html')
+   * ```
+   *
+   * @param {string} filePath relative route to file with templates
+   * @return {object} nuts
+   */
   addFile (filePath) {
     this.addNuts(fs.readFileSync(filePath, { encoding: 'utf8' }))
     return this
   }
 
+  /**
+   * addFolder
+   *
+   * Add all templates from files within a folder
+   *
+   * ```
+   * nuts.addFile('path/to/file.html')
+   * ```
+   *
+   * @param {string} folderPath path to folder containing nuts template files
+   * @return {object} nuts
+   */
   addFolder (folderPath) {
     let nuts = this
     this.compiled = false
@@ -192,6 +250,16 @@ class Nuts {
     return this
   }
 
+  /**
+   * Assign a formatter to formatters archive
+   *
+   * ```
+   * nuts.addFormat('meters', (input) => input + ' meters')
+   * ```
+   * @param {string} keyname name of the formatter
+   * @param {function} formatter
+   * @return {object} nuts
+   */
   addFormat (keyname, formatter) {
     let nuts = this
     this.compiled = false
@@ -202,6 +270,12 @@ class Nuts {
     return this
   }
 
+  /**
+   * Assign a filter to a nut template
+   *
+   * @param {string} keyname nut template name
+   * @param {} formatter
+   */
   addFilter (keyname, filter) {
     let nuts = this
     this.compiled = false
@@ -212,6 +286,20 @@ class Nuts {
     return this
   }
 
+  /**
+   * Assing filters to nut templates
+   * For more info see [filters]()
+   *
+   * ```
+   * nuts.addFilters({
+   *   aTemplateName: aFilter,
+   *   otherTemplatename: otherFilter
+   * })
+   * ```
+   *
+   * @param {object} filters dictionary with template names as keys and filters as values
+   * @return {object} nuts
+   */
   addFilters (filters) {
     this.compiled = false
 
@@ -221,6 +309,13 @@ class Nuts {
     return this
   }
 
+  /**
+   * Render a template
+   *
+   * @param {string} keyname name of template for rendering
+   * @param {object} data context
+   * @param {function} callback signature: err, renderedTemplate
+   */
   render (keyname, data, callback) {
     if (!this.compiled) {
       callback('compile before render please')
@@ -234,6 +329,11 @@ class Nuts {
     callback(null, '')
   }
 
+  /**
+   * Compile all the nuts template objects.
+   *
+   * @param {function} callback signature: err
+   */
   compile (callback) {
     callback = callback || function () {}
     this.promises.push(compile)
@@ -242,6 +342,12 @@ class Nuts {
     sequence(this, fns, callback)
   }
 
+  /**
+   * Get a nut template object
+   *
+   * @param {string} keyname name of a template
+   * @return {object} nut template object
+   */
   get (keyname) {
     return this.items[ keyname ]
   }

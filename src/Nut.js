@@ -6,7 +6,10 @@ const getSource = require('./source.js'),
       getPrecompiled = require('./precompiled.js'),
       Compiled = require('./compiler.js')
 
-// ramdom hash generator
+/*!
+ * random hash generator
+ * @return {string} random hash
+ */
 const uniid = function () {
   let s4 = function () {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -76,6 +79,7 @@ class Nut {
         })
         this.finalChildren = partial.children
       } else {
+        // TODO: is this working?
         this.finalChildren = this.children
       }
       return getSchema(this.source, this.nuts.items[ this.partial ].schema)
@@ -98,6 +102,11 @@ class Nut {
     return getPrecompiled(this.schema, this.nuts.formats)
   }
 
+  /**
+   * Compiles the tag and return the compiled function
+   *
+   * @return {object} compiled tag
+   */
   getRender () {
     if (this.finalChildren) {
       this.finalChildren.forEach(function (nut) {
