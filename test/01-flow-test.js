@@ -1,10 +1,10 @@
 'use strict'
 
-var expect = require('chai').expect,
-    Nuts = require('../src/Nuts.js')
+const expect = require('chai').expect,
+      Nuts = require('../src/Nuts.js')
 
 describe('Constructor', function () {
-  var nuts = new Nuts()
+  let nuts = new Nuts()
   it('init nuts with constructor', function () {
     expect(nuts.Nuts).to.be.a('function')
   })
@@ -18,10 +18,10 @@ describe('Constructor', function () {
 
 describe('flow', function () {
   describe('nuts.then', function () {
-    var nuts = new Nuts()
+    let nuts = new Nuts()
 
     it('add a function to promises list', function (done) {
-      var myFn = function () {}
+      let myFn = function () {}
       myFn.test = 1
       nuts
       .then(myFn)
@@ -31,14 +31,14 @@ describe('flow', function () {
   })
 
   describe('nuts.exec', function () {
-    var nuts = new Nuts()
+    let nuts = new Nuts()
 
     it('executes promises list and then callback', function (done) {
-      var control = false
-      var myFn = function (next) {
+      let control = false
+      let myFn = function (next) {
         next()
       }
-      var myFn2 = function (next) {
+      let myFn2 = function (next) {
         control = true
         next()
       }

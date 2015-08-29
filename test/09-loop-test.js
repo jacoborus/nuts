@@ -1,14 +1,14 @@
 'use strict'
 
-var expect = require('chai').expect,
-  Nuts = require('../src/Nuts.js')
+const expect = require('chai').expect,
+      Nuts = require('../src/Nuts.js')
 
 describe('Loop:', function () {
   describe('Repeat:', function () {
     it('render simple array loops', function (done) {
-      var nuts = new Nuts()
+      let nuts = new Nuts()
 
-      var tmpl = '<ul nut="arrLoop" nu-scope="nums"><li nu-repeat nu-model></li></ul>'
+      let tmpl = '<ul nut="arrLoop" nu-scope="nums"><li nu-repeat nu-model></li></ul>'
       nuts
       .addNuts(tmpl)
       .compile(function () {
@@ -21,8 +21,8 @@ describe('Loop:', function () {
     })
 
     it('render loops through repeat scope array', function (done) {
-      var nuts = new Nuts()
-      var tmpl = '<ul nut="arrLoopScoped"><li nu-repeat="nums" nu-model></li></ul>'
+      let nuts = new Nuts()
+      let tmpl = '<ul nut="arrLoopScoped"><li nu-repeat="nums" nu-model></li></ul>'
       nuts
       .addNuts(tmpl)
       .compile(function () {
@@ -37,9 +37,9 @@ describe('Loop:', function () {
 
   describe('Each:', function () {
     it('render simple array loops', function (done) {
-      var nuts = new Nuts()
+      let nuts = new Nuts()
 
-      var tmpl = '<ul nut="eachLoop" nu-scope="nums" nu-each>' +
+      let tmpl = '<ul nut="eachLoop" nu-scope="nums" nu-each>' +
           '<li nu-model></li>' +
         '</ul>'
       nuts
@@ -56,8 +56,8 @@ describe('Loop:', function () {
     })
 
     it('render loops through repeat scope array', function (done) {
-      var nuts = new Nuts()
-      var tmpl = '<ul nu-each="nums" nut="eachLoopScoped">'
+      let nuts = new Nuts()
+      let tmpl = '<ul nu-each="nums" nut="eachLoopScoped">'
         + '<li nu-model></li></ul>'
       nuts
       .addNuts(tmpl)

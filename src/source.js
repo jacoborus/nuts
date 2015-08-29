@@ -2,7 +2,7 @@
 
 // create a Set with all self-closing html tags
 const voidElements = require('./void-elements.json'),
-      voidElementsSet = new Set
+      voidElementsSet = new Set()
 
 voidElements.forEach(e => voidElementsSet.add(e))
 

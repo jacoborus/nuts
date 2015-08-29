@@ -1,11 +1,11 @@
 'use strict'
 
-var expect = require('chai').expect,
-  nuts = require('../index.js')
+const expect = require('chai').expect,
+      nuts = require('../index.js')
 
 describe('Inherit', function () {
   it('extend data with parent', function (done) {
-    var tmpl = '<article nu-scope="person" nut="directExtend">' +
+    let tmpl = '<article nu-scope="person" nut="directExtend">' +
         '<h1 nu-model="name"></h1>' +
         '<div nu-scope="skills" nu-inherit>' +
           '<span nu-model="js"></span>' +
@@ -40,7 +40,7 @@ describe('Inherit', function () {
   })
 
   it('extend by select properties from parent', function (done) {
-    var tmpl = '<article nu-scope="person" nut="selectExtend">' +
+    let tmpl = '<article nu-scope="person" nut="selectExtend">' +
           '<h1 nu-model="name"></h1>' +
           '<div nu-scope="skills" nu-inherit="city">' +
             '<span nu-model="js"></span>' +

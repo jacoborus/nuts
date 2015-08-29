@@ -31,8 +31,8 @@ const getSchema = function (source, extension) {
   extension = Object.create(extension || null)
   delete extension.nutName
 
-  nuProps.forEach(function (prop) {
-    if (typeof source[prop] !== 'undefined') {
+  nuProps.forEach(prop => {
+    if (source[prop] !== undefined) {
       extension[prop] = source[prop]
     }
   })

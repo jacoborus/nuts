@@ -1,12 +1,12 @@
 'use strict'
 
-var expect = require('chai').expect,
-  Nuts = require('../src/Nuts.js')
+const expect = require('chai').expect,
+      Nuts = require('../src/Nuts.js')
 
 describe('nuts.render', function () {
   it('render simple tag and text nodes', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nut="sample">hola</span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nut="sample">hola</span>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -20,8 +20,8 @@ describe('nuts.render', function () {
   })
 
   it('render comment nodes', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nut="tmplComment"><!--this is a comment--></span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nut="tmplComment"><!--this is a comment--></span>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -37,8 +37,8 @@ describe('nuts.render', function () {
   })
 
   it('render CDATA nodes', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nut="tmplCdata"><![CDATA[ This is a CDATA block ]]></span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nut="tmplCdata"><![CDATA[ This is a CDATA block ]]></span>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -54,8 +54,8 @@ describe('nuts.render', function () {
   })
 
   it('render through parent scope', function () {
-    var nuts = new Nuts(),
-      tmpl = '<ul nut="simpleScope"><li>hola</li></ul>'
+    let nuts = new Nuts(),
+        tmpl = '<ul nut="simpleScope"><li>hola</li></ul>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -68,8 +68,8 @@ describe('nuts.render', function () {
   })
 
   it('render regular attributes', function () {
-    var nuts = new Nuts(),
-      tmpl = '<span nut="regularAttribs" id="id" other="other"></span>'
+    let nuts = new Nuts(),
+        tmpl = '<span nut="regularAttribs" id="id" other="other"></span>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -82,8 +82,8 @@ describe('nuts.render', function () {
   })
 
   it('render simple className', function () {
-    var nuts = new Nuts()
-    var tmpl = '<span nut="simpleClass" class="featured"></span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nut="simpleClass" class="featured"></span>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -96,8 +96,8 @@ describe('nuts.render', function () {
   })
 
   it('render doctype', function () {
-    var nuts = new Nuts()
-    var tmpl = '<html nut="doctype" nu-doctype></html>'
+    let nuts = new Nuts()
+    let tmpl = '<html nut="doctype" nu-doctype></html>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
@@ -110,8 +110,8 @@ describe('nuts.render', function () {
   })
 
   it('render void elements', function () {
-    var nuts = new Nuts()
-    var tmpl = '<span nut="voidElements">' +
+    let nuts = new Nuts()
+    let tmpl = '<span nut="voidElements">' +
         '<area>' +
         '<base>' +
         '<br>' +
@@ -157,8 +157,8 @@ describe('nuts.render', function () {
   })
 
   it('render SVG elements', function () {
-    var nuts = new Nuts()
-    var tmpl = '<span nut="svgElements">' +
+    let nuts = new Nuts()
+    let tmpl = '<span nut="svgElements">' +
         '<path>' +
         '<circle>' +
         '<ellipse>' +

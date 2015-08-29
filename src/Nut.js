@@ -30,6 +30,7 @@ class Nut {
     if (this.source.nutName) {
       this.nutName = this.source.nutName
     }
+
     // assign children dom elements
     if (dom.children && dom.children.length) {
       // create children container in schema
@@ -41,24 +42,19 @@ class Nut {
           children.push(new Nut(child, nuts))
         }
       })
-      // remove children container if empty
-      if (!this.children.length) {
-        delete this.children
-      } else {
-        // add children partials to nut.partials
-        this.children.forEach(function (child) {
-          if (child.partials) {
-            child.partials.forEach(function (partial) {
-              partials.push(partial)
-            })
-          }
-          if (child.partial) {
-            partials.push(child.partial)
-          }
-        })
-        if (partials.length) {
-          this.partials = partials
+      // add children partials to nut.partials
+      this.children.forEach(function (child) {
+        if (child.partials) {
+          child.partials.forEach(function (partial) {
+            partials.push(partial)
+          })
         }
+        if (child.partial) {
+          partials.push(child.partial)
+        }
+      })
+      if (partials.length) {
+        this.partials = partials
       }
     }
 

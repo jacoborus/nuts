@@ -1,29 +1,29 @@
 'use strict'
 
-var expect = require('chai').expect,
-  parser = require('../src/parser.js'),
-  getSource = require('../src/source.js')
+const expect = require('chai').expect,
+      parser = require('../src/parser.js'),
+      getSource = require('../src/source.js')
 
-var fn = function () {}
+const fn = function () {}
 
 describe('Source', function () {
   it('contain parent nuts, render, compile and name', function (done) {
-    var tmpl = '<ul nut="simpleTag"></ul>'
+    let tmpl = '<ul nut="simpleTag"></ul>'
 
     parser(tmpl, (err, parsed) => {
       if (err) throw err
-      var source = getSource(parsed[0], 5)
+      let source = getSource(parsed[0], 5)
       expect(source.nutName).to.equal('simpleTag')
       done()
     })
   })
 
   it('generate a nut from template string', function (done) {
-    var tmpl = '<ul nut="simpleTag"></ul>'
+    let tmpl = '<ul nut="simpleTag"></ul>'
 
     parser(tmpl, function (err, parsed) {
       if (err) throw err
-      var source = getSource(parsed[0])
+      let source = getSource(parsed[0])
       expect(source.type).to.equal('tag')
       expect(source.name).to.equal('ul')
       done()
@@ -31,7 +31,7 @@ describe('Source', function () {
   })
 
   it('distribute special nuts attributes', function (done) {
-    var tmpl = '<span' +
+    let tmpl = '<span' +
       ' class="class"' +
       ' nu-class="nuclass"' +
       // scopes
@@ -60,7 +60,7 @@ describe('Source', function () {
       '</span>'
 
     parser(tmpl, function (err, parsed) {
-      var source = getSource(parsed[0], fn)
+      let source = getSource(parsed[0], fn)
 
       expect(err).to.not.be.ok
       // class
@@ -115,9 +115,9 @@ describe('Source', function () {
   })
 
   it('add boolean attributes to schema', function (done) {
-    var tmpl = '<span nut="booleans" nu-bool-="myboolean">hello</span>'
+    let tmpl = '<span nut="booleans" nu-bool-="myboolean">hello</span>'
     parser(tmpl, function (err, parsed) {
-      var schema = getSource(parsed[0], fn)
+      let schema = getSource(parsed[0], fn)
       expect(err).to.not.be.ok
       expect(schema.booleans.bool).to.equal('myboolean')
       done()
@@ -125,9 +125,9 @@ describe('Source', function () {
   })
 
   it('detect void elements', function (done) {
-    var tmpl = '<input nut="voidelem">'
+    let tmpl = '<input nut="voidelem">'
     parser(tmpl, function (err, parsed) {
-      var schema0 = getSource(parsed[0], fn)
+      let schema0 = getSource(parsed[0], fn)
       expect(err).to.not.be.ok
       expect(schema0.voidElement).to.equal(true)
       done()
@@ -135,9 +135,9 @@ describe('Source', function () {
   })
 
   it('detect formatters', function (done) {
-    var tmpl = '<input nut="voidelem" nu-model=" model | format | other ">'
+    let tmpl = '<input nut="voidelem" nu-model=" model | format | other ">'
     parser(tmpl, function (err, parsed) {
-      var schema0 = getSource(parsed[0], fn)
+      let schema0 = getSource(parsed[0], fn)
       expect(err).to.not.be.ok
       expect(schema0.formats[0]).to.equal('format')
       expect(schema0.formats[1]).to.equal('other')
@@ -147,10 +147,10 @@ describe('Source', function () {
 
   describe('doctypes', function () {
     it('detect HTML5', function (done) {
-      var tmpl = '<html nu-doctype></html><html nu-doctype="5"></html>'
+      let tmpl = '<html nu-doctype></html><html nu-doctype="5"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0], fn),
-          schema1 = getSource(parsed[1], fn)
+        let schema0 = getSource(parsed[0], fn),
+            schema1 = getSource(parsed[1], fn)
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('5')
         expect(schema1.doctype).to.equal('5')
@@ -159,10 +159,10 @@ describe('Source', function () {
     })
     // HTML4
     it('detect HTML4 Strict', function (done) {
-      var tmpl = '<html nu-doctype=4></html><html nu-doctype="4s"></html>'
+      let tmpl = '<html nu-doctype=4></html><html nu-doctype="4s"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0]),
-          schema1 = getSource(parsed[1])
+        let schema0 = getSource(parsed[0]),
+            schema1 = getSource(parsed[1])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('4s')
         expect(schema1.doctype).to.equal('4s')
@@ -170,18 +170,18 @@ describe('Source', function () {
       })
     })
     it('detect HTML4 Transactional', function (done) {
-      var tmpl = '<html nu-doctype="4t"></html>'
+      let tmpl = '<html nu-doctype="4t"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0])
+        let schema0 = getSource(parsed[0])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('4t')
         done()
       })
     })
     it('detect HTML4 Frameset', function (done) {
-      var tmpl = '<html nu-doctype="4f"></html>'
+      let tmpl = '<html nu-doctype="4f"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0])
+        let schema0 = getSource(parsed[0])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('4f')
         done()
@@ -189,10 +189,10 @@ describe('Source', function () {
     })
     // XHTML1.0
     it('detect XHTML1.0 Strict', function (done) {
-      var tmpl = '<html nu-doctype="x"></html><html nu-doctype="xs"></html>'
+      let tmpl = '<html nu-doctype="x"></html><html nu-doctype="xs"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0]),
-          schema1 = getSource(parsed[1])
+        let schema0 = getSource(parsed[0]),
+            schema1 = getSource(parsed[1])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('xs')
         expect(schema1.doctype).to.equal('xs')
@@ -200,18 +200,18 @@ describe('Source', function () {
       })
     })
     it('detect XHTML1.0 Transactional', function (done) {
-      var tmpl = '<html nu-doctype="xt"></html>'
+      let tmpl = '<html nu-doctype="xt"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0])
+        let schema0 = getSource(parsed[0])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('xt')
         done()
       })
     })
     it('detect XHTML1.0 Frameset', function (done) {
-      var tmpl = '<html nu-doctype="xf"></html>'
+      let tmpl = '<html nu-doctype="xf"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0])
+        let schema0 = getSource(parsed[0])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('xf')
         done()
@@ -219,10 +219,10 @@ describe('Source', function () {
     })
     // XHTML1.1
     it('detect XHTML1.1', function (done) {
-      var tmpl = '<html nu-doctype="xx"></html><html nu-doctype="11"></html>'
+      let tmpl = '<html nu-doctype="xx"></html><html nu-doctype="11"></html>'
       parser(tmpl, function (err, parsed) {
-        var schema0 = getSource(parsed[0]),
-          schema1 = getSource(parsed[1])
+        let schema0 = getSource(parsed[0]),
+            schema1 = getSource(parsed[1])
         expect(err).to.not.be.ok
         expect(schema0.doctype).to.equal('xx')
         expect(schema1.doctype).to.equal('xx')

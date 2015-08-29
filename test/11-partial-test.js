@@ -1,11 +1,11 @@
 'use strict'
-var expect = require('chai').expect,
-  Nuts = require('../src/Nuts.js')
+const expect = require('chai').expect,
+      Nuts = require('../src/Nuts.js')
 
 describe('Partial', function () {
   it('render simple partials', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<ul nut="simplePartialUl"><li nu-as="simplePartialLi"></li></ul>' +
+    let nuts = new Nuts()
+    let tmpl = '<ul nut="simplePartialUl"><li nu-as="simplePartialLi"></li></ul>' +
       '<li nut="simplePartialLi" yeah="yeah">nuts</li>'
     nuts
     .addNuts(tmpl)
@@ -19,7 +19,7 @@ describe('Partial', function () {
   })
 
   it('render complex partials', function (done) {
-    var nuts = new Nuts()
+    let nuts = new Nuts()
     nuts
     .addFile('./test/assets/complex-partial.html')
     .compile(function () {

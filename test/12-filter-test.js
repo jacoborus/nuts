@@ -1,16 +1,16 @@
 'use strict'
 
-var expect = require('chai').expect,
-  nuts = require('../index.js')
+const expect = require('chai').expect,
+      nuts = require('../index.js')
 
 describe('Filters', function () {
   describe('Filter', function () {
     it('Filter simple data', function (done) {
-      var tmpl = '<span nu-model="word" nut="simpleFilter"></span>'
+      let tmpl = '<span nu-model="word" nut="simpleFilter"></span>'
       nuts
       .addNuts(tmpl)
       .addFilter('simpleFilter', {
-        word: function (field, scope) {
+        word: function (field) {
           return 'get ' + field + '!'
         }
       })
@@ -26,14 +26,14 @@ describe('Filters', function () {
     })
 
     it('Filter looped data', function (done) {
-      var loopedFilterTmpl = '<ul nut="loopedFilter">' +
+      let loopedFilterTmpl = '<ul nut="loopedFilter">' +
           '<li nu-repeat="nums" nu-model></li>' +
         '</ul>'
       nuts
       .addNuts(loopedFilterTmpl)
       .addFilter('loopedFilter', {
-        nums: function (val, scope) {
-          var i
+        nums: function (val) {
+          let i
           for (i in val) {
             val[i] = val[i] + 1
           }
@@ -56,7 +56,7 @@ describe('Filters', function () {
     })
 
     it('Filter global data scope', function (done) {
-      var tmpl = '<span nu-model="word" nut="globalFilter"></span>'
+      let tmpl = '<span nu-model="word" nut="globalFilter"></span>'
       nuts
       .addNuts(tmpl)
       .addFilter('simpleFilter', {

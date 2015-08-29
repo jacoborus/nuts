@@ -1,12 +1,12 @@
 'use strict'
 
-var expect = require('chai').expect,
-  Nuts = require('../src/Nuts.js')
+const expect = require('chai').expect,
+      Nuts = require('../src/Nuts.js')
 
 describe('Formatters', function () {
   it('give simple format to partial nu-model', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nu-model="number | euro" nut="simpleFormatter"></span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nu-model="number | euro" nut="simpleFormatter"></span>'
     nuts
     .addNuts(tmpl)
     .addFormat('euro', function (val) {
@@ -22,8 +22,8 @@ describe('Formatters', function () {
   })
 
   it('give simple format to full nu-model', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nu-model="| euro" nut="loopFormatter" nu-repeat="numbers"></span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nu-model="| euro" nut="loopFormatter" nu-repeat="numbers"></span>'
     nuts
     .addNuts(tmpl)
     .addFormat('euro', function (val) {
@@ -39,8 +39,8 @@ describe('Formatters', function () {
   })
 
   it('give simple format to full nu-model with children', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nu-model="number | euro" nut="simpleFormatter">a</span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nu-model="number | euro" nut="simpleFormatter">a</span>'
     nuts
     .addNuts(tmpl)
     .addFormat('euro', function (val) {
@@ -56,8 +56,8 @@ describe('Formatters', function () {
   })
 
   it('give simple format to partial nu-model with children', function (done) {
-    var nuts = new Nuts()
-    var tmpl = '<span nu-model="| euro" nut="loopFormatter" nu-repeat="numbers">a</span>'
+    let nuts = new Nuts()
+    let tmpl = '<span nu-model="| euro" nut="loopFormatter" nu-repeat="numbers">a</span>'
     nuts
     .addNuts(tmpl)
     .addFormat('euro', function (val) {
