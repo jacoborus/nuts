@@ -149,8 +149,7 @@ class Nuts {
   }
 
   addNuts (html) {
-    let nuts = this
-    this.promises.push(next => addNuts.call(nuts, html, next))
+    this.promises.push(next => addNuts.call(this, html, next))
     return this
   }
 
@@ -261,10 +260,9 @@ class Nuts {
    * @return {object} nuts
    */
   addFormat (keyname, formatter) {
-    let nuts = this
     this.compiled = false
     this.promises.push(next => {
-      nuts.formatters[keyname] = formatter
+      this.formatters[keyname] = formatter
       next()
     })
     return this
@@ -277,10 +275,9 @@ class Nuts {
    * @param {} formatter
    */
   addFilter (keyname, filter) {
-    let nuts = this
     this.compiled = false
-    this.promises.push(function (next) {
-      nuts.filters[keyname] = filter
+    this.promises.push(next => {
+      this.filters[keyname] = filter
       next()
     })
     return this
