@@ -27,7 +27,7 @@ const getNamesakes = function (atts, nuAtts) {
   return ns
 }
 
-const getPrecompiled = function (schema, formats) {
+const getPrecompiled = function (schema, formatters) {
   let precompiled = {}
   for (let i in schema) {
     precompiled[i] = schema[i]
@@ -54,10 +54,11 @@ const getPrecompiled = function (schema, formats) {
     precompiled.start += ' class="' + precompiled.class + '"'
   }
   // set formatter methods
-  if (precompiled.formats) {
-    precompiled.formats.forEach((format, i, arr) => {
-      arr[i] = formats[ format ]
-    })
+  if (precompiled.formatters) {
+    precompiled.formatters = precompiled.formatters.map(name => formatters[name])
+    // precompiled.formatters.forEach((format, i, arr) => {
+    //   arr[i] = formatters[ format ]
+    // })
   }
   return precompiled
 }

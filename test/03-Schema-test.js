@@ -31,9 +31,9 @@ describe('Schema:', function () {
     expect(schema.nutName).equals('test')
   })
 
-  it('extend formats', function () {
-    let schema = getSchema({ formats: ['test'] }, { formats: ['other'] })
-    expect(schema.formats[0]).equals('test')
+  it('extend formatters', function () {
+    let schema = getSchema({ formatters: ['test'] }, { formatters: ['other'] })
+    expect(schema.formatters[0]).equals('test')
   })
 })
 

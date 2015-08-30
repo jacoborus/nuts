@@ -91,7 +91,7 @@ describe('API', function () {
   })
 
   describe('addFormat', function () {
-    it('add formats to Nuts', function (done) {
+    it('add formatters to Nuts', function (done) {
       let nuts = new Nuts()
       nuts
       .addFormat('€', function (val) {
@@ -99,7 +99,7 @@ describe('API', function () {
       })
       .exec(function (err) {
         expect(err).to.not.be.ok
-        expect(nuts.formats['€']).to.be.a('function')
+        expect(nuts.formatters['€']).to.be.a('function')
         done()
       })
     })

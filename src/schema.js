@@ -18,7 +18,7 @@ const nuProps = [
   'checked',
   'doctype',
   'children',
-  'formats'
+  'formatters'
 ]
 
 const nuObjs = [

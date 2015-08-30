@@ -62,7 +62,7 @@ const tag = function (precompiled, children, filters) {
       rData = {
         model: precompiled.model,
         children: children,
-        formatters: precompiled.formats
+        formatters: precompiled.formatters
       }
       if (!children) { // model, no children
         if (precompiled.model) {
@@ -87,13 +87,13 @@ const tag = function (precompiled, children, filters) {
           }
         } else { // model, children, no each
           if (precompiled.model) { // partial model
-            if (precompiled.formats) {
+            if (precompiled.formatters) {
               render = getRenderLink(renders.partModelFormatChildren, render, rData)
             } else {
               render = getRenderLink(renders.partModelChildren, render, rData)
             }
           } else { // full model
-            if (precompiled.formats) {
+            if (precompiled.formatters) {
               render = getRenderLink(renders.fullModelFormatChildren, render, rData)
             } else {
               render = getRenderLink(renders.fullModelChildren, render, rData)

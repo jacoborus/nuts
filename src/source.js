@@ -149,19 +149,19 @@ const getSource = function (dom) {
 
   {
     // add formatters from piped model
-    let formats = []
+    let formatters = []
     // skip operation if tag has no model
     if (typeof src.model !== 'undefined') {
-      formats = src.model.split('|')
+      formatters = src.model.split('|')
       // skip if tag has not formatters
-      if (formats.length !== 1) {
+      if (formatters.length !== 1) {
         // extract model from formatters
-        src.model = formats.shift().trim()
+        src.model = formatters.shift().trim()
         // remove extra spaces form formatter names
-        formats.forEach((format, i) => formats[i] = format.trim())
+        formatters.forEach((format, i) => formatters[i] = format.trim())
         // add formatters to source
-        if (formats) {
-          src.formats = formats
+        if (formatters) {
+          src.formatters = formatters
         }
       }
     }

@@ -29,14 +29,14 @@ describe('Precompiled', function () {
   })
 
   it('add formatter methods', function () {
-    let formats = {
+    let formatters = {
       myformat: function (val) {
         return val + '€'
       }
     }
     let pre = getPrecompiled({
-      formats: ['myformat']
-    }, formats)
-    expect(pre.formats[0]).to.be.a('function')
+      formatters: ['myformat']
+    }, formatters)
+    expect(pre.formatters[0]).to.be.a('function')
   })
 })

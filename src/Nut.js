@@ -95,7 +95,7 @@ class Nut {
         nut.precompiled = nut.getPrecompiled()
       })
     }
-    return getPrecompiled(this.schema, this.nuts.formats)
+    return getPrecompiled(this.schema, this.nuts.formatters)
   }
 
   /**

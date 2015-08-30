@@ -139,8 +139,8 @@ describe('Source', function () {
     parser(tmpl, function (err, parsed) {
       let schema0 = getSource(parsed[0], fn)
       expect(err).to.not.be.ok
-      expect(schema0.formats[0]).to.equal('format')
-      expect(schema0.formats[1]).to.equal('other')
+      expect(schema0.formatters[0]).to.equal('format')
+      expect(schema0.formatters[1]).to.equal('other')
       done()
     })
   })

@@ -110,7 +110,7 @@ class Nuts {
     this.compiled = false
     this.Nuts = Nuts
     this.items = {}
-    this.formats = {}
+    this.formatters = {}
     this.filters = {}
     this.promises = []
     this.errors = []
@@ -264,7 +264,7 @@ class Nuts {
     let nuts = this
     this.compiled = false
     this.promises.push(next => {
-      nuts.formats[keyname] = formatter
+      nuts.formatters[keyname] = formatter
       next()
     })
     return this
