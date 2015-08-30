@@ -123,7 +123,7 @@ renders.attribs = function (out, x, cb, pos) {
 
 renders.nuAtts = function (out, x, cb, pos) {
   for (let i in this.nuAtts) {
-    if (typeof this.nuAtts[i] !== 'undefined') {
+    if (this.nuAtts[i] !== undefined) {
       out += ' ' + i + '="' + x[this.nuAtts[i]] + '"'
     }
   }
@@ -132,7 +132,7 @@ renders.nuAtts = function (out, x, cb, pos) {
 
 renders.nuClass = function (out, x, cb, pos) {
   let pre = ' class="'
-  if (typeof x[this.nuClass] !== 'undefined') {
+  if (x[this.nuClass] !== undefined) {
     if (this.classes) {
       out += pre + this.classes + ' ' + x[this.nuClass] + '"'
     } else {
@@ -148,7 +148,7 @@ renders.nuClass = function (out, x, cb, pos) {
 
 renders.nuSakes = function (out, x, cb, pos) {
   for (let i in this.nuSakes) {
-    if (typeof x[this.nuSakes[i]] !== 'undefined') {
+    if (x[this.nuSakes[i]] !== undefined) {
       out += ' ' + i + '="' + x[this.nuSakes[i]] + '"'
     } else {
       out += ' ' + i + '="' + this.namesakes[i] + '"'
@@ -169,7 +169,7 @@ renders.fullModelNoChildren = function (out, x, cb, pos) {
 
 renders.partModelNoChildren = function (out, x, cb, pos) {
   let y
-  if (typeof x[this.model] !== 'undefined') {
+  if (x[this.model] !== undefined) {
     if (this.formatters) {
       y = out + this.formatters[0](x[this.model])
     } else {
@@ -203,14 +203,14 @@ renders.fullModelFormatChildren = function (out, x, cb, pos) {
 }
 
 renders.partModelChildren = function (out, x, cb, pos) {
-  if (typeof x[this.model] !== 'undefined') {
+  if (x[this.model] !== undefined) {
     return this.next.render(out + x[ this.model ], x, cb, pos)
   }
   renderChildren(this.children, out, undefined, this.next, cb, pos)
 }
 
 renders.partModelFormatChildren = function (out, x, cb, pos) {
-  if (typeof x[this.model] !== 'undefined') {
+  if (x[this.model] !== undefined) {
     return this.next.render(out + this.formatters[0](x[ this.model ]), x, cb, pos)
   }
   renderChildren(this.children, out, undefined, this.next, cb, pos)
@@ -236,7 +236,7 @@ renders.fullModelFullEach = function (out, x, cb, pos) {
 }
 
 renders.partModelFullEach = function (out, x, cb, pos) {
-  if (typeof x[this.model] !== 'undefined') {
+  if (x[this.model] !== undefined) {
     if (this.formatters) {
       return this.next.render(out + this.formatters[0](x[ this.model ]), undefined, cb, pos)
     }
@@ -279,7 +279,7 @@ renders.fullModelPartialEach = function (out, x, cb, pos) {
 }
 
 renders.partModelPartialEach = function (out, x, cb, pos) {
-  if (typeof x[this.model] !== 'undefined') {
+  if (x[this.model] !== undefined) {
     if (this.formatters) {
       return this.next.render(out + this.formatters[0](x[ this.model ]), x, cb, pos)
     }
