@@ -44,6 +44,7 @@ class Nut {
       })
       // add children partials to nut.partials
       this.children.forEach(function (child) {
+        // TODO: rethink this
         if (child.partials) {
           child.partials.forEach(function (partial) {
             partials.push(partial)

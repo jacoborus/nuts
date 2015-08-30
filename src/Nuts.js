@@ -22,53 +22,33 @@ const readyForGetSchema = function (item) {
   return partials ? !partials.some(partial => !templates[partial].schema) : true
 }
 
-/*!
- * Make all schemas of nuts
- *
- * @param {array} list names of the templates
- * @param {object} items all the templates
- * @param {function} callback
- */
-const makeSchemas = function (list, items, callback) {
-  list.forEach(() => {
-    let key = list.shift(),
-        item = items[key]
-
-    if (readyForGetSchema(item)) {
-      item.schema = item.getSchema()
-    } else {
-      list.push(key)
-    }
-  })
-
-  if (list.length) {
-    return makeSchemas(list, items, callback)
-  }
-  callback()
-}
-
 // compile action
 const compile = function (next) {
-  let keys = Object.keys(this.templates),
-      nut = this
+  let keys = Object.keys(this.templates)
 
-  // if (!keys.length) {
-  //   return next()
-  // }
+  // make all schemas of nuts
+  while (keys.length) {
+    keys.forEach(() => {
+      let key = keys.shift(),
+          item = this.templates[key]
 
-  makeSchemas(keys, this.templates, function () {
-    // optimize for compilation
-    for (let i in nut.items) {
-      nut.items[i].precompiled = nut.items[i].getPrecompiled()
-    }
+      if (readyForGetSchema(item)) {
+        // generate schema
+        item.schema = item.getSchema()
+        // optimize for compilation
+        item.precompiled = item.getPrecompiled()
+      } else {
+        keys.push(key)
+      }
+    }, this)
+  }
 
-    // compile all optimized schemas
-    for (let i in nut.items) {
-      nut.items[i].render = nut.items[i].getRender()
-    }
-    nut.compiled = true
-    next()
-  })
+  // compile all optimized schemas
+  for (let i in this.items) {
+    this.items[i].render = this.items[i].getRender()
+  }
+  this.compiled = true
+  next()
 }
 
 /*!
