@@ -9,7 +9,7 @@ describe('Constructor', function () {
     expect(nuts.Nuts).to.be.a('function')
   })
   it('init nuts with promises list', function () {
-    expect(nuts.promises).to.be.a('array')
+    expect(nuts.queue).to.be.a('array')
   })
   it('init nuts with error list', function () {
     expect(nuts.errors).to.be.a('array')
@@ -25,7 +25,7 @@ describe('flow', function () {
       myFn.test = 1
       nuts
       .then(myFn)
-      expect(nuts.promises[0].test).to.equal(1)
+      expect(nuts.queue[0].test).to.equal(1)
       done()
     })
   })
@@ -47,7 +47,7 @@ describe('flow', function () {
       .then(myFn2)
       .exec(function () {
         expect(control).to.be.equal(true)
-        expect(nuts.promises.length).to.be.equal(0)
+        expect(nuts.queue.length).to.be.equal(0)
         done()
       })
     })

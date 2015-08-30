@@ -51,8 +51,6 @@ const addNuts = function (html, next) {
       count()
     })
   })
-
-  return this
 }
 
 // nuts constructor
@@ -63,7 +61,7 @@ class Nuts {
     this.items = {}
     this.formatters = {}
     this.filters = {}
-    this.promises = []
+    this.queue = []
     this.errors = []
     this.templates = {}
   }
@@ -79,7 +77,7 @@ class Nuts {
       this.errors.push('nuts.then requires a function as param')
       return this
     }
-    this.promises.push(fn)
+    this.queue.push(fn)
     return this
   }
 
@@ -90,8 +88,8 @@ class Nuts {
    */
   exec (callback) {
     callback = callback || function () {}
-    let fns = this.promises.slice()
-    this.promises = []
+    let fns = this.queue.slice()
+    this.queue = []
     sequence(this, fns, callback)
   }
 
@@ -100,7 +98,7 @@ class Nuts {
   }
 
   addNuts (html) {
-    this.promises.push(next => addNuts.call(this, html, next))
+    this.queue.push(next => addNuts.call(this, html, next))
     return this
   }
 
@@ -114,7 +112,7 @@ class Nuts {
   setTemplate (keyname, tmpl) {
     let nuts = this
     this.compiled = false
-    this.promises.push(next => {
+    this.queue.push(next => {
       parser(tmpl, function (err, parsed) {
         if (err) throw err
         let nut = new Nut(parsed[0], nuts)
@@ -177,7 +175,7 @@ class Nuts {
   addFolder (folderPath) {
     let nuts = this
     this.compiled = false
-    this.promises.push(function (next) {
+    this.queue.push(function (next) {
       // get all files inside folderPath
       recursive(folderPath, function (error, files) {
         if (!files) { return next()}
@@ -211,7 +209,7 @@ class Nuts {
    */
   addFormat (keyname, formatter) {
     this.compiled = false
-    this.promises.push(next => {
+    this.queue.push(next => {
       this.formatters[keyname] = formatter
       next()
     })
@@ -226,7 +224,7 @@ class Nuts {
    */
   addFilter (keyname, filter) {
     this.compiled = false
-    this.promises.push(next => {
+    this.queue.push(next => {
       this.filters[keyname] = filter
       next()
     })
@@ -283,7 +281,7 @@ class Nuts {
    */
   compile (callback) {
     callback = callback || function () {}
-    this.promises.push(function (next) {
+    this.queue.push(function (next) {
       let keys = Object.keys(this.templates)
 
       // make all schemas of nuts
@@ -310,8 +308,9 @@ class Nuts {
       this.compiled = true
       next()
     })
-    let fns = this.promises.slice()
-    this.promises = []
+
+    let fns = this.queue.slice()
+    this.queue = []
     sequence(this, fns, callback)
   }
 
