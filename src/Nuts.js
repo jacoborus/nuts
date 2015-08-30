@@ -22,35 +22,6 @@ const readyForGetSchema = function (item) {
   return partials ? !partials.some(partial => !templates[partial].schema) : true
 }
 
-// compile action
-const compile = function (next) {
-  let keys = Object.keys(this.templates)
-
-  // make all schemas of nuts
-  while (keys.length) {
-    keys.forEach(() => {
-      let key = keys.shift(),
-          item = this.templates[key]
-
-      if (readyForGetSchema(item)) {
-        // generate schema
-        item.schema = item.getSchema()
-        // optimize for compilation
-        item.precompiled = item.getPrecompiled()
-      } else {
-        keys.push(key)
-      }
-    }, this)
-  }
-
-  // compile all optimized schemas
-  for (let i in this.items) {
-    this.items[i].render = this.items[i].getRender()
-  }
-  this.compiled = true
-  next()
-}
-
 /*!
  * Add templates to archive
  * @param {String}   html text with nuts
@@ -188,8 +159,7 @@ class Nuts {
    * @return {object} nuts
    */
   addFile (filePath) {
-    this.addNuts(fs.readFileSync(filePath, { encoding: 'utf8' }))
-    return this
+    return this.addNuts(fs.readFileSync(filePath, { encoding: 'utf8' }))
   }
 
   /**
@@ -313,7 +283,33 @@ class Nuts {
    */
   compile (callback) {
     callback = callback || function () {}
-    this.promises.push(compile)
+    this.promises.push(function (next) {
+      let keys = Object.keys(this.templates)
+
+      // make all schemas of nuts
+      while (keys.length) {
+        keys.forEach(() => {
+          let key = keys.shift(),
+              item = this.templates[key]
+
+          if (readyForGetSchema(item)) {
+            // generate schema
+            item.schema = item.getSchema()
+            // optimize for compilation
+            item.precompiled = item.getPrecompiled()
+          } else {
+            keys.push(key)
+          }
+        }, this)
+      }
+
+      // compile all optimized schemas
+      for (let i in this.items) {
+        this.items[i].render = this.items[i].getRender()
+      }
+      this.compiled = true
+      next()
+    })
     let fns = this.promises.slice()
     this.promises = []
     sequence(this, fns, callback)
