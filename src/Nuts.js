@@ -8,20 +8,6 @@ const Nut = require('./Nut.js'),
       newCounter = require('./loop.js').newCounter,
       sequence = require('./loop.js').sequence
 
-// TODO: rethink this
-const readyForGetSchema = function (item) {
-  let templates = item.nuts.templates,
-      partials = item.partials
-
-  // check if a template has partial and its schema ready
-  if (item.partial && !templates[ item.partial ].schema) {
-    return true
-  }
-
-  // check if any partial of the tag has not its schema ready
-  return partials ? !partials.some(partial => !templates[partial].schema) : true
-}
-
 /*!
  * Add templates to archive
  * @param {String}   html text with nuts
@@ -290,7 +276,7 @@ class Nuts {
           let key = keys.shift(),
               item = this.templates[key]
 
-          if (readyForGetSchema(item)) {
+          if (item.readyForSchema()) {
             // generate schema
             item.schema = item.getSchema()
             // optimize for compilation

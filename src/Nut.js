@@ -112,6 +112,19 @@ class Nut {
     }
     return new Compiled(this.precompiled, this.finalChildren, this.nuts.filters)
   }
+
+  readyForSchema () {
+    let templates = this.nuts.templates,
+        partials = this.partials
+
+    // check if a template has partial and its schema ready
+    if (this.partial && !templates[ this.partial ].schema) {
+      return true
+    }
+
+    // check if any partial of the tag has not its schema ready
+    return partials ? !partials.some(partial => !templates[partial].schema) : true
+  }
 }
 
 module.exports = Nut
