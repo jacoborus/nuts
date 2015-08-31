@@ -4,7 +4,7 @@
   "description": "New Unified Templates System",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --harmony_arrow_functions",
+    "test": "node --harmony_arrow_functions ./node_modules/mocha/bin/mocha --harmony_arrow_functions",
     "build-docs": "node ./docs/createdocs.js",
     "eslint": "eslint index.js src test"
   },
