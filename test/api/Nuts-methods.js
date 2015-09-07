@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect,
-      Nuts = require('../src/Nuts.js')
+      Nuts = require('../../src/Nuts.js')
 
 describe('API', function () {
   describe('addNuts', function () {
@@ -62,8 +62,8 @@ describe('API', function () {
     it('add nuts from file', function (done) {
       let nuts = new Nuts()
       nuts
-      .addFile(__dirname + '/assets/basic.html')
-      .addFile(__dirname + '/assets/basic2.html')
+      .addFile(__dirname + '/../assets/basic.html')
+      .addFile(__dirname + '/../assets/basic2.html')
       .exec(function (err) {
         expect(err).to.not.be.ok
         expect(nuts.getNut('basic1').nutName).to.equal('basic1')
@@ -78,7 +78,7 @@ describe('API', function () {
     it('add nuts from files in folder (recursive)', function (done) {
       let nuts = new Nuts()
       nuts
-      .addFolder(__dirname + '/assets/folder')
+      .addFolder(__dirname + '/../assets/folder')
       .exec(function (err) {
         expect(err).to.not.be.ok
         expect(nuts.getNut('basic1').nutName).to.equal('basic1')

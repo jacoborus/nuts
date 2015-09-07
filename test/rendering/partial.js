@@ -1,6 +1,6 @@
 'use strict'
 const expect = require('chai').expect,
-      Nuts = require('../src/Nuts.js')
+      Nuts = require('../../src/Nuts.js')
 
 describe('Partial', function () {
   it('render simple partials', function (done) {

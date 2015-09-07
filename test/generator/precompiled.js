@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect,
-      getPrecompiled = require('../src/precompiled.js')
+      getPrecompiled = require('../../src/precompiled.js')
 
 describe('Precompiled', function () {
   it('separate regular attributes with nuNamesake', function () {

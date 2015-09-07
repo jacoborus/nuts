@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect,
-      Nuts = require('../src/Nuts.js')
+      Nuts = require('../../src/Nuts.js')
 
 describe('Scope', function () {
   it('render simple data', function (done) {

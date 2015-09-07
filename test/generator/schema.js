@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect,
-      getSchema = require('../src/schema.js')
+      getSchema = require('../../src/schema.js')
 
 describe('Schema:', function () {
   it('has same properties as source when no extension passed', function () {

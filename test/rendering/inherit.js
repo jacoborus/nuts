@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect,
-      nuts = require('../index.js')
+      nuts = require('../../index.js')
 
 describe('Inherit', function () {
   it('extend data with parent', function (done) {

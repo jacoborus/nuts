@@ -1,8 +1,8 @@
 'use strict'
 
 const expect = require('chai').expect,
-      parser = require('../src/parser.js'),
-      Nut = require('../src/Nut.js')
+      parser = require('../../src/parser.js'),
+      Nut = require('../../src/Nut.js')
 
 describe('Nut constructor', function () {
   it('initialize nut with source, nutName, nuts and type', function (done) {

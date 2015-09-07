@@ -1,8 +1,8 @@
 'use strict'
 
 const expect = require('chai').expect,
-      parser = require('../src/parser.js'),
-      getSource = require('../src/source.js')
+      parser = require('../../src/parser.js'),
+      getSource = require('../../src/source.js')
 
 const fn = function () {}
 

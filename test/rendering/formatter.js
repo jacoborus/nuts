@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect,
-      Nuts = require('../src/Nuts.js')
+      Nuts = require('../../src/Nuts.js')
 
 describe('Formatters', function () {
   it('give simple format to partial nu-model', function (done) {
