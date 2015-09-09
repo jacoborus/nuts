@@ -28,11 +28,11 @@
         "guard-for-in": 0,
         "handle-callback-err": [2, "^(err|error|anySpecificError)$" ],
         "indent": [1, 2, {
+          "SwitchCase": 1,
           "VariableDeclarator": {
             "var": 2,
             "let": 2,
-            "const": 3,
-            "SwitchCase": 2
+            "const": 3
           }}
         ],
         "key-spacing": [2, { "beforeColon": false, "afterColon": true }],

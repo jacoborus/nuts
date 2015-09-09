@@ -41,7 +41,15 @@ const addNuts = function (html, next) {
 
 // nuts constructor
 class Nuts {
-  constructor () {
+  /**
+   * constructor
+   *
+   * @param {boolean} liveMode enable browser live mode templates
+   */
+  constructor (liveMode) {
+    if (liveMode) {
+      this.liveMode = true
+    }
     this.compiled = false
     this.Nuts = Nuts
     this.items = {}
@@ -253,11 +261,18 @@ class Nuts {
     }
     let nut = this.items[ keyname ]
     if (nut) {
-      return nut.render(data, function (out) {
-        callback(null, out)
-      })
+      if (!this.liveMode) {
+        return nut.render(data, function (out) {
+          callback(null, out)
+        })
+      } else {
+        return nut.getJson(function (out) {
+          callback(null, out)
+        })
+      }
     }
-    callback(null, '')
+    // TODO: throw error here
+    // callback(null, '')
   }
 
   /**

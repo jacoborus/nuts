@@ -5,8 +5,8 @@ const expect = require('chai').expect,
 
 describe('nuts.render', function () {
   it('render simple tag and text nodes', function (done) {
-    let nuts = new Nuts()
-    let tmpl = '<span nut="sample">hola</span>'
+    let nuts = new Nuts(),
+        tmpl = '<span nut="sample">hola</span>'
     nuts
     .addNuts(tmpl)
     .compile(function (err) {
