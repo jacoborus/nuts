@@ -74,9 +74,6 @@ test('Source', function (t) {
       // model
       tt.is(source.model, 'model')
       tt.notOk(source.nuAtts.model)
-      // inherit
-      tt.is(source.inherit, 'inherit')
-      tt.notOk(source.nuAtts.inherit)
       // nuif
       tt.is(source.nuif, 'if')
       tt.notOk(source.nuAtts.nuif)

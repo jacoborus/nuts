@@ -51,18 +51,22 @@ Example
 `templates.html`:
 
 ```html
-<section id="blog" nut="blog">
-	<h1 nu-model="title"></h1>
-	<article nu-as="blogPost" nu-repeat="articles"></article>
-</body>
+<template nut="blog">
+  <section id="blog" nut="blog">
+    <h1>{{ title }}</h1>
+    <nut as="blogPost" repeat="articles"/>
+  </section>
+</template>
 
 
-<article nut="blogPost">
-	<h1 nu-model="title"></h1>
-	<ul nu-each="related">
-		<li nu-model></li>
-	</ul>
-</article>
+<template nut="blogPost">
+  <article>
+    <h1>{{ title }}</h1>
+    <ul nu-each="related">
+      <li>{{ . }}</li>
+    </ul>
+  </article>
+</template>
 ```
 
 myfile.js
@@ -208,81 +212,6 @@ results in:
 	</article>
 </section>
 ```
-
-
-<a name="inherit"></a>
-#### `nu-inherit`
-
-Extend scope with selected or all properties from parent scope.
-
-**Example:**
-
-Having this model:
-
-```js
-nuts.render( 'inheritExample', {
-	fruit:{
-		name: 'Walnut',
-		provider: 'tree',
-		specs: {
-			model: 'nut'
-		}
-	}
-});
-```
-
-**Without** selecting any property
-
-```html
-<article nu-scope="fruit" nut="inheritExample">
-	<h1 nu-model="name"></h1>
-	<div nu-scope="specs" nu-inherit>
-		<span nu-model="provider"></span>
-		<span nu-model="model"></span>
-		<span nu-model="name"></span>
-	</div>
-</article>
-```
-
-results in:
-
-```html
-<article>
-	<h1>Walnut</h1>
-	<div>
-		<span>tree</span>
-		<span>nut</span>
-		<span>Walnut</span>
-	</div>
-</article>
-```
-
-**Selecting** properties
-
-```html
-<article nu-scope="fruit" nut="inheritExample">
-	<h1 nu-model="name"></h1>
-	<div nu-scope="specs" nu-inherit="name">
-		<span nu-model="provider"></span>
-		<span nu-model="model"></span>
-		<span nu-model="name"></span>
-	</div>
-</article>
-```
-
-results in:
-
-```html
-<article>
-	<h1>Walnut</h1>
-	<div>
-		<span>tree</span>
-		<span></span>
-		<span>Walnut</span>
-	</div>
-</article>
-```
-
 
 <a name="conditionals"></a>
 ### Conditionals

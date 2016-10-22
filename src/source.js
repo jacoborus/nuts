@@ -44,10 +44,6 @@ const getSource = function (dom) {
       src.model = atts['nu-model']
       delete atts['nu-model']
     }
-    if (atts['nu-inherit'] !== undefined) {
-      src.inherit = atts['nu-inherit']
-      delete atts['nu-inherit']
-    }
     // iterations
     if (atts['nu-repeat'] !== undefined) {
       src.repeat = atts['nu-repeat']
