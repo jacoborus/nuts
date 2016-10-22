@@ -1,8 +1,8 @@
 'use strict'
 
 const childrenCounter = function (limit, callback) {
-  let count = 0,
-      res = []
+  let count = 0
+  let res = []
 
   return function (text, i) {
     res[i] = text
@@ -47,8 +47,8 @@ renders.inheritFull = function (out, x, cb, pos) {
 }
 
 renders.inheritPart = function (out, x, cb, pos) {
-  let pre = {},
-      props = this.inherit.split(' ')
+  let pre = {}
+  let props = this.inherit.split(' ')
 
   for (let i in props) {
     pre[props[i]] = x[props[i]]
@@ -223,9 +223,9 @@ renders.fullModelFullEach = function (out, x, cb, pos) {
     }
     return this.next.render(out + x, undefined, cb, pos)
   }
-  let children = this.children,
-      tagEnd = this.tagEnd,
-      count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
+  let children = this.children
+  let tagEnd = this.tagEnd
+  let count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
 
   x.forEach((y, i) => {
     renderChildren(children, '', y, {
@@ -242,9 +242,9 @@ renders.partModelFullEach = function (out, x, cb, pos) {
     }
     return this.next.render(out + x[ this.model ], undefined, cb, pos)
   }
-  let children = this.children,
-      tagEnd = this.tagEnd,
-      count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
+  let children = this.children
+  let tagEnd = this.tagEnd
+  let count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
 
   x.forEach((y, i) => {
     renderChildren(children, '', y, {
@@ -266,9 +266,9 @@ renders.fullModelPartialEach = function (out, x, cb, pos) {
   if (!Array.isArray(y)) {
     return cb(out + this.tagEnd, pos)
   }
-  let children = this.children,
-      tagEnd = this.tagEnd,
-      count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
+  let children = this.children
+  let tagEnd = this.tagEnd
+  let count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
 
   y.forEach((z, i) => {
     renderChildren(children, '', z, {
@@ -290,9 +290,9 @@ renders.partModelPartialEach = function (out, x, cb, pos) {
   if (!Array.isArray(y)) {
     return cb(out + this.tagEnd, pos)
   }
-  let children = this.children,
-      tagEnd = this.tagEnd,
-      count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
+  let children = this.children
+  let tagEnd = this.tagEnd
+  let count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
 
   y.forEach((z, i) => {
     renderChildren(children, '', z, {
@@ -303,9 +303,9 @@ renders.partModelPartialEach = function (out, x, cb, pos) {
 }
 
 renders.NoModelFullEach = function (out, x, cb, pos) {
-  let children = this.children,
-      tagEnd = this.tagEnd,
-      count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
+  let children = this.children
+  let tagEnd = this.tagEnd
+  let count = childrenCounter(x.length, text => cb(out + text + tagEnd, pos))
 
   x.forEach((y, i) => {
     renderChildren(children, '', y, {
@@ -321,9 +321,9 @@ renders.NoModelPartialEach = function (out, x, cb, pos) {
   if (!Array.isArray(y)) {
     return cb(out + this.tagEnd, pos)
   }
-  let children = this.children,
-      tagEnd = this.tagEnd,
-      count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
+  let children = this.children
+  let tagEnd = this.tagEnd
+  let count = childrenCounter(y.length, text => cb(out + text + tagEnd, pos))
 
   y.forEach((z, i) => {
     renderChildren(children, '', z, {

@@ -1,39 +1,44 @@
 'use strict'
 
-const expect = require('chai').expect,
-      getSchema = require('../../src/schema.js')
+const getSchema = require('../../src/schema.js')
+const test = require('tape')
 
-describe('Schema:', function () {
-  it('has same properties as source when no extension passed', function () {
+test('Schema:', function (t) {
+  t.test('Schema: has same properties as source when no extension passed', function (tt) {
     let schema = getSchema({ scope: 'test' })
-    expect(schema.scope).equals('test')
+    tt.is(schema.scope, 'test')
+    tt.end()
   })
 
-  it('extend nut properties', function () {
+  t.test('Schema: extend nut properties', function (tt) {
     let schema = getSchema({ scope: 'test' }, { scope: 'extension', other: 'other' })
-    expect(schema.scope).equals('test')
-    expect(schema.other).equals('other')
+    tt.is(schema.scope, 'test')
+    tt.is(schema.other, 'other')
+    tt.end()
   })
 
-  it('extend attributes and variable attributes', function () {
+  t.test('Schema: extend attributes and variable attributes', function (tt) {
     let schema = getSchema(
-        { attribs: { other: 'src' }, nuAtts: {other: 'src' } },
-        { attribs: { id: 'ext', other: 'ext' }, nuAtts: { id: 'ext', other: 'ext' }}
-      )
-    expect(schema.attribs.id).equals('ext')
-    expect(schema.attribs.other).equals('src')
-    expect(schema.nuAtts.id).equals('ext')
-    expect(schema.nuAtts.other).equals('src')
+      {attribs: { other: 'src' }, nuAtts: { other: 'src' }},
+      {attribs: { id: 'ext', other: 'ext' }, nuAtts: { id: 'ext', other: 'ext' }}
+    )
+    tt.is(schema.attribs.id, 'ext')
+    tt.is(schema.attribs.other, 'src')
+    tt.is(schema.nuAtts.id, 'ext')
+    tt.is(schema.nuAtts.other, 'src')
+    tt.end()
   })
 
-  it('extend nutName', function () {
+  t.test('Schema: extend nutName', function (tt) {
     let schema = getSchema({ nutName: 'test' }, { nutName: 'other' })
-    expect(schema.nutName).equals('test')
+    tt.is(schema.nutName, 'test')
+    tt.end()
   })
 
-  it('extend formatters', function () {
+  t.test('extend formatters', function (tt) {
     let schema = getSchema({ formatters: ['test'] }, { formatters: ['other'] })
-    expect(schema.formatters[0]).equals('test')
+    tt.is(schema.formatters[0], 'test')
+    tt.end()
   })
 })
 

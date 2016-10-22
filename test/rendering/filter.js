@@ -1,79 +1,71 @@
 'use strict'
 
-const expect = require('chai').expect,
-      nuts = require('../../index.js')
+const nuts = require('../../index.js')
+const test = require('tape')
 
-describe('Filters', function () {
-  describe('Filter', function () {
-    it('Filter simple data', function (done) {
-      let tmpl = '<span nu-model="word" nut="simpleFilter"></span>'
-      nuts
-      .addNuts(tmpl)
-      .addFilter('simpleFilter', {
-        word: function (field) {
-          return 'get ' + field + '!'
-        }
-      })
-      .compile(function () {
-        nuts.render('simpleFilter', { word: 'nuts'}, function (err, rendered) {
-          if (err) throw err
-          expect(rendered).to.equal(
-            '<span>get nuts!</span>'
-         )
-          done()
-        })
-      })
+test('Filter simple data', function (t) {
+  let tmpl = '<span nu-model="word" nut="simpleFilter"></span>'
+  nuts
+  .addNuts(tmpl)
+  .addFilter('simpleFilter', {
+    word: function (field) {
+      return 'get ' + field + '!'
+    }
+  })
+  .compile(function () {
+    nuts.render('simpleFilter', {word: 'nuts'}, function (err, rendered) {
+      if (err) throw err
+      t.is(rendered, '<span>get nuts!</span>')
+      t.end()
     })
+  })
+})
 
-    it('Filter looped data', function (done) {
-      let loopedFilterTmpl = '<ul nut="loopedFilter">' +
-          '<li nu-repeat="nums" nu-model></li>' +
+test('Filter looped data', function (t) {
+  let loopedFilterTmpl = '<ul nut="loopedFilter">' +
+      '<li nu-repeat="nums" nu-model></li>' +
+    '</ul>'
+  nuts
+  .addNuts(loopedFilterTmpl)
+  .addFilter('loopedFilter', {
+    nums: function (val) {
+      let i
+      for (i in val) {
+        val[i] = val[i] + 1
+      }
+      return val
+    }
+  })
+  .compile(function () {
+    nuts.render('loopedFilter', {nums: [1, 2, 3]}, function (err, rendered) {
+      if (err) throw err
+      t.is(rendered,
+        '<ul>' +
+          '<li>2</li>' +
+          '<li>3</li>' +
+          '<li>4</li>' +
         '</ul>'
-      nuts
-      .addNuts(loopedFilterTmpl)
-      .addFilter('loopedFilter', {
-        nums: function (val) {
-          let i
-          for (i in val) {
-            val[i] = val[i] + 1
-          }
-          return val
-        }
-      })
-      .compile(function () {
-        nuts.render('loopedFilter', { nums: [1, 2, 3]}, function (err, rendered) {
-          if (err) throw err
-          expect(rendered).to.equal(
-            '<ul>' +
-              '<li>2</li>' +
-              '<li>3</li>' +
-              '<li>4</li>' +
-            '</ul>'
-         )
-          done()
-        })
-      })
+     )
+      t.end()
     })
+  })
+})
 
-    it('Filter global data scope', function (done) {
-      let tmpl = '<span nu-model="word" nut="globalFilter"></span>'
-      nuts
-      .addNuts(tmpl)
-      .addFilter('simpleFilter', {
-        _global: function (val) {
-          val.word = 'get ' + val.word + '!'
-          return val
-        }
-      })
-      .compile(function () {
-        nuts.render('simpleFilter', { word: 'nuts'}, function (err, rendered) {
-          if (err) throw err
-          expect(rendered).to.equal(
-            '<span>get nuts!</span>'
-         )
-          done()
-        })
-      })
+test('Filter global data scope', function (t) {
+  let tmpl = '<span nu-model="word" nut="globalFilter"></span>'
+  nuts
+  .addNuts(tmpl)
+  .addFilter('simpleFilter', {
+    _global: function (val) {
+      val.word = 'get ' + val.word + '!'
+      return val
+    }
+  })
+  .compile(function () {
+    nuts.render('simpleFilter', {word: 'nuts'}, function (err, rendered) {
+      if (err) throw err
+      t.is(rendered, '<span>get nuts!</span>')
+      t.end()
     })
   })
 })

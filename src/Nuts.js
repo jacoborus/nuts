@@ -1,12 +1,12 @@
 'use strict'
 
-const Nut = require('./Nut.js'),
-      parser = require('./parser.js'),
-      recursive = require('recursive-readdir'),
-      fs = require('fs'),
-      path = require('path'),
-      newCounter = require('./loop.js').newCounter,
-      sequence = require('./loop.js').sequence
+const Nut = require('./Nut.js')
+const parser = require('./parser.js')
+const recursive = require('recursive-readdir')
+const fs = require('fs')
+const path = require('path')
+const newCounter = require('./loop.js').newCounter
+const sequence = require('./loop.js').sequence
 
 /*!
  * Add templates to archive
@@ -172,10 +172,10 @@ class Nuts {
     this.queue.push(function (next) {
       // get all files inside folderPath
       recursive(folderPath, function (error, files) {
-        if (!files) { return next()}
-        if (error) { return next(error)}
+        if (!files) { return next() }
+        if (error) { return next(error) }
         let limit = files.length
-        if (!limit) { return next()}
+        if (!limit) { return next() }
 
         let count = newCounter(limit, next)
         // read files
@@ -288,8 +288,8 @@ class Nuts {
       // make all schemas of nuts
       while (keys.length) {
         keys.forEach(() => {
-          let key = keys.shift(),
-              item = this.templates[key]
+          let key = keys.shift()
+          let item = this.templates[key]
 
           if (item.readyForSchema()) {
             // generate schema

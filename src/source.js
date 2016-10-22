@@ -1,8 +1,8 @@
 'use strict'
 
 // create a Set with all self-closing html tags
-const voidElements = require('./void-elements.json'),
-      voidElementsSet = new Set()
+const voidElements = require('./void-elements.json')
+const voidElementsSet = new Set()
 
 voidElements.forEach(e => voidElementsSet.add(e))
 
@@ -13,8 +13,8 @@ voidElements.forEach(e => voidElementsSet.add(e))
  * @param {Object} parent [description]
  */
 const getSource = function (dom) {
-  let src = {},
-      atts = dom.attribs
+  let src = {}
+  let atts = dom.attribs
 
   src.type = dom.type
   src.data = dom.data
@@ -158,7 +158,7 @@ const getSource = function (dom) {
         // extract model from formatters
         src.model = formatters.shift().trim()
         // remove extra spaces form formatter names
-        formatters.forEach((format, i) => formatters[i] = format.trim())
+        formatters.forEach((format, i) => { formatters[i] = format.trim() })
         // add formatters to source
         if (formatters) {
           src.formatters = formatters

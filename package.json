@@ -1,12 +1,12 @@
 {
   "name": "nuts",
   "version": "0.26.0",
-  "description": "New Unified Templates System",
+  "description": "New Unified Template System",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha",
+    "test": "node test/tests.js",
     "build-docs": "node ./docs/createdocs.js",
-    "eslint": "eslint index.js src test"
+    "linter": "standard --verbose index.js src/*.js test/*/*.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +18,8 @@
     "engine"
   ],
   "devDependencies": {
-    "chai": "^3.2.0",
-    "eslint": "^1.0.0",
-    "mocha": "^2.2.5",
+    "standard": "^8.4.0",
+    "tape": "^4.6.2",
     "updox": "0.0.5"
   },
   "dependencies": {

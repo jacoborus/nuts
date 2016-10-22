@@ -1,10 +1,10 @@
 'use strict'
 
 // private dependencies
-const getSource = require('./source.js'),
-      getSchema = require('./schema.js'),
-      getPrecompiled = require('./precompiled.js'),
-      Compiled = require('./compiler.js')
+const getSource = require('./source.js')
+const getSchema = require('./schema.js')
+const getPrecompiled = require('./precompiled.js')
+const Compiled = require('./compiler.js')
 
 /*!
  * random hash generator
@@ -22,8 +22,8 @@ const uniid = function () {
 // NUT Constructor
 class Nut {
   constructor (dom, nuts) {
-    let partials = [],
-        children
+    let partials = []
+    let children
 
     this.nuts = nuts
     this.source = getSource(dom)
@@ -63,7 +63,7 @@ class Nut {
       this.partial = this.source.as
     }
     this.type = this.source.type
-    this.nuts.templates[ this.nutName || uniid()] = this
+    this.nuts.templates[ this.nutName || uniid() ] = this
   }
 
   getSchema () {
@@ -114,8 +114,8 @@ class Nut {
   }
 
   readyForSchema () {
-    let templates = this.nuts.templates,
-        partials = this.partials
+    let templates = this.nuts.templates
+    let partials = this.partials
 
     // check if a template has partial and its schema ready
     if (this.partial && !templates[ this.partial ].schema) {

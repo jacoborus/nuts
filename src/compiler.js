@@ -1,7 +1,7 @@
 'use strict'
 
-const doctypes = require('./doctypes.json'),
-      renders = require('./renders.js')
+const doctypes = require('./doctypes.json')
+const renders = require('./renders.js')
 
 const text = function (elData) {
   return function (x, callback, i) {
@@ -42,8 +42,8 @@ const getRenderLink = function (fn, next, props) {
 }
 
 const tag = function (precompiled, children, filters) {
-  let tagEnd = '</' + precompiled.name + '>',
-      render, rData
+  let tagEnd = '</' + precompiled.name + '>'
+  let render, rData
 
   if (precompiled.voidElement) {
     render = {

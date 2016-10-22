@@ -1,75 +1,63 @@
 'use strict'
 
-const expect = require('chai').expect,
-      Nuts = require('../../src/Nuts.js')
+const test = require('tape')
+const Nuts = require('../../src/Nuts.js')
 
-describe('Constructor', function () {
-  describe('basic', function () {
-    let nuts = new Nuts()
-    it('init nuts with constructor', function () {
-      expect(nuts.Nuts).to.be.a('function')
-    })
-    it('init nuts with promises list', function () {
-      expect(nuts.queue).to.be.a('array')
-    })
-    it('init nuts with error list', function () {
-      expect(nuts.errors).to.be.a('array')
-    })
-  })
-  describe('live mode', function () {
-    let nuts = new Nuts(true)
-    it('init nuts with constructor', function () {
-      expect(nuts.Nuts).to.be.a('function')
-    })
-    it('set browser live templates flag when first params evalues to true', () => {
-      expect(nuts.liveMode).to.equal(true)
-    })
-  })
+// Constructor
+
+test('basic constructor', function (t) {
+  let nuts = new Nuts()
+  t.is(typeof nuts.Nuts, 'function', 'init nuts with constructor')
+  t.is(Array.isArray(nuts.queue), true, 'init nuts with queue')
+  t.is(Array.isArray(nuts.errors), true, 'init nuts with error list')
+  t.end()
+})
+test('live mode', function (t) {
+  let nuts = new Nuts(true)
+  t.is(typeof nuts.Nuts, 'function', 'init nuts with constructor')
+  t.is(nuts.liveMode, true, 'set browser live templates flag when first params evalues to true')
+  t.end()
 })
 
-describe('flow', function () {
-  describe('nuts.then', function () {
-    let nuts = new Nuts()
+// FLOW
+test('nuts.then', function (t) {
+  let nuts = new Nuts()
 
-    it('add a function to promises list', function (done) {
-      let myFn = function () {}
-      myFn.test = 1
-      nuts
-      .then(myFn)
-      expect(nuts.queue[0].test).to.equal(1)
-      done()
-    })
-  })
+  let myFn = function () {}
+  myFn.test = 1
+  nuts.then(myFn)
+  t.is(nuts.queue[0].test, 1, 'add a function to promises list')
+  t.end()
+})
 
-  describe('nuts.exec', function () {
-    let nuts = new Nuts()
+test('executes promises list and then callback', function (t) {
+  let nuts = new Nuts()
 
-    it('executes promises list and then callback', function (done) {
-      let control = false
-      let myFn = function (next) {
-        next()
-      }
-      let myFn2 = function (next) {
-        control = true
-        next()
-      }
-      nuts
+  t.test('executes promises list and then callback', tt => {
+    let control = false
+    let myFn = function (next) {
+      next()
+    }
+    let myFn2 = function (next) {
+      control = true
+      next()
+    }
+    nuts
       .then(myFn)
       .then(myFn2)
       .exec(function () {
-        expect(control).to.be.equal(true)
-        expect(nuts.queue.length).to.be.equal(0)
-        done()
+        tt.is(control, true)
+        tt.is(nuts.queue.length, 0)
+        tt.end()
       })
-    })
+  })
 
-    it('catches errors from promises list', function (done) {
-      nuts
-      .then([])
-      .exec(function (err) {
-        expect(err.message).to.equal('nuts.then requires a function as param')
-        done()
-      })
+  t.test('catches errors from promises list', function (tt) {
+    nuts
+    .then([])
+    .exec(function (err) {
+      tt.is(err.message, 'nuts.then requires a function as param')
+      tt.end()
     })
   })
 })
