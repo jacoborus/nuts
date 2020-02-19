@@ -1,5 +1,5 @@
 const arr = [
-  require('./compiler/text-content-test'),
+  require('./compiler/compile-text-test'),
   require('./compiler/compile-attribs-test')
 ]
 
