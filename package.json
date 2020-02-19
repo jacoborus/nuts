@@ -1,0 +1,43 @@
+{
+  "name": "nuts",
+  "version": "0.30.0",
+  "description": "Reactive template compiler for javascript apps",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf lib && tsc",
+    "linter": "eslint src/**/**.ts",
+    "test": "tape -r ts-node/register src/tests.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacoborus/nuts.git"
+  },
+  "author": "Jacobo Tabernero Rey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jacoborus/nuts/issues"
+  },
+  "devDependencies": {
+    "@types/domhandler": "2.4.1",
+    "@types/htmlparser2": "3.10.1",
+    "@types/node": "13.7.1",
+    "@types/tape": "4.2.34",
+    "@typescript-eslint/eslint-plugin": "2.17.0",
+    "@typescript-eslint/parser": "2.7.0",
+    "eslint": "6.8.0",
+    "eslint-config-standard": "14.1.0",
+    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-node": "11.0.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "tape": "4.13.0",
+    "ts-node": "8.6.2",
+    "typescript": "3.7.5"
+  },
+  "dependencies": {
+    "boxes": "0.30.0",
+    "domhandler": "3.0.0",
+    "htmlparser2": "4.0.0"
+  },
+  "homepage": "https://github.com/jacoborus/nuts#readme"
+}
