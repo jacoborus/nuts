@@ -1,18 +1,16 @@
-
 import {
   Schema,
   matcherConst,
   matcherVar
 } from '../common'
 
-type AttType = 'attPlain' | 'attConst' | 'attVar'
+type AttType = 'plain' | 'constant' | 'variable'
 type AttDef = [AttType, string, string]
-type CompilerType = 'plain' | 'constant' | 'variable'
 type Compilers = {
-  [K in CompilerType]: (att: string, value: string) => AttDef
+  [K in AttType]: (att: string, value: string) => AttDef
 }
 
-export function compileAttribs (schema: Schema) {
+export function compileAttribs (schema: Schema): AttDef[] {
   const { attribs } = schema
   const list: AttDef[] = []
   Object.keys(attribs).forEach(att => {
@@ -25,7 +23,7 @@ export function compileAttribs (schema: Schema) {
   return list
 }
 
-function getAttType (value: string): CompilerType {
+function getAttType (value: string): AttType {
   return !value.match(matcherConst)
     ? 'plain'
     : value.match(matcherVar)
@@ -40,15 +38,15 @@ const compilers: Compilers = {
 }
 
 function compileAttPlain (att: string, value: string): AttDef {
-  return ['attPlain', att, value]
+  return ['plain', att, value]
 }
 
 function compileAttConstant (att: string, value: string): AttDef {
   const prop = (value.match(matcherConst) as [string, string])[1].trim()
-  return ['attConst', att, prop]
+  return ['constant', att, prop]
 }
 
 function compileAttVariable (att: string, value: string): AttDef {
   const prop = (value.match(matcherVar) as [string, string])[1].trim()
-  return ['attVar', att, prop]
+  return ['variable', att, prop]
 }

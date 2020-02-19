@@ -25,9 +25,9 @@ test('Compile#textFixed', t => {
   const compiled = compileAttribs(schema)
   t.is(compiled.length, 3)
   const [id, className, other] = compiled
-  t.same(['attPlain', 'id', 'myId'], id)
-  t.same(['attPlain', 'class', 'myClass'], className)
-  t.same(['attPlain', 'other', 'otherAtt'], other)
+  t.same(['plain', 'id', 'myId'], id)
+  t.same(['plain', 'class', 'myClass'], className)
+  t.same(['plain', 'other', 'otherAtt'], other)
   t.end()
 })
 
@@ -42,9 +42,9 @@ test('Compile#textFixed', t => {
   const compiled = compileAttribs(schema)
   t.is(compiled.length, 3)
   const [id, className, other] = compiled
-  t.same(['attConst', 'id', 'myId'], id)
-  t.same(['attConst', 'class', 'myClass'], className)
-  t.same(['attPlain', 'other', 'otherAtt'], other)
+  t.same(['constant', 'id', 'myId'], id)
+  t.same(['constant', 'class', 'myClass'], className)
+  t.same(['plain', 'other', 'otherAtt'], other)
   t.end()
 })
 
@@ -59,8 +59,8 @@ test('Compile#textFixed', t => {
   const compiled = compileAttribs(schema)
   t.is(compiled.length, 3)
   const [id, className, other] = compiled
-  t.same(['attVar', 'id', 'myId'], id)
-  t.same(['attVar', 'class', 'myClass'], className)
-  t.same(['attPlain', 'other', 'otherAtt'], other)
+  t.same(['variable', 'id', 'myId'], id)
+  t.same(['variable', 'class', 'myClass'], className)
+  t.same(['plain', 'other', 'otherAtt'], other)
   t.end()
 })
