@@ -10,9 +10,9 @@ export interface RawSchema {
   data?: string
 }
 
-export type TextType = 'textFixed' | 'textConst' | 'textVar'
-export type TextSchema = [TextType, string]
-export type TextSchemas = TextSchema[]
+export type TextChunkType = 'textFixed' | 'textConst' | 'textVar'
+export type TextChunkSchema = [TextType, string]
+export type TextSchema = ['text', TextChunkSchema[]]
 
 export type TagSchema = ['tag', string, AttDef[], ElemSchema[]]
 

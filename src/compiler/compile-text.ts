@@ -1,35 +1,35 @@
 import {
   RawSchema,
-  TextSchema,
-  TextSchemas
+  TextChunkSchema,
+  TextSchema
 } from '../common'
 
 const matcher = /{([^}]*)}/
 
-export function compileText (schema: Partial<RawSchema>): TextSchemas {
+export function compileText (schema: Partial<RawSchema>): TextSchema {
   const str = schema.data || ''
   const compiled = compileChunk(str)
-  return compiled
+  return ['text', compiled]
 }
 
-function compileChunk (str: string, fns: TextSchemas = []): TextSchemas {
-  if (!str.length) return fns
+function compileChunk (str: string, chunks: TextChunkSchema[] = []): TextChunkSchema[] {
+  if (!str.length) return chunks
   const st = str.match(matcher)
   if (!st) {
-    fns.push(['textFixed', str])
-    return fns
+    chunks.push(['textFixed', str])
+    return chunks
   }
   if (st.index && st.index !== 0) {
     const out = str.substr(0, st.index)
-    fns.push(['textFixed', out])
+    chunks.push(['textFixed', out])
     const rest = str.substr(st.index)
-    return compileChunk(rest, fns)
+    return compileChunk(rest, chunks)
   }
   const prop = st[1].trim()
-  const fn: TextSchema = prop.startsWith(':')
+  const chunk: TextChunkSchema = prop.startsWith(':')
     ? ['textVar', prop.substr(1).trim()]
     : ['textConst', prop]
-  fns.push(fn)
+  chunks.push(chunk)
   const rest = str.substring(st[0].length)
-  return compileChunk(rest, fns)
+  return compileChunk(rest, chunks)
 }
