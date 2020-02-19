@@ -1,17 +1,18 @@
-import { Schema } from '../common'
+import {
+  RawSchema,
+  TextSchema,
+  TextSchemas
+} from '../common'
 
-type TextType = 'textFixed' | 'textConst' | 'textVar'
-type TextChunk = [TextType, string]
-type TextContent = TextChunk[]
 const matcher = /{([^}]*)}/
 
-export function compileTextContent (schema: Partial<Schema>): TextContent {
+export function compileText (schema: Partial<RawSchema>): TextSchemas {
   const str = schema.data || ''
   const compiled = compileChunk(str)
   return compiled
 }
 
-function compileChunk (str: string, fns: TextContent = []): TextContent {
+function compileChunk (str: string, fns: TextSchemas = []): TextSchemas {
   if (!str.length) return fns
   const st = str.match(matcher)
   if (!st) {
@@ -25,7 +26,7 @@ function compileChunk (str: string, fns: TextContent = []): TextContent {
     return compileChunk(rest, fns)
   }
   const prop = st[1].trim()
-  const fn: TextChunk = prop.startsWith(':')
+  const fn: TextSchema = prop.startsWith(':')
     ? ['textVar', prop.substr(1).trim()]
     : ['textConst', prop]
   fns.push(fn)

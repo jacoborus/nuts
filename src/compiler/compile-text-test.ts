@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileTextContent } from './compile-text'
+import { compileText } from './compile-text'
 
 const baseComp = {
   type: 'text',
@@ -7,14 +7,14 @@ const baseComp = {
 }
 
 test('Compile#textFixed empty', t => {
-  const compiled = compileTextContent(baseComp)
+  const compiled = compileText(baseComp)
   t.same([], compiled)
   t.end()
 })
 
 test('Compile#textFixed', t => {
   const schema = Object.assign({}, baseComp, { data: 'hola' })
-  const compiled = compileTextContent(schema)
+  const compiled = compileText(schema)
   t.is(compiled.length, 1)
   const [item] = compiled
   t.same(['textFixed', 'hola'], item)
@@ -23,7 +23,7 @@ test('Compile#textFixed', t => {
 
 test('Compile#textConstant', t => {
   const schema = Object.assign({}, baseComp, { data: '{ hola }' })
-  const compiled = compileTextContent(schema)
+  const compiled = compileText(schema)
   t.is(compiled.length, 1)
   const [item] = compiled
   t.same(['textConst', 'hola'], item)
@@ -32,7 +32,7 @@ test('Compile#textConstant', t => {
 
 test('Compile#textVar', t => {
   const schema = Object.assign({}, baseComp, { data: '{: hola }' })
-  const compiled = compileTextContent(schema)
+  const compiled = compileText(schema)
   t.is(compiled.length, 1)
   const [item] = compiled
   t.same(['textVar', 'hola'], item)

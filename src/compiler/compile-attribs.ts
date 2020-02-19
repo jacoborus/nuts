@@ -1,16 +1,13 @@
 import {
-  Schema,
+  RawSchema,
   matcherConst,
-  matcherVar
+  matcherVar,
+  AttType,
+  AttDef,
+  AttribCompilers
 } from '../common'
 
-type AttType = 'plain' | 'constant' | 'variable'
-type AttDef = [AttType, string, string]
-type Compilers = {
-  [K in AttType]: (att: string, value: string) => AttDef
-}
-
-export function compileAttribs (schema: Schema): AttDef[] {
+export function compileAttribs (schema: RawSchema): AttDef[] {
   const { attribs } = schema
   const list: AttDef[] = []
   Object.keys(attribs).forEach(att => {
@@ -31,7 +28,7 @@ function getAttType (value: string): AttType {
       : 'constant'
 }
 
-const compilers: Compilers = {
+const compilers: AttribCompilers = {
   plain: compileAttPlain,
   constant: compileAttConstant,
   variable: compileAttVariable
