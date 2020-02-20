@@ -5,8 +5,7 @@ import {
   ElemSchema,
   ElemType,
   ElemCompiler,
-  ElemCompilers,
-  spreadTextFns
+  ElemCompilers
 } from '../common'
 
 import { compileAttribs } from './compile-attribs'
@@ -32,5 +31,5 @@ function compileChildren (schema: RawTagSchema): ElemSchema[] {
     const render = compiler(childSchema)
     list.push(render)
   })
-  return spreadTextFns(list)
+  return list
 }

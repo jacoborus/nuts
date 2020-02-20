@@ -2,8 +2,7 @@ import {
   RawSchema,
   ElemCompiler,
   ElemCompilers,
-  ElemType,
-  spreadTextFns
+  ElemType
 } from '../common'
 
 import { compileTag } from './compile-tag'
@@ -21,6 +20,5 @@ export function compileTemplate (schemas: RawSchema[]) {
     const render = compiler(schema)
     list.push(render)
   })
-  const children = spreadTextFns(list)
-  return ['template', children]
+  return ['template', list]
 }
