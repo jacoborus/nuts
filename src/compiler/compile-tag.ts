@@ -5,7 +5,8 @@ import {
   ElemSchema,
   ElemType,
   ElemCompiler,
-  ElemCompilers
+  ElemCompilers,
+  spreadTextFns
 } from '../common'
 
 import { compileAttribs } from './compile-attribs'
@@ -33,13 +34,4 @@ function compileChildren (schema: RawTagSchema): ElemSchema[] {
     list.push(render)
   })
   return spreadTextFns(list)
-}
-
-function spreadTextFns (list: any[]): ElemSchema[] {
-  const final: ElemSchema[] = []
-  list.forEach(elem => {
-    if (elem.type !== 'text') final.push(elem)
-    else final.push(...elem)
-  })
-  return final
 }
