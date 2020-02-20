@@ -1,12 +1,12 @@
 import {
-  RawSchema,
+  RawTextSchema,
   TextChunkSchema,
   TextSchema
 } from '../common'
 
 const matcher = /{([^}]*)}/
 
-export function compileText (schema: Partial<RawSchema>): TextSchema {
+export function compileText (schema: RawTextSchema): TextSchema {
   const str = schema.data || ''
   const compiled = compileChunk(str)
   return ['text', compiled]

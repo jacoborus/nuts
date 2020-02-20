@@ -1,5 +1,5 @@
 import {
-  RawSchema,
+  RawTagSchema,
   matcherConst,
   matcherVar,
   AttType,
@@ -7,7 +7,7 @@ import {
   AttribCompilers
 } from '../common'
 
-export function compileAttribs (schema: RawSchema): AttDef[] {
+export function compileAttribs (schema: RawTagSchema): AttDef[] {
   const { attribs } = schema
   const list: AttDef[] = []
   Object.keys(attribs).forEach(att => {
