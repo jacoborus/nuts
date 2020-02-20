@@ -29,7 +29,6 @@ function compileChildren (schema: RawTagSchema): ElemSchema[] {
   const list: any[] = []
   children.forEach((childSchema: RawSchema) => {
     const compiler: ElemCompiler = compilers[childSchema.type as ElemType]
-    if (!compiler) console.log(childSchema.type)
     const render = compiler(childSchema)
     list.push(render)
   })
