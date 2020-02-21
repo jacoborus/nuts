@@ -1,15 +1,6 @@
 export const matcherConst = /{([^}]*)}/
 export const matcherVar = /{:([^}]*)}/
 
-export function spreadTextFns (list: any[]): ElemSchema[] {
-  const final: ElemSchema[] = []
-  list.forEach(elem => {
-    if (elem.type !== 'text') final.push(elem)
-    else final.push(...elem)
-  })
-  return final
-}
-
 // TYPES
 export type ElemType = 'tag' | 'text'
 export type RawTextSchema = {

@@ -22,21 +22,21 @@ test('Compile#textFixed', t => {
 })
 
 test('Compile#textConstant', t => {
-  const schema = Object.assign({}, baseComp, { data: '{ hola }' })
+  const schema = Object.assign({}, baseComp, { data: '{{ hola }}' })
   const compiled = compileText(schema)
   t.same(compiled, ['text', [['textConst', 'hola']]])
   t.end()
 })
 
 test('Compile#textVar', t => {
-  const schema = Object.assign({}, baseComp, { data: '{: hola }' })
+  const schema = Object.assign({}, baseComp, { data: '{{: hola }}' })
   const compiled = compileText(schema)
   t.same(compiled, ['text', [['textVar', 'hola']]])
   t.end()
 })
 
 test('Compile#textVar', t => {
-  const schema = Object.assign({}, baseComp, { data: 'Fixed { constantino } y {: valentino }' })
+  const schema = Object.assign({}, baseComp, { data: 'Fixed {{ constantino }} y {{: valentino }}' })
   const compiled = compileText(schema)
   t.same(compiled, ['text', [
     ['textFixed', 'Fixed '],

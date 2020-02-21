@@ -4,7 +4,7 @@ import {
   TextSchema
 } from '../common'
 
-const matcher = /{([^}]*)}/
+const matcher = /{{([^}]*)}}/
 
 export function compileText (schema: RawTextSchema): TextSchema {
   const str = schema.data || ''
