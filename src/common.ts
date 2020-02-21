@@ -2,6 +2,11 @@ export const matcherConst = /{([^}]*)}/
 export const matcherVar = /{:([^}]*)}/
 
 // TYPES
+export interface Box {
+  __isBox: true
+  [ index: string ]: any
+}
+
 export type ElemType = 'tag' | 'text'
 export type RawTextSchema = {
   type: string

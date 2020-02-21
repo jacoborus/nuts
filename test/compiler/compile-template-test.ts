@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileTemplate } from '../../compiler/compile-template'
+import { compileTemplate } from '../../src/compiler/compile-template'
 
 const baseComp = [{
   type: 'tag',
