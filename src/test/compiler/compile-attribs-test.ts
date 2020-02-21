@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileAttribs } from './compile-attribs'
+import { compileAttribs } from '../../compiler/compile-attribs'
 
 const baseComp = {
   type: 'tag',

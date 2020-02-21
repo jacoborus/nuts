@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileText } from './compile-text'
+import { compileText } from '../../compiler/compile-text'
 
 const baseComp = {
   type: 'text',
