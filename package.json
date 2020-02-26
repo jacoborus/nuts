@@ -38,7 +38,7 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "boxes": "^0.30.1",
+    "boxes": "0.31.0",
     "domhandler": "3.0.0",
     "htmlparser2": "4.0.0"
   },
