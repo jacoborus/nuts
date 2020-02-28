@@ -6,32 +6,32 @@ const baseComp = {
   data: ''
 }
 
-test('Compile#textFixed empty', t => {
+test('Compile#textPlain empty', t => {
   const compiled = compileText(baseComp)
   t.same(['text', []], compiled)
   t.end()
 })
 
-test('Compile#textFixed', t => {
+test('Compile#textPlain', t => {
   const schema = Object.assign({}, baseComp, { data: 'hola' })
   const compiled = compileText(schema)
   t.is(compiled.length, 2)
   t.is(compiled[1].length, 1)
-  t.same(compiled, ['text', [['textFixed', 'hola']]])
+  t.same(compiled, ['text', [['plain', 'hola']]])
   t.end()
 })
 
 test('Compile#textConstant', t => {
   const schema = Object.assign({}, baseComp, { data: '{{ hola }}' })
   const compiled = compileText(schema)
-  t.same(compiled, ['text', [['textConst', 'hola']]])
+  t.same(compiled, ['text', [['constant', 'hola']]])
   t.end()
 })
 
 test('Compile#textVar', t => {
   const schema = Object.assign({}, baseComp, { data: '{{: hola }}' })
   const compiled = compileText(schema)
-  t.same(compiled, ['text', [['textVar', 'hola']]])
+  t.same(compiled, ['text', [['variable', 'hola']]])
   t.end()
 })
 
@@ -39,10 +39,10 @@ test('Compile#textVar', t => {
   const schema = Object.assign({}, baseComp, { data: 'Fixed {{ constantino }} y {{: valentino }}' })
   const compiled = compileText(schema)
   t.same(compiled, ['text', [
-    ['textFixed', 'Fixed '],
-    ['textConst', 'constantino'],
-    ['textFixed', ' y '],
-    ['textVar', 'valentino']
+    ['plain', 'Fixed '],
+    ['constant', 'constantino'],
+    ['plain', ' y '],
+    ['variable', 'valentino']
   ]])
   t.end()
 })

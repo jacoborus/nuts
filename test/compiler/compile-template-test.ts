@@ -27,7 +27,7 @@ test('Compile#template', t => {
   t.notOk(children.length, 'no children')
 
   t.is(kind2, 'text', 'text content type')
-  t.is(kind3, 'textFixed', 'value')
+  t.is(kind3, 'plain', 'value')
   t.is(value, 'hola', 'value')
 
   t.end()

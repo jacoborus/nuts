@@ -1,6 +1,7 @@
 export const matcherConst = /{([^}]*)}/
 export const matcherVar = /{:([^}]*)}/
 
+export type ChunkType = 'plain' | 'constant' | 'variable'
 // TYPES
 export type ElemType = 'tag' | 'text'
 export type RawTextSchema = {
@@ -15,14 +16,14 @@ export type RawTagSchema = {
 }
 export type RawSchema = RawTextSchema | RawTagSchema
 
-export type TextChunkType = 'textFixed' | 'textConst' | 'textVar'
+export type TextChunkType = ChunkType
 export type TextChunkSchema = [TextChunkType, string]
 export type TextSchema = ['text', TextChunkSchema[]]
 
 export interface Attribs {
   [ index: string ]: string
 }
-export type AttType = 'plain' | 'constant' | 'variable'
+export type AttType = ChunkType
 export type AttDef = [AttType, string, string]
 export type AttribCompilers = {
   [K in AttType]: (att: string, value: string) => AttDef
