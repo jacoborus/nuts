@@ -3,6 +3,7 @@ const arr = [
   require('./compiler/compile-attribs-test'),
   require('./compiler/compile-tag-test'),
   require('./compiler/compile-template-test'),
+  require('./builder/build-text-test'),
   require('./builder/build-attribs-test')
 ]
 

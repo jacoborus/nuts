@@ -4,12 +4,12 @@ import {
   // renderTextContent,
   renderTextVariable,
   renderTextConstant,
-  renderTextFixed
+  renderTextPlain
 } from '../../src/dom/dom-text'
 
-test('DOM: renderTextFixed', t => {
+test('DOM: renderTextPlain', t => {
   const str = 'Hello nuts'
-  const render = renderTextFixed(str)
+  const render = renderTextPlain(str)
   const comp = render({})
   t.is(comp.elem.textContent, str, 'render ok')
   t.end()

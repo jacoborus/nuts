@@ -24,7 +24,7 @@ export function renderTextContent (...fns: RenderFn[]): RenderFn {
   }
 }
 
-export function renderTextFixed (txt: string): RenderFn {
+export function renderTextPlain (txt: string): RenderFn {
   return () => ({
     elem: document.createTextNode(txt),
     links: []
