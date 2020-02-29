@@ -1,22 +1,20 @@
-import { on, BoxController } from 'boxes'
-
-type Box = { [index: string]: any }
-
-interface RenderedComp {
-  elem: Element | Text | DocumentFragment
-  links?: any[]
-}
-
-export type RenderAtt = (elem: Element, scope: Box) => BoxController[] | void
-export type RenderFn = (scope: Box) => RenderedComp
+import { on } from 'boxes'
+import {
+  Box,
+  RenderAtt
+} from './dom-common'
 
 export function renderAttPlain (att: string, value: string): RenderAtt {
-  return (elem: Element) => { elem.setAttribute(att, value) }
+  return (elem: Element) => {
+    elem.setAttribute(att, value)
+    return []
+  }
 }
 
 export function renderAttConstant (att: string, value: string): RenderAtt {
   return (elem: Element, scope: Box) => {
     elem.setAttribute(att, scope[value])
+    return []
   }
 }
 

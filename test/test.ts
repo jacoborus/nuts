@@ -4,7 +4,8 @@ const arr = [
   require('./compiler/compile-tag-test'),
   require('./compiler/compile-template-test'),
   require('./builder/build-text-test'),
-  require('./builder/build-attribs-test')
+  require('./builder/build-attribs-test'),
+  require('./builder/build-tag-test')
 ]
 
 console.log('test files:', arr.length)

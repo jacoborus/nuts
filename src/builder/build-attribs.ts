@@ -1,5 +1,5 @@
 import {
-  AttDef,
+  AttSchema,
   AttType
 } from '../../src/common'
 
@@ -9,7 +9,7 @@ const attKinds: {[K in AttType]: string} = {
   variable: 'renderAttVariable'
 }
 
-export function buildAtts (defs: AttDef[]): string {
+export function buildAttribs (defs: AttSchema[]): string {
   return defs.map(([kind, att, prop]) => {
     return `${attKinds[kind]}('${att}','${prop}')`
   })

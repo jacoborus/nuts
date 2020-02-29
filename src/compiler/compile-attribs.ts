@@ -3,13 +3,13 @@ import {
   matcherConst,
   matcherVar,
   AttType,
-  AttDef,
+  AttSchema,
   AttribCompilers
 } from '../common'
 
-export function compileAttribs (schema: RawTagSchema): AttDef[] {
+export function compileAttribs (schema: RawTagSchema): AttSchema[] {
   const { attribs } = schema
-  const list: AttDef[] = []
+  const list: AttSchema[] = []
   Object.keys(attribs).forEach(att => {
     const value = attribs[att]
     const attType = getAttType(value)
@@ -34,16 +34,16 @@ const compilers: AttribCompilers = {
   variable: compileAttVariable
 }
 
-function compileAttPlain (att: string, value: string): AttDef {
+function compileAttPlain (att: string, value: string): AttSchema {
   return ['plain', att, value]
 }
 
-function compileAttConstant (att: string, value: string): AttDef {
+function compileAttConstant (att: string, value: string): AttSchema {
   const prop = (value.match(matcherConst) as [string, string])[1].trim()
   return ['constant', att, prop]
 }
 
-function compileAttVariable (att: string, value: string): AttDef {
+function compileAttVariable (att: string, value: string): AttSchema {
   const prop = (value.match(matcherVar) as [string, string])[1].trim()
   return ['variable', att, prop]
 }

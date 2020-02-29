@@ -1,3 +1,6 @@
+import { compileAttribs } from './compile-attribs'
+import { compileText } from './compile-text'
+
 import {
   RawSchema,
   RawTagSchema,
@@ -7,9 +10,6 @@ import {
   ElemCompiler,
   ElemCompilers
 } from '../common'
-
-import { compileAttribs } from './compile-attribs'
-import { compileText } from './compile-text'
 
 const compilers: ElemCompilers = {
   tag: compileTag as ElemCompiler,

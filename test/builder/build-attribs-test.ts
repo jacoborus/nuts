@@ -1,12 +1,12 @@
 import test from 'tape'
 import {
-  AttDef
+  AttSchema
 } from '../../src/common'
 
-import { buildAtts } from '../../src/builder/build-attribs'
+import { buildAttribs } from '../../src/builder/build-attribs'
 
-test('BuildAtts', t => {
-  const atts: AttDef[] = [
+test('Build attribs', t => {
+  const atts: AttSchema[] = [
     ['plain', 'p1', 'p2'],
     ['constant', 'c1', 'c2'],
     ['variable', 'v1', 'v2']
@@ -14,7 +14,7 @@ test('BuildAtts', t => {
 
   const result = "renderAttPlain('p1','p2'),renderAttConstant('c1','c2'),renderAttVariable('v1','v2')"
 
-  const built = buildAtts(atts)
+  const built = buildAttribs(atts)
   t.is(built, result)
   t.end()
 })
