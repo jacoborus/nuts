@@ -5,8 +5,9 @@ import {
 } from './dom-common'
 
 export function renderComponent (renderTemplate: RenderFn) {
-  return (scope: Box = {}) => {
+  return (scope: Box = {}, setup?: (box: Box) => void) => {
     scope = getBox(scope)
+    if (setup) setup(scope)
     const comp = renderTemplate(scope)
     let parentNode: Element
     return {
