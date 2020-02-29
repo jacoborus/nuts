@@ -20,7 +20,7 @@ test('Build template', t => {
             [],
             []
           ]
-        ],
+        ]
       ],
       [
         'text',
@@ -28,7 +28,7 @@ test('Build template', t => {
       ]
     ]
   ]
-  const result = "['template',[renderTag('div',[renderAttPlain('p1','p2'),renderAttVariable('v1','v2')],[renderTag('span',[],[])]),renderTextConstant('c1')]]"
+  const result = "renderTemplate([renderTag('div',[renderAttPlain('p1','p2'),renderAttVariable('v1','v2')],[renderTag('span',[],[])]),renderTextConstant('c1')]])"
   const str = buildTemplate(templateSchema as TemplateSchema)
   t.is(str, result)
   t.end()
