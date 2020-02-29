@@ -20,6 +20,7 @@ export type RawTagSchema = {
 }
 export type RawSchema = RawTextSchema | RawTagSchema
 
+export type TemplateSchema = ['template', ElemSchema[]]
 export type TextChunkType = ChunkType
 export type TextChunkSchema = [TextChunkType, string]
 export type TextSchema = ['text', TextChunkSchema[]]

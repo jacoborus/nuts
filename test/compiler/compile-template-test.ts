@@ -1,5 +1,6 @@
 import test from 'tape'
 import { compileTemplate } from '../../src/compiler/compile-template'
+import { TagSchema } from '../../src/common'
 
 const baseComp = [{
   type: 'tag',
@@ -17,10 +18,13 @@ const baseComp = [{
 test('Compile#template', t => {
   // TODO: clean this mess
   const [kind, [
-    [kind1, name, attribs, children],
+    child1,
     [kind2, [[kind3, value]]]
   ]] = compileTemplate(baseComp)
+
+  const [kind1, name, attribs, children] = child1 as TagSchema
   t.is(kind, 'template', 'template type')
+
   t.is(kind1, 'tag', 'tag type')
   t.is(name, 'tagname', 'tag name')
   t.same(attribs, [['plain', 'id', 'myid']], 'attribs')

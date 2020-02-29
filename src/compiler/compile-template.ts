@@ -2,7 +2,8 @@ import {
   RawSchema,
   ElemCompiler,
   ElemCompilers,
-  ElemType
+  ElemType,
+  TemplateSchema
 } from '../common'
 
 import { compileTag } from './compile-tag'
@@ -13,7 +14,7 @@ const compilers: ElemCompilers = {
   text: compileText as ElemCompiler
 }
 
-export function compileTemplate (schemas: RawSchema[]) {
+export function compileTemplate (schemas: RawSchema[]): TemplateSchema {
   const list: any = []
   schemas.forEach((schema: RawSchema) => {
     const compiler: ElemCompiler = compilers[schema.type as ElemType]
