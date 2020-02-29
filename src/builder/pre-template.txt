@@ -1,0 +1,7 @@
+import { renderAttPlain, renderAttConstant, renderAttVariable } from './dom-attrib'
+import { renderComponent } from './dom-component'
+import { renderTag } from './dom-tag'
+import { renderTemplate } from './dom-template'
+import { renderTextContent } from './dom-text'
+
+export const render = 
