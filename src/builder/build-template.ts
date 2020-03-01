@@ -16,7 +16,7 @@ const builders: Builders = {
 
 export function buildTemplate (schema: TemplateSchema): string {
   const children = buildChildren(schema[1])
-  return `renderTemplate([${children}]])`
+  return `renderTemplate([${children}])`
 }
 
 function buildChildren (children: ElemSchema[]): string {
