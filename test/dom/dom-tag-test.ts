@@ -20,9 +20,15 @@ test('DOM: renderTag', t => {
   )
   const box = getBox({ varname: 'two' })
   const comp = render(box)
+
   t.is(comp.elem.tagName, 'SPAN', 'render tag name')
   t.is(comp.elem.outerHTML, '<span uno="one" dos="two"><span></span><div></div></span>', 'render tag full')
+
   box.varname = 'hola'
   t.is(comp.elem.outerHTML, '<span uno="one" dos="hola"><span></span><div></div></span>', 'change attribute')
+
+  comp.links.forEach(link => link.off())
+  box.varname = 'adios'
+  t.is(comp.elem.outerHTML, '<span uno="one" dos="hola"><span></span><div></div></span>', 'off attribute')
   t.end()
 })
