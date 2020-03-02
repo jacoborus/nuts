@@ -1,47 +1,28 @@
 import test from 'tape'
 import { getBox } from 'boxes'
+import { renderTag } from '../../src/dom/dom-tag'
 import {
-  // renderTextContent,
-  renderTextVariable,
-  renderTextConstant,
-  renderTextPlain
-} from '../../src/dom/dom-text'
+  renderAttPlain,
+  renderAttVariable
+} from '../../src/dom/dom-attrib'
 
-test('DOM: renderTextPlain', t => {
-  const str = 'Hello nuts'
-  const render = renderTextPlain(str)
-  const comp = render({})
-  t.is(comp.elem.textContent, str, 'render ok')
-  t.end()
-})
-
-test('DOM: renderTextConstant', t => {
-  const braces = 'myvar'
-  const render = renderTextConstant(braces)
-  const str = 'Hello nuts'
-  const comp = render({ myvar: str })
-  t.is(comp.elem.textContent, str, 'render ok')
-  t.end()
-})
-
-test('DOM: renderVariable', t => {
-  const braces = 'myvar'
-  const render = renderTextVariable(braces)
-  const str = 'Hello nuts'
-  const box = getBox({ myvar: str })
+test('DOM: renderTag', t => {
+  const render = renderTag(
+    'span',
+    [
+      renderAttPlain('uno', 'one'),
+      renderAttVariable('dos', 'varname')
+    ],
+    [
+      renderTag('span', [], []),
+      renderTag('div', [], [])
+    ]
+  )
+  const box = getBox({ varname: 'two' })
   const comp = render(box)
-  t.is(comp.elem.textContent, str, 'render')
-  box.myvar = 'a'
-  t.is(comp.elem.textContent, 'a', 'change value')
-  comp.links[0].off()
-  box.myvar = 'b'
-  t.is(comp.elem.textContent, 'a', 'link.off')
+  t.is(comp.elem.tagName, 'SPAN', 'render tag name')
+  t.is(comp.elem.outerHTML, '<span uno="one" dos="two"><span></span><div></div></span>', 'render tag full')
+  box.varname = 'hola'
+  t.is(comp.elem.outerHTML, '<span uno="one" dos="hola"><span></span><div></div></span>', 'change attribute')
   t.end()
 })
-
-// test('DOM: renderTextContent', t => {
-//   const fns = [
-//   ]
-//   t.fail()
-//   t.end()
-// })

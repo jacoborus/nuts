@@ -1,6 +1,5 @@
 import test from 'tape'
 import { getBox } from 'boxes'
-import { RenderFn } from '../../src/dom/dom-common'
 import {
   renderTextContent,
   renderTextVariable,
