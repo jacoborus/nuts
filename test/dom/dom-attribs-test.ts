@@ -1,47 +1,41 @@
 import test from 'tape'
 import { getBox } from 'boxes'
 import {
-  // renderTextContent,
-  renderTextVariable,
-  renderTextConstant,
-  renderTextPlain
-} from '../../src/dom/dom-text'
+  renderAttVariable,
+  renderAttConstant,
+  renderAttPlain
+} from '../../src/dom/dom-attrib'
 
-test('DOM: renderTextPlain', t => {
-  const str = 'Hello nuts'
-  const render = renderTextPlain(str)
-  const comp = render({})
-  t.is(comp.elem.textContent, str, 'render ok')
+test('DOM: renderAttPlain', t => {
+  const elem = document.createElement('span')
+  const render = renderAttPlain('uno', 'one')
+  const links = render(elem, {})
+  t.is(links.length, 0, 'no links')
+  t.is(elem.getAttribute('uno'), 'one', 'adds attrib')
   t.end()
 })
 
-test('DOM: renderTextConstant', t => {
-  const braces = 'myvar'
-  const render = renderTextConstant(braces)
-  const str = 'Hello nuts'
-  const comp = render({ myvar: str })
-  t.is(comp.elem.textContent, str, 'render ok')
+test('DOM renderAttConstant', t => {
+  const elem = document.createElement('div')
+  const render = renderAttConstant('uno', 'varname')
+  const box = getBox({ varname: 'one' })
+  const links = render(elem, box)
+  t.is(links.length, 0, 'no links')
+  t.is(elem.getAttribute('uno'), 'one', 'adds attrib')
   t.end()
 })
 
-test('DOM: renderVariable', t => {
-  const braces = 'myvar'
-  const render = renderTextVariable(braces)
-  const str = 'Hello nuts'
-  const box = getBox({ myvar: str })
-  const comp = render(box)
-  t.is(comp.elem.textContent, str, 'render')
-  box.myvar = 'a'
-  t.is(comp.elem.textContent, 'a', 'change value')
-  comp.links[0].off()
-  box.myvar = 'b'
-  t.is(comp.elem.textContent, 'a', 'link.off')
+test('DOM renderAttVariable', t => {
+  const elem = document.createElement('div')
+  const render = renderAttVariable('uno', 'varname')
+  const box = getBox({ varname: 'one' })
+  const links = render(elem, box)
+  t.is(links.length, 1, 'one link')
+  t.is(elem.getAttribute('uno'), 'one', 'adds attrib')
+  box.varname = 'two'
+  t.is(elem.getAttribute('uno'), 'two', 'change attrib')
+  links.forEach(link => link.off())
+  box.varname = 'three'
+  t.is(elem.getAttribute('uno'), 'two', 'off attrib')
   t.end()
 })
-
-// test('DOM: renderTextContent', t => {
-//   const fns = [
-//   ]
-//   t.fail()
-//   t.end()
-// })
