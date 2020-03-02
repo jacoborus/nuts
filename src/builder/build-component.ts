@@ -6,10 +6,11 @@ import {
 
 import { buildTemplate } from './build-template'
 
-const pretemplatePath = resolve(__dirname, 'pre-template.txt')
+const pretemplatePath = resolve(__dirname, '../../src/builder/pre-template.txt')
 const pretemplate = readFileSync(pretemplatePath, 'UTF8')
+const lastLine = 'export const render = renderComponent('
 
 export function buildComponent (schema: TemplateSchema) {
   const templateString = buildTemplate(schema)
-  return pretemplate + templateString
+  return pretemplate + lastLine + templateString + "')'"
 }
