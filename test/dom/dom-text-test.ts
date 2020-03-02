@@ -1,7 +1,8 @@
 import test from 'tape'
 import { getBox } from 'boxes'
+import { RenderFn } from '../../src/dom/dom-common'
 import {
-  // renderTextContent,
+  renderTextContent,
   renderTextVariable,
   renderTextConstant,
   renderTextPlain
@@ -39,9 +40,20 @@ test('DOM: renderVariable', t => {
   t.end()
 })
 
-// test('DOM: renderTextContent', t => {
-//   const fns = [
-//   ]
-//   t.fail()
-//   t.end()
-// })
+test('DOM: renderTextContent', t => {
+  const container = document.createElement('div')
+  const str = 'Hello nuts'
+  const braces = 'count'
+  const box = getBox({ count: 1 })
+  const fns = [
+    renderTextPlain(str),
+    renderTextConstant(braces),
+    renderTextVariable(braces)
+  ]
+  const render = renderTextContent(...fns)
+  const comp = render(box)
+  container.appendChild(comp.elem)
+  t.is(container.textContent, 'Hello nuts11')
+  t.is(comp.links.length, 1)
+  t.end()
+})
