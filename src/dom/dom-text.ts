@@ -33,7 +33,7 @@ export function renderTextPlain (txt: string): RenderFn {
 
 export function renderTextConstant (prop: string): RenderFn {
   return (scope: Box) => ({
-    elem: document.createTextNode(scope[prop]),
+    elem: document.createTextNode(scope[prop] ?? ''),
     links: []
   })
 }
@@ -42,7 +42,7 @@ export function renderTextVariable (prop: string): RenderFn {
   return function (scope: Box) {
     const elem = document.createTextNode(scope[prop])
     const evCtrl = on(scope, prop, (_:string, __: string, newValue: any) => {
-      elem.textContent = typeof newValue !== 'undefined' ? newValue : ''
+      elem.textContent = newValue ?? ''
     })
     const links = [evCtrl]
     return { elem, links }
