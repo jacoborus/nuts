@@ -17,8 +17,8 @@ export function renderTemplate (renderFns: RenderFn[]): RenderComp {
     })
     return { elem: fragment, links }
   }
-  return (setup?: (box: Box) => void, scope: Box = {}): RenderedNut => {
-    scope = getBox(scope)
+  return (setup?: (box: Box) => void, props: object = {}): RenderedNut => {
+    const scope = getBox(props)
     if (setup) setup(scope)
     const comp = renderComponent(scope)
     let parentNode: Element
