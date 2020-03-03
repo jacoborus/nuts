@@ -23,6 +23,7 @@ export function renderTemplate (renderFns: RenderFn[]): RenderComp {
     const comp = renderComponent(scope)
     let parentNode: Element
     return function mount (target: Element) {
+      console.log(target)
       target.appendChild(comp.elem)
       parentNode = target
       return function () {

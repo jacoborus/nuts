@@ -2,7 +2,6 @@ import {
   renderAttPlain,
   renderAttConstant,
   renderAttVariable,
-  renderComponent,
   renderTag,
   renderTemplate,
   renderTextContent,

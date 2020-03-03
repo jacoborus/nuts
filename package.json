@@ -4,7 +4,7 @@
   "description": "Reactive template compiler for javascript apps",
   "main": "lib/dom/core.js",
   "scripts": {
-    "build": "rm -rf lib && tsc",
+    "build": "rm -rf lib && tsc && cp ./src/builder/pre-template.txt ./lib/builder/pre-template.txt",
     "linter": "eslint src/**/**.ts",
     "test": "tape -r ts-node/register test/test.ts",
     "browser-test": "rm -rf temp-test && tsc -p tsconfig-test.json && browserify ./temp-test/test/dom/dom-test.js -o ./temp-test/bundle-test.js"
