@@ -15,7 +15,6 @@ Describe your view (`myview.nuts.html`):
 
 ```html
 <template>
-  <h1>Hello World!</h1>
   <span id="{ myid }">Count: {{: count }}</span>
   <button @click="increment">+1</button>
 </template>
@@ -52,9 +51,9 @@ Now your app should look like this:
 
 ```html
 <div id="target">
-  <h1>Hello World!</h1>
   <span id="awesome">Count: 0</span>
+  <button>+1</button>
 </div>
 ```
 
-and count will increment 1 every second
+and count will increment 1 every click on button
