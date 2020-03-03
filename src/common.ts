@@ -28,7 +28,7 @@ export type TextSchema = ['text', TextChunkSchema[]]
 export interface Attribs {
   [ index: string ]: string
 }
-export type AttType = ChunkType
+export type AttType = ChunkType | 'event'
 export type AttSchema = [AttType, string, string]
 export type AttribCompilers = {
   [K in AttType]: (att: string, value: string) => AttSchema

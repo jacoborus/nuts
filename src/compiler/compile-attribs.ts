@@ -12,7 +12,7 @@ export function compileAttribs (schema: RawTagSchema): AttSchema[] {
   const list: AttSchema[] = []
   Object.keys(attribs).forEach(att => {
     const value = attribs[att]
-    const attType = getAttType(value)
+    const attType = getAttType(att, value)
     const compiler = compilers[attType]
     const compiled = compiler(att, value)
     list.push(compiled)
@@ -20,7 +20,8 @@ export function compileAttribs (schema: RawTagSchema): AttSchema[] {
   return list
 }
 
-function getAttType (value: string): AttType {
+function getAttType (att: string, value: string): AttType {
+  if (att.startsWith('@')) return 'event'
   return !value.match(matcherConst)
     ? 'plain'
     : value.match(matcherVar)
@@ -31,7 +32,8 @@ function getAttType (value: string): AttType {
 const compilers: AttribCompilers = {
   plain: compileAttPlain,
   constant: compileAttConstant,
-  variable: compileAttVariable
+  variable: compileAttVariable,
+  event: compileAttEvent
 }
 
 function compileAttPlain (att: string, value: string): AttSchema {
@@ -46,4 +48,9 @@ function compileAttConstant (att: string, value: string): AttSchema {
 function compileAttVariable (att: string, value: string): AttSchema {
   const prop = (value.match(matcherVar) as [string, string])[1].trim()
   return ['variable', att, prop]
+}
+
+function compileAttEvent (att: string, value: string): AttSchema {
+  const attName = att.slice(1)
+  return ['event', attName, value]
 }

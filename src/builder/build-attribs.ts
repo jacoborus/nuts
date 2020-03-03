@@ -6,7 +6,8 @@ import {
 const attKinds: {[K in AttType]: string} = {
   plain: 'renderAttPlain',
   constant: 'renderAttConstant',
-  variable: 'renderAttVariable'
+  variable: 'renderAttVariable',
+  event: 'renderAttVariable'
 }
 
 export function buildAttribs (defs: AttSchema[]): string {
