@@ -7,7 +7,7 @@ const attKinds: {[K in AttType]: string} = {
   plain: 'renderAttPlain',
   constant: 'renderAttConstant',
   variable: 'renderAttVariable',
-  event: 'renderAttVariable'
+  event: 'renderAttEvent'
 }
 
 export function buildAttribs (defs: AttSchema[]): string {
