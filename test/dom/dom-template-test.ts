@@ -14,6 +14,8 @@ function setup (scope: Box) {
 
 test('DOM: renderTemplate', t => {
   const target = document.createElement('div')
+  document.body.appendChild(target)
+  target.setAttribute('id', 'renderTemplate')
   const render = renderTemplate([
     renderTag(
       'span',
@@ -31,7 +33,7 @@ test('DOM: renderTemplate', t => {
 
   const comp = render(setup)
 
-  comp(target)
+  comp('#renderTemplate')
   t.is(target.innerHTML, '<span uno="one" dos="two"><span></span><div></div></span><span></span>', 'render tag full')
 
   t.end()

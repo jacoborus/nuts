@@ -22,10 +22,9 @@ export function renderTemplate (renderFns: RenderFn[]): RenderComp {
     if (setup) setup(scope)
     const comp = renderComponent(scope)
     let parentNode: Element
-    return function mount (target: Element) {
-      console.log(target)
-      target.appendChild(comp.elem)
-      parentNode = target
+    return function mount (selector: string): () => void {
+      parentNode = document.querySelector(selector) || document.createElement('span')
+      parentNode.appendChild(comp.elem)
       return function () {
         comp.links.forEach(link => link.off())
         parentNode.removeChild(comp.elem)
