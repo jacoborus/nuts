@@ -1,11 +1,13 @@
-import { BoxController } from 'boxes'
+import { BoxController, getBox } from 'boxes'
 import {
   Box,
-  RenderFn
+  RenderFn,
+  RenderComp,
+  RenderedNut
 } from './dom-common'
 
-export function renderTemplate (renderFns: RenderFn[]): RenderFn {
-  return (scope: Box) => {
+export function renderTemplate (renderFns: RenderFn[]): RenderComp {
+  function renderComponent (scope: Box) {
     const fragment = document.createDocumentFragment()
     const links: BoxController[] = []
     renderFns.forEach(renderFn => {
@@ -14,5 +16,19 @@ export function renderTemplate (renderFns: RenderFn[]): RenderFn {
       links.push(...comp.links)
     })
     return { elem: fragment, links }
+  }
+  return (setup?: (box: Box) => void, scope: Box = {}): RenderedNut => {
+    scope = getBox(scope)
+    if (setup) setup(scope)
+    const comp = renderComponent(scope)
+    let parentNode: Element
+    return function mount (target: Element) {
+      target.appendChild(comp.elem)
+      parentNode = target
+      return function () {
+        comp.links.forEach(link => link.off())
+        parentNode.removeChild(comp.elem)
+      }
+    }
   }
 }

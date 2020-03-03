@@ -6,7 +6,8 @@ const arr = [
   require('./builder/build-text-test'),
   require('./builder/build-attribs-test'),
   require('./builder/build-tag-test'),
-  require('./builder/build-template-test')
+  require('./builder/build-template-test'),
+  require('./cli/cli-compile-test')
 ]
 
 console.log('test files:', arr.length)
