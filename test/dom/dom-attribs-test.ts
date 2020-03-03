@@ -1,6 +1,7 @@
 import test from 'tape'
 import { getBox } from 'boxes'
 import {
+  renderAttEvent,
   renderAttVariable,
   renderAttConstant,
   renderAttPlain
@@ -37,5 +38,21 @@ test('DOM renderAttVariable', t => {
   links.forEach(link => link.off())
   box.varname = 'three'
   t.is(elem.getAttribute('uno'), 'two', 'off attrib')
+  t.end()
+})
+
+test('DOM renderAttEvent', t => {
+  const elem = document.createElement('div')
+  const render = renderAttEvent('click', 'ev')
+  const box = getBox({ count: 0 })
+  box.ev = () => ++box.count
+  const links = render(elem, box)
+  elem.click()
+  t.is(box.count, 1, 'click 1')
+  elem.click()
+  t.is(box.count, 2, 'click 2')
+  links.forEach(link => link.off())
+  elem.click()
+  t.is(box.count, 2, 'off')
   t.end()
 })

@@ -1,4 +1,4 @@
-import { on } from 'boxes'
+import { on, BoxController } from 'boxes'
 import {
   Box,
   RenderAtt
@@ -26,5 +26,13 @@ export function renderAttVariable (att: string, value: string): RenderAtt {
     })
     const links = [evCtrl]
     return links
+  }
+}
+
+export function renderAttEvent (att: string, value: string): RenderAtt {
+  return (elem: Element, scope: Box) => {
+    elem.addEventListener(att, scope[value])
+    const evCtrl = { off () { elem.removeEventListener(att, scope[value]) } }
+    return [evCtrl as BoxController]
   }
 }

@@ -17,6 +17,7 @@ Describe your view (`myview.nuts.html`):
 <template>
   <h1>Hello World!</h1>
   <span id="{ myid }">Count: {{: count }}</span>
+  <button @click="increment">+1</button>
 </template>
 ```
 
@@ -35,7 +36,7 @@ import * as view from './myview.nuts.js'
 export const render = view.render(function (scope) {
   scope.myid = 'awesome'
   scope.count = 0
-  window.setInterval(() => ++scope.count, 1000)
+  scope.increment = () => ++scope.count
 })
 ```
 
