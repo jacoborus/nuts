@@ -1,7 +1,11 @@
 import test from 'tape'
+import fs from 'fs'
+import path from 'path'
 
 import { buildTemplate } from '../../src/builder/build-template'
 import { TemplateSchema } from '../../src/common'
+
+const pretemplate = fs.readFileSync(path.resolve(__dirname, '../../src/builder/pre-template.txt'), 'UTF8')
 
 test('Build template', t => {
   const templateSchema = [
@@ -30,6 +34,6 @@ test('Build template', t => {
   ]
   const result = "renderTemplate([renderTag('div',[renderAttPlain('p1','p2'),renderAttVariable('v1','v2')],[renderTag('span',[],[])]),renderTextConstant('c1')])"
   const str = buildTemplate(templateSchema as TemplateSchema)
-  t.is(str, result)
+  t.is(str, pretemplate + 'export const render = ' + result)
   t.end()
 })
