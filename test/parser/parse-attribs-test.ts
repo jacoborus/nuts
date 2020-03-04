@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileAttribs } from '../../src/compiler/compile-attribs'
+import { parseAttribs } from '../../src/parser/parse-attribs'
 
 const baseComp = {
   type: 'tag',
@@ -8,13 +8,13 @@ const baseComp = {
   children: []
 }
 
-test('Compile#attribs', t => {
-  const compiled = compileAttribs(baseComp)
-  t.same([], compiled)
+test('Parse#attribs', t => {
+  const parsed = parseAttribs(baseComp)
+  t.same([], parsed)
   t.end()
 })
 
-test('CompileAttFixed', t => {
+test('ParseAttFixed', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: 'myId',
@@ -22,16 +22,16 @@ test('CompileAttFixed', t => {
       other: 'otherAtt'
     }
   })
-  const compiled = compileAttribs(schema)
-  t.is(compiled.length, 3)
-  const [id, className, other] = compiled
+  const parsed = parseAttribs(schema)
+  t.is(parsed.length, 3)
+  const [id, className, other] = parsed
   t.same(['plain', 'id', 'myId'], id)
   t.same(['plain', 'class', 'myClass'], className)
   t.same(['plain', 'other', 'otherAtt'], other)
   t.end()
 })
 
-test('CompileAttConstant', t => {
+test('ParseAttConstant', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: '{ myId }',
@@ -39,16 +39,16 @@ test('CompileAttConstant', t => {
       other: 'otherAtt'
     }
   })
-  const compiled = compileAttribs(schema)
-  t.is(compiled.length, 3)
-  const [id, className, other] = compiled
+  const parsed = parseAttribs(schema)
+  t.is(parsed.length, 3)
+  const [id, className, other] = parsed
   t.same(['constant', 'id', 'myId'], id)
   t.same(['constant', 'class', 'myClass'], className)
   t.same(['plain', 'other', 'otherAtt'], other)
   t.end()
 })
 
-test('CompileAttVariable', t => {
+test('parseAttVariable', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: '{: myId }',
@@ -56,25 +56,25 @@ test('CompileAttVariable', t => {
       other: 'otherAtt'
     }
   })
-  const compiled = compileAttribs(schema)
-  t.is(compiled.length, 3)
-  const [id, className, other] = compiled
+  const parsed = parseAttribs(schema)
+  t.is(parsed.length, 3)
+  const [id, className, other] = parsed
   t.same(['variable', 'id', 'myId'], id)
   t.same(['variable', 'class', 'myClass'], className)
   t.same(['plain', 'other', 'otherAtt'], other)
   t.end()
 })
 
-test('CompileAttEvent', t => {
+test('ParseAttEvent', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '@click': 'clicked',
       '@dblclick': 'doubleclicked'
     }
   })
-  const compiled = compileAttribs(schema)
-  t.is(compiled.length, 2)
-  const [single, double] = compiled
+  const parsed = parseAttribs(schema)
+  t.is(parsed.length, 2)
+  const [single, double] = parsed
   t.same(single, ['event', 'click', 'clicked'])
   t.same(double, ['event', 'dblclick', 'doubleclicked'])
   t.end()

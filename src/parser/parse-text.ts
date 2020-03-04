@@ -6,13 +6,13 @@ import {
 
 const matcher = /{{([^}]*)}}/
 
-export function compileText (schema: RawTextSchema): TextSchema {
+export function parseText (schema: RawTextSchema): TextSchema {
   const str = schema.data || ''
-  const compiled = compileChunk(str)
-  return ['text', compiled]
+  const parsed = parseChunk(str)
+  return ['text', parsed]
 }
 
-function compileChunk (str: string, chunks: TextChunkSchema[] = []): TextChunkSchema[] {
+function parseChunk (str: string, chunks: TextChunkSchema[] = []): TextChunkSchema[] {
   if (!str.length) return chunks
   const st = str.match(matcher)
   if (!st) {
@@ -23,7 +23,7 @@ function compileChunk (str: string, chunks: TextChunkSchema[] = []): TextChunkSc
     const out = str.substr(0, st.index)
     chunks.push(['plain', out])
     const rest = str.substr(st.index)
-    return compileChunk(rest, chunks)
+    return parseChunk(rest, chunks)
   }
   const prop = st[1].trim()
   const chunk: TextChunkSchema = prop.startsWith(':')
@@ -31,5 +31,5 @@ function compileChunk (str: string, chunks: TextChunkSchema[] = []): TextChunkSc
     : ['constant', prop]
   chunks.push(chunk)
   const rest = str.substring(st[0].length)
-  return compileChunk(rest, chunks)
+  return parseChunk(rest, chunks)
 }

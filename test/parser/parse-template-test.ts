@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileTemplate } from '../../src/compiler/compile-template'
+import { parseTemplate } from '../../src/parser/parse-template'
 import { TagSchema } from '../../src/common'
 
 const baseComp = [{
@@ -15,12 +15,12 @@ const baseComp = [{
   data: 'hola'
 }]
 
-test('Compile#template', t => {
+test('Parse#template', t => {
   // TODO: clean this mess
   const [kind, [
     child1,
     [kind2, [[kind3, value]]]
-  ]] = compileTemplate(baseComp)
+  ]] = parseTemplate(baseComp)
 
   const [kind1, name, attribs, children] = child1 as TagSchema
   t.is(kind, 'template', 'template type')

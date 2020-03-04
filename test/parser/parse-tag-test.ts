@@ -1,5 +1,5 @@
 import test from 'tape'
-import { compileTag } from '../../src/compiler/compile-tag'
+import { parseTag } from '../../src/parser/parse-tag'
 
 const baseComp = {
   type: 'tag',
@@ -15,8 +15,8 @@ const baseComp = {
   ]
 }
 
-test('Compile#tag', t => {
-  const [kind, name, attribs, children] = compileTag(baseComp)
+test('Parse#tag', t => {
+  const [kind, name, attribs, children] = parseTag(baseComp)
   t.is(kind, 'tag')
   t.is(name, 'tagname')
   t.same(attribs, [['plain', 'id', 'myid']])
