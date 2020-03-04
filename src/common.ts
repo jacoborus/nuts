@@ -30,13 +30,13 @@ export interface Attribs {
 }
 export type AttType = ChunkType | 'event'
 export type AttSchema = [AttType, string, string]
-export type AttribCompilers = {
+export type AttribParsers = {
   [K in AttType]: (att: string, value: string) => AttSchema
 }
 
 export type TagSchema = ['tag', string, AttSchema[], ElemSchema[]]
 export type ElemSchema = TextSchema | TagSchema
-export type ElemCompiler = (schema: RawSchema) => ElemSchema
-export type ElemCompilers = {
-  [ K in ElemType ]: ElemCompiler
+export type ElemParser = (schema: RawSchema) => ElemSchema
+export type ElemParsers = {
+  [ K in ElemType ]: ElemParser
 }

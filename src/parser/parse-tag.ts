@@ -7,13 +7,13 @@ import {
   TagSchema,
   ElemSchema,
   ElemType,
-  ElemCompiler,
-  ElemCompilers
+  ElemParser,
+  ElemParsers
 } from '../common'
 
-const parsers: ElemCompilers = {
-  tag: parseTag as ElemCompiler,
-  text: parseText as ElemCompiler
+const parsers: ElemParsers = {
+  tag: parseTag as ElemParser,
+  text: parseText as ElemParser
 }
 
 export function parseTag (schema: RawTagSchema): TagSchema {
@@ -27,7 +27,7 @@ function parseChildren (schema: RawTagSchema): ElemSchema[] {
   const { children } = schema
   const list: any[] = []
   children.forEach((childSchema: RawSchema) => {
-    const parser: ElemCompiler = parsers[childSchema.type as ElemType]
+    const parser: ElemParser = parsers[childSchema.type as ElemType]
     const render = parser(childSchema)
     list.push(render)
   })

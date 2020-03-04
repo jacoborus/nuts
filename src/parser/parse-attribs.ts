@@ -4,7 +4,7 @@ import {
   matcherVar,
   AttType,
   AttSchema,
-  AttribCompilers
+  AttribParsers
 } from '../common'
 
 export function parseAttribs (schema: RawTagSchema): AttSchema[] {
@@ -29,7 +29,7 @@ function getAttType (att: string, value: string): AttType {
       : 'constant'
 }
 
-const parsers: AttribCompilers = {
+const parsers: AttribParsers = {
   plain: parseAttPlain,
   constant: parseAttConstant,
   variable: parseAttVariable,

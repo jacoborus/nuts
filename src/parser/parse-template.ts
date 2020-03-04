@@ -1,7 +1,7 @@
 import {
   RawSchema,
-  ElemCompiler,
-  ElemCompilers,
+  ElemParser,
+  ElemParsers,
   ElemType,
   TemplateSchema
 } from '../common'
@@ -9,15 +9,15 @@ import {
 import { parseTag } from './parse-tag'
 import { parseText } from './parse-text'
 
-const parsers: ElemCompilers = {
-  tag: parseTag as ElemCompiler,
-  text: parseText as ElemCompiler
+const parsers: ElemParsers = {
+  tag: parseTag as ElemParser,
+  text: parseText as ElemParser
 }
 
 export function parseTemplate (schemas: RawSchema[]): TemplateSchema {
   const list: any = []
   schemas.forEach((schema: RawSchema) => {
-    const parser: ElemCompiler = parsers[schema.type as ElemType]
+    const parser: ElemParser = parsers[schema.type as ElemType]
     const render = parser(schema)
     list.push(render)
   })
