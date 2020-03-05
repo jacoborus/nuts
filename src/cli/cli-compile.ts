@@ -1,8 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import { parseHTML } from './parse-html'
-import { RawSchema } from '../common'
-import { parseTemplate } from '../parser/parse-template'
+import { RawTagSchema } from '../common'
+import { parseTag } from '../parser/parse-tag'
 import { buildTemplate } from '../builder/build-template'
 
 const inputPath = path.resolve(process.argv[2])
@@ -10,7 +10,8 @@ const basename = path.basename(inputPath, '.html')
 const rawTemplate = fs.readFileSync(path.resolve(inputPath), 'UTF8')
 
 const schema = parseHTML(rawTemplate)
-const templateSchema = parseTemplate(schema as unknown as RawSchema[])
+const templateSchema = parseTag(schema as RawTagSchema)
+// TODO: already removed parsetemplate
 const str = buildTemplate(templateSchema)
 
 const outputFile = path.resolve(basename + '.ts')

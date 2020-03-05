@@ -1,4 +1,5 @@
 import {
+  RawNutSchema,
   RawTagSchema,
   matcherConst,
   matcherVar,
@@ -7,7 +8,7 @@ import {
   AttribParsers
 } from '../common'
 
-export function parseAttribs (schema: RawTagSchema): AttSchema[] {
+export function parseAttribs (schema: RawTagSchema | RawNutSchema): AttSchema[] {
   const { attribs } = schema
   const list: AttSchema[] = []
   Object.keys(attribs).forEach(att => {

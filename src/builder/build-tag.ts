@@ -1,5 +1,6 @@
 import { buildText } from './build-text'
 import { buildAttribs } from './build-attribs'
+import { buildNut } from './build-nut'
 
 import {
   TagSchema,
@@ -11,7 +12,8 @@ import {
 type Builders = {[ K in ElemType ]: ElemBuilder}
 const builders: Builders = {
   tag: buildTag as ElemBuilder,
-  text: buildText as ElemBuilder
+  text: buildText as ElemBuilder,
+  nut: buildNut as ElemBuilder
 }
 
 export function buildTag (schema: TagSchema): string {

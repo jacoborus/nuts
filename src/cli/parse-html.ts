@@ -1,5 +1,6 @@
 import * as html from 'html5parser'
 
+type Attribs = Record<string, string>
 interface Schema {
   type: string
   name?: string
@@ -13,8 +14,6 @@ function findTemplate (schemas: Schema[]) {
     return schema.type === 'tag' && schema.name === 'template'
   })
   return schema
-    ? schema.children
-    : []
 }
 
 export function parseHTML (input: string) {
@@ -46,8 +45,6 @@ function cleanRawSchema (node: html.INode): Schema {
     children
   }
 }
-
-type Attribs = Record<string, string>
 
 function cleanAttributes (attributes: html.IAttribute[]): Attribs {
   const atts: Attribs = {}

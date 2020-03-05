@@ -3,7 +3,6 @@ const arr = [
   require('./parser/parse-attribs-test'),
   require('./parser/parse-tag-test'),
   require('./parser/parse-nut-test'),
-  require('./parser/parse-template-test'),
   require('./builder/build-text-test'),
   require('./builder/build-attribs-test'),
   require('./builder/build-tag-test'),

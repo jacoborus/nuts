@@ -4,28 +4,35 @@ import path from 'path'
 import {
   ElemType,
   ElemBuilder,
-  TemplateSchema,
+  TagSchema,
   ElemSchema
 } from '../common'
 
 import { buildTag } from './build-tag'
 import { buildText } from './build-text'
+import { buildNut } from './build-nut'
 
 type Builders = {[ K in ElemType ]: ElemBuilder}
 
-const pretemplate = fs.readFileSync(path.resolve(__dirname, './pre-template.txt'), 'UTF8')
+export function buildTemplate (schema: TagSchema): string {
+  const rawChildren = schema[3]
+  const children = buildChildren(rawChildren)
+  return printTemplate(children)
+}
+
+const pretemplate = fs.readFileSync(
+  path.resolve(__dirname, './pre-template.txt'),
+  'UTF8'
+)
+
 const builders: Builders = {
   tag: buildTag as ElemBuilder,
-  text: buildText as ElemBuilder
+  text: buildText as ElemBuilder,
+  nut: buildNut as ElemBuilder
 }
 
 function printTemplate (children: string): string {
   return pretemplate + `export const render = renderTemplate([${children}])`
-}
-
-export function buildTemplate (schema: TemplateSchema): string {
-  const children = buildChildren(schema[1])
-  return printTemplate(children)
 }
 
 function buildChildren (children: ElemSchema[]): string {
