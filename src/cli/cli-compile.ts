@@ -11,7 +11,6 @@ const rawTemplate = fs.readFileSync(path.resolve(inputPath), 'UTF8')
 
 const schema = parseHTML(rawTemplate)
 const templateSchema = parseTag(schema as RawTagSchema)
-// TODO: already removed parsetemplate
 const str = buildTemplate(templateSchema)
 
 const outputFile = path.resolve(basename + '.ts')
