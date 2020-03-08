@@ -13,7 +13,7 @@ export function renderAttPlain (att: string, value: string): RenderAtt {
 
 export function renderAttConstant (att: string, value: string): RenderAtt {
   return (elem: Element, scope: Box) => {
-    elem.setAttribute(att, scope[value])
+    elem.setAttribute(att, scope[value] ?? '')
     return []
   }
 }
@@ -22,7 +22,7 @@ export function renderAttVariable (att: string, value: string): RenderAtt {
   return (elem: Element, scope: Box) => {
     elem.setAttribute(att, scope[value])
     const evCtrl = on(scope, value, (_:string, __: string, newValue: any) => {
-      elem.setAttribute(att, newValue || '')
+      elem.setAttribute(att, newValue ?? '')
     })
     const links = [evCtrl]
     return links
