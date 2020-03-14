@@ -7,42 +7,52 @@ const baseComp = {
 }
 
 test('Parse#textPlain empty', t => {
+  const result = {
+    kind: 'text',
+    mode: 'plain',
+    literal: '',
+    variables: []
+  }
   const parsed = parseText(baseComp)
-  t.same(['text', []], parsed)
+  t.same(parsed, result)
   t.end()
 })
 
 test('Parse#textPlain', t => {
-  const schema = Object.assign({}, baseComp, { data: 'hola' })
+  const result = {
+    kind: 'text',
+    mode: 'plain',
+    literal: 'hola mundo ',
+    variables: []
+  }
+  const schema = Object.assign({}, baseComp, { data: 'hola mundo ' })
   const parsed = parseText(schema)
-  t.is(parsed.length, 2)
-  t.is(parsed[1].length, 1)
-  t.same(parsed, ['text', [['plain', 'hola']]])
+  t.same(parsed, result)
   t.end()
 })
 
 test('Parse#textConstant', t => {
-  const schema = Object.assign({}, baseComp, { data: '{{ hola }}' })
+  const result = {
+    kind: 'text',
+    mode: 'constant',
+    literal: 'counter ${count}.',
+    variables: []
+  }
+  const schema = Object.assign({}, baseComp, { data: 'counter {{ count }}.' })
   const parsed = parseText(schema)
-  t.same(parsed, ['text', [['constant', 'hola']]])
+  t.same(parsed, result)
   t.end()
 })
 
 test('Parse#textVar', t => {
-  const schema = Object.assign({}, baseComp, { data: '{{: hola }}' })
+  const result = {
+    kind: 'text',
+    mode: 'variable',
+    literal: 'Fixed ${constantino} y ${valentina}',
+    variables: ['valentina']
+  }
+  const schema = Object.assign({}, baseComp, { data: 'Fixed {{ constantino }} y {{: valentina }}' })
   const parsed = parseText(schema)
-  t.same(parsed, ['text', [['variable', 'hola']]])
-  t.end()
-})
-
-test('Parse#textVar', t => {
-  const schema = Object.assign({}, baseComp, { data: 'Fixed {{ constantino }} y {{: valentino }}' })
-  const parsed = parseText(schema)
-  t.same(parsed, ['text', [
-    ['plain', 'Fixed '],
-    ['constant', 'constantino'],
-    ['plain', ' y '],
-    ['variable', 'valentino']
-  ]])
+  t.same(parsed, result)
   t.end()
 })

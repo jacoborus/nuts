@@ -1,35 +1,64 @@
 import {
   RawTextSchema,
-  TextChunkSchema,
+  TextChunkType,
   TextSchema
 } from '../common'
 
-const matcher = /{{([^}]*)}}/
-
-export function parseText (schema: RawTextSchema): TextSchema {
-  const str = schema.data || ''
-  const parsed = parseChunk(str)
-  return ['text', parsed]
+interface ParseChunkOpts {
+  str?: string
+  literal: string
+  variables: TextSchema['variables']
 }
 
-function parseChunk (str: string, chunks: TextChunkSchema[] = []): TextChunkSchema[] {
-  if (!str.length) return chunks
-  const st = str.match(matcher)
+const matchTextConst = /{{([^}]*)}}/
+const matchTextVar = /{{:([^}]*)}}/
+
+export function parseText (schema: RawTextSchema): TextSchema {
+  const str = schema.data
+  const mode = getTextMode(str)
+  const { literal, variables } = parseChunk({ str })
+  return {
+    kind: 'text',
+    mode,
+    literal,
+    variables
+  }
+}
+
+function getTextMode (str: string): TextChunkType {
+  if (str.match(matchTextVar)) return 'variable'
+  if (str.match(matchTextConst)) return 'constant'
+  return 'plain'
+}
+
+function parseChunk ({ str = '', literal = '', variables = [] }: Partial<ParseChunkOpts>): ParseChunkOpts {
+  if (!str.length) return { literal, variables }
+  const st = str.match(matchTextConst)
   if (!st) {
-    chunks.push(['plain', str])
-    return chunks
+    return {
+      literal: literal + str,
+      variables
+    }
   }
   if (st.index && st.index !== 0) {
     const out = str.substr(0, st.index)
-    chunks.push(['plain', out])
     const rest = str.substr(st.index)
-    return parseChunk(rest, chunks)
+    return parseChunk({
+      str: rest,
+      literal: literal + out,
+      variables
+    })
   }
-  const prop = st[1].trim()
-  const chunk: TextChunkSchema = prop.startsWith(':')
-    ? ['variable', prop.substr(1).trim()]
-    : ['constant', prop]
-  chunks.push(chunk)
+  let prop = st[1].trim()
   const rest = str.substring(st[0].length)
-  return parseChunk(rest, chunks)
+  const isVar = prop.startsWith(':')
+  if (isVar) {
+    prop = prop.substr(1).trim()
+    variables.push(prop)
+  }
+  return parseChunk({
+    str: rest,
+    literal: literal + '${' + prop + '}',
+    variables
+  })
 }

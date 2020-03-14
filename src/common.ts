@@ -33,22 +33,43 @@ export type ChunkType = 'plain' | 'constant' | 'variable'
 export type AttType = ChunkType | 'event'
 export type TextChunkType = ChunkType
 
-export type AttSchema = [AttType, string, string]
-export type AttribParsers = {
-  [K in AttType]: (att: string, value: string) => AttSchema
+// SCHEMAS
+export interface AttSchema {
+  kind: AttType
+  propName: string
+  value: string | number
 }
-
-export type TextChunkSchema = [TextChunkType, string]
-export type TextSchema = ['text', TextChunkSchema[]]
-export type TemplateSchema = ['template', ElemSchema[]]
-export type NutSchema = ['nut', string, AttSchema[]]
-export type TagSchema = ['tag', string, AttSchema[], ElemSchema[]]
+export interface TextSchema {
+  kind: 'text'
+  mode: ChunkType
+  literal: string
+  variables: string[]
+}
+export interface TemplateSchema {
+  kind: 'template'
+  children: ElemSchema[]
+}
+export interface NutSchema {
+  kind: 'nut'
+  name: string
+  // props: any
+}
+export interface TagSchema {
+  kind: 'tag'
+  name: string
+  attribs: AttSchema[]
+  children: ElemSchema[]
+}
 export type ElemSchema = TextSchema | TagSchema | NutSchema
 
+// PARSERS
 export type NutParser = (schema: RawNutSchema) => NutSchema
 export type TagParser = (schema: RawTagSchema) => TagSchema
 export type TextParser = (schema: RawTextSchema) => TextSchema
 export type ElemParser = (schema: RawSchema) => ElemSchema
 export type ElemParsers = {
   [ K in ElemType ]: ElemParser
+}
+export type AttribParsers = {
+  [K in AttType]: (att: string, value: string) => AttSchema
 }
