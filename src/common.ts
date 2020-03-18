@@ -30,7 +30,18 @@ export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema
 
 export type ElemType = 'tag' | 'text' | 'nut'
 export type ChunkType = 'plain' | 'constant' | 'variable'
-export type AttType = ChunkType | 'event'
+export type AttType =
+  'plain' |
+  'constant' |
+  'variable' |
+  'event' |
+  'ifcond' |
+  'elsecond' |
+  'ifelsecond' |
+  'prop' |
+  'props' |
+  'cssclass'
+
 export type TextChunkType = ChunkType
 
 // SCHEMAS
@@ -38,6 +49,7 @@ export interface AttSchema {
   kind: AttType
   propName: string
   value: string | number
+  variables: string[]
 }
 export interface TextSchema {
   kind: 'text'
@@ -72,4 +84,9 @@ export type ElemParsers = {
 }
 export type AttribParsers = {
   [K in AttType]: (att: string, value: string) => AttSchema
+}
+export interface ParseChunkOpts {
+  str?: string
+  literal: string
+  variables: TextSchema['variables']
 }
