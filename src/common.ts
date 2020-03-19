@@ -34,12 +34,12 @@ export type AttType =
   'plain' |
   'constant' |
   'variable' |
+  'booleanConst' |
+  'booleanVar' |
   'event' |
-  'ifcond' |
-  'elsecond' |
-  'ifelsecond' |
+  'conditionConst' |
+  'conditionVar' |
   'prop' |
-  'props' |
   'cssclass'
 
 export type TextChunkType = ChunkType
