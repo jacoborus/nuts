@@ -101,7 +101,7 @@ function parseBooleanConst (att: string, value: string): AttSchema {
   return {
     kind: 'booleanConst',
     propName,
-    value: '${' + val + '}',
+    value: val,
     variables: []
   }
 }
@@ -112,7 +112,7 @@ function parseBooleanVar (att: string, value: string): AttSchema {
   return {
     kind: 'booleanVar',
     propName,
-    value: '${' + val + '}',
+    value: val,
     variables: [val]
   }
 }

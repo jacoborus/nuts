@@ -1,20 +1,45 @@
 import test from 'tape'
 import {
-  TextChunkSchema
+  TextSchema
 } from '../../src/common'
 
 import { buildText } from '../../src/builder/build-text'
 
-test('Build#TextContent', t => {
-  const chunks: TextChunkSchema[] = [
-    ['plain', 'p1'],
-    ['constant', 'c1'],
-    ['variable', 'v1']
-  ]
+test('Build#TextContent plain', t => {
+  const schema = {
+    kind: 'text',
+    mode: 'plain',
+    literal: 'uno',
+    variables: []
+  }
+  const result = "renderTextPlain(() => 'uno', [])"
+  const built = buildText(schema as TextSchema)
+  t.is(built, result)
+  t.end()
+})
 
-  const result = "renderTextPlain('p1'),renderTextConstant('c1'),renderTextVariable('v1')"
+test('Build#TextContent constant', t => {
+  const schema = {
+    kind: 'text',
+    mode: 'constant',
+    literal: "${box.uno ?? ''}",
+    variables: []
+  }
+  const result = "renderTextConstant(box => `${box.uno ?? ''}`, [])"
+  const built = buildText(schema as TextSchema)
+  t.is(built, result)
+  t.end()
+})
 
-  const built = buildText(['text', chunks])
+test('Build#TextContent variable', t => {
+  const schema = {
+    kind: 'text',
+    mode: 'variable',
+    literal: "${box.uno ?? ''}",
+    variables: ['uno']
+  }
+  const result = "renderTextVariable(box => `${box.uno ?? ''}`, ['uno'])"
+  const built = buildText(schema as TextSchema)
   t.is(built, result)
   t.end()
 })

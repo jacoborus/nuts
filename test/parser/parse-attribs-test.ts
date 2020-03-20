@@ -62,7 +62,7 @@ test('ParseAttConstant', t => {
   const resultId = {
     kind: 'constant',
     propName: 'id',
-    value: '${myId}',
+    value: "${box.myId ?? ''}",
     variables: []
   }
   t.same(id, resultId)
@@ -76,7 +76,7 @@ test('ParseAttConstant', t => {
   const resultAnother = {
     kind: 'constant',
     propName: 'another',
-    value: '${anotherAtt}',
+    value: "${box.anotherAtt ?? ''}",
     variables: []
   }
   t.same(another, resultAnother)
@@ -97,7 +97,7 @@ test('parseAttVariable', t => {
   const resultId = {
     kind: 'variable',
     propName: 'id',
-    value: '${myId}',
+    value: "${box.myId ?? ''}",
     variables: ['myId']
   }
   t.same(id, resultId)
@@ -111,7 +111,7 @@ test('parseAttVariable', t => {
   const resultAnother = {
     kind: 'variable',
     propName: 'another',
-    value: '${anotherAtt}',
+    value: "${box.anotherAtt ?? ''}",
     variables: ['anotherAtt']
   }
   t.same(another, resultAnother)
@@ -158,14 +158,14 @@ test('ParseBooleanConst', t => {
   const resultChecked = {
     kind: 'booleanConst',
     propName: 'checked',
-    value: '${uno}',
+    value: 'uno',
     variables: []
   }
   t.same(checked, resultChecked)
   const resultOther = {
     kind: 'booleanConst',
     propName: 'other',
-    value: '${other}',
+    value: 'other',
     variables: []
   }
   t.same(other, resultOther)
@@ -185,14 +185,14 @@ test('ParseBooleanVar', t => {
   const resultChecked = {
     kind: 'booleanVar',
     propName: 'checked',
-    value: '${uno}',
+    value: 'uno',
     variables: ['uno']
   }
   t.same(checked, resultChecked)
   const resultOther = {
     kind: 'booleanVar',
     propName: 'other',
-    value: '${other}',
+    value: 'other',
     variables: ['other']
   }
   t.same(other, resultOther)

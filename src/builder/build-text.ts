@@ -9,10 +9,31 @@ const textKinds: {[K in TextChunkType]: string} = {
   variable: 'renderTextVariable'
 }
 
-export function buildText (schema: TextSchema): string {
-  const [, defs] = schema
-  return defs.map(([kind, prop]) => {
-    return `${textKinds[kind]}('${prop}')`
-  })
-    .join(',')
+const builders = {
+  plain: buildTextPlain,
+  constant: buildTextConst,
+  variable: buildTextVar
+}
+
+export function buildText (schema: TextSchema) {
+  const { mode } = schema
+  return builders[mode](schema)
+}
+
+export function buildTextPlain (schema: TextSchema): string {
+  const { mode, literal } = schema
+  const fn = textKinds[mode]
+  return fn + "(() => '" + literal + "', [])"
+}
+
+export function buildTextConst (schema: TextSchema): string {
+  const { mode, literal } = schema
+  const fn = textKinds[mode]
+  return fn + '(box => `' + literal + '`, [])'
+}
+
+export function buildTextVar (schema: TextSchema): string {
+  const { mode, literal, variables } = schema
+  const fn = textKinds[mode]
+  return fn + '(box => `' + literal + "`, ['" + variables.join(',') + "'])"
 }

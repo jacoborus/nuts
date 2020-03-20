@@ -35,7 +35,7 @@ test('Parse#textConstant', t => {
   const result = {
     kind: 'text',
     mode: 'constant',
-    literal: 'counter ${count}.',
+    literal: "counter ${box.count ?? ''}.",
     variables: []
   }
   const schema = Object.assign({}, baseComp, { data: 'counter {{ count }}.' })
@@ -48,7 +48,7 @@ test('Parse#textVar', t => {
   const result = {
     kind: 'text',
     mode: 'variable',
-    literal: 'Fixed ${constantino} y ${valentina}',
+    literal: "Fixed ${box.constantino ?? ''} y ${box.valentina ?? ''}",
     variables: ['valentina']
   }
   const schema = Object.assign({}, baseComp, { data: 'Fixed {{ constantino }} y {{: valentina }}' })

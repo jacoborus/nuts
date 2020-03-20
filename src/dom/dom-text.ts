@@ -9,7 +9,7 @@ interface RenderedComp {
 type RenderFn = (scope: Box) => RenderedComp
 // type Updater = (kind: string, oldValue: any, newValue: any) => void
 
-export function renderTextContent (...fns: RenderFn[]): RenderFn {
+export function renderTextContent (fn: RenderFn): RenderFn {
   return (scope: Box) => {
     const fragment = document.createDocumentFragment()
     const links: string[] = []
@@ -24,9 +24,9 @@ export function renderTextContent (...fns: RenderFn[]): RenderFn {
   }
 }
 
-export function renderTextPlain (txt: string): RenderFn {
+export function renderTextPlain (literal: () => string, _: []): RenderFn {
   return () => ({
-    elem: document.createTextNode(txt),
+    elem: document.createTextNode(literal()),
     links: []
   })
 }

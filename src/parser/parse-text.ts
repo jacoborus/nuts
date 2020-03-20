@@ -12,9 +12,10 @@ export function parseText (schema: RawTextSchema): TextSchema {
   const str = schema.data
   const mode = getTextMode(str)
   const parseChunk = createStringParser('text')
+  const kind = 'text'
   const { literal, variables } = parseChunk({ str })
   return {
-    kind: 'text',
+    kind,
     mode,
     literal,
     variables
