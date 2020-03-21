@@ -4,7 +4,7 @@ import path from 'path'
 import {
   ElemType,
   ElemBuilder,
-  TemplateSchema,
+  TagSchema,
   ElemSchema
 } from '../common'
 
@@ -14,7 +14,7 @@ import { buildNut } from './build-nut'
 
 type Builders = {[ K in ElemType ]: ElemBuilder}
 
-export function buildTemplate (schema: TemplateSchema): string {
+export function buildTemplate (schema: TagSchema): string {
   const rawChildren = schema.children
   const children = buildChildren(rawChildren)
   return printTemplate(children)

@@ -66,10 +66,6 @@ export interface TextSchema {
   literal: string
   variables: string[]
 }
-export interface TemplateSchema {
-  kind: 'template'
-  children: ElemSchema[]
-}
 export interface NutSchema {
   kind: 'nut'
   name: string
