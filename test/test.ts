@@ -5,8 +5,8 @@ const arr = [
   require('./parser/parse-nut-test'),
   require('./builder/build-text-test'),
   require('./builder/build-attribs-test'),
-  require('./builder/build-tag-test')
-  // require('./builder/build-nut-test'),
+  require('./builder/build-tag-test'),
+  require('./builder/build-nut-test')
   // require('./builder/build-template-test'),
   // require('./cli/cli-compile-test')
 ]

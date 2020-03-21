@@ -7,5 +7,5 @@ import {
 export function buildNut (schema: NutSchema): string {
   const { name, props } = schema
   const finalProps = buildProps(props)
-  return `renderNut('${name}',[${finalProps}])`
+  return `renderNut('${name}',${finalProps})`
 }

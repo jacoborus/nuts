@@ -20,7 +20,7 @@ test('Build#Nut', t => {
       }
     ]
   }
-  const result = "renderNut('my-comp',[renderProp('p1','v1'),renderProp('p2','v2')])"
+  const result = "renderNut('my-comp',renderProps({'p1':'v1','p2':'v2'}))"
   const str = buildNut(nutSchema as NutSchema)
   t.is(str, result)
   t.end()
