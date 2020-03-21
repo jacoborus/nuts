@@ -99,7 +99,7 @@ test('Build attribs: boolean variable', t => {
     value: 'test.value',
     variables: ['test', 'value']
   }
-  const result = "renderAttBoolVar('testname','test.value', ['test','value'])"
+  const result = "renderAttBoolVar('testname','test.value',['test','value'])"
   const built = buildAttBoolVar(schema as AttSchema)
   t.is(built, result)
   t.end()
