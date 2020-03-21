@@ -17,16 +17,16 @@ const builders: Builders = {
 }
 
 export function buildTag (schema: TagSchema): string {
-  const [, name, atts, children] = schema
-  const attribs = buildAttribs(atts)
+  const { name, attribs, children } = schema
+  const atts = buildAttribs(attribs)
   const childTags = buildChildren(children)
-  return `renderTag('${name}',[${attribs}],[${childTags}])`
+  return `renderTag('${name}',[${atts}],[${childTags}])`
 }
 
 function buildChildren (children: ElemSchema[]): string {
   const childTags = children.map(child => {
-    const builder: ElemBuilder = builders[child[0]]
-    return builder(child as ElemSchema)
+    const build = builders[child.kind]
+    return build(child)
   })
   return childTags.join(',')
 }

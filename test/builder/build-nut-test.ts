@@ -4,15 +4,23 @@ import { buildNut } from '../../src/builder/build-nut'
 import { NutSchema } from '../../src/common'
 
 test('Build#Nut', t => {
-  const nutSchema = [
-    'nut',
-    'my-comp',
-    [
-      ['plain', 'p1', 'p2'],
-      ['variable', 'v1', 'v2']
+  const nutSchema = {
+    kind: 'nut',
+    name: 'my-comp',
+    props: [
+      {
+        kind: 'plain',
+        propName: 'p1',
+        value: 'v1'
+      },
+      {
+        kind: 'variable',
+        propName: 'p2',
+        value: 'v2'
+      }
     ]
-  ]
-  const result = "renderNut('my-comp',[renderAttPlain('p1','p2'),renderAttVariable('v1','v2')])"
+  }
+  const result = "renderNut('my-comp',[renderProp('p1','v1'),renderProp('p2','v2')])"
   const str = buildNut(nutSchema as NutSchema)
   t.is(str, result)
   t.end()
