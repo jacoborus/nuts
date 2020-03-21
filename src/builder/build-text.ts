@@ -23,7 +23,7 @@ export function buildText (schema: TextSchema) {
 export function buildTextPlain (schema: TextSchema): string {
   const { mode, literal } = schema
   const fn = textKinds[mode]
-  return fn + "(() => '" + literal + "', [])"
+  return fn + `('${literal}')`
 }
 
 export function buildTextConst (schema: TextSchema): string {

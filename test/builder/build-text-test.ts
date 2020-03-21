@@ -12,7 +12,7 @@ test('Build#TextContent plain', t => {
     literal: 'uno',
     variables: []
   }
-  const result = "renderTextPlain(() => 'uno', [])"
+  const result = "renderTextPlain('uno')"
   const built = buildText(schema as TextSchema)
   t.is(built, result)
   t.end()
