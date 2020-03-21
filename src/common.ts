@@ -42,6 +42,15 @@ export type AttType =
   'prop' |
   'cssclass'
 
+export type FinalAttType =
+  'plain' |
+  'constant' |
+  'variable' |
+  'booleanConst' |
+  'booleanVar' |
+  'event' |
+  'cssclass'
+
 export type TextChunkType = ChunkType
 
 // SCHEMAS
