@@ -4,7 +4,7 @@ import path from 'path'
 import {
   ElemType,
   ElemBuilder,
-  TagSchema,
+  TemplateSchema,
   ElemSchema
 } from '../common'
 
@@ -14,8 +14,8 @@ import { buildNut } from './build-nut'
 
 type Builders = {[ K in ElemType ]: ElemBuilder}
 
-export function buildTemplate (schema: TagSchema): string {
-  const rawChildren = schema[3]
+export function buildTemplate (schema: TemplateSchema): string {
+  const rawChildren = schema.children
   const children = buildChildren(rawChildren)
   return printTemplate(children)
 }
@@ -37,7 +37,7 @@ function printTemplate (children: string): string {
 
 function buildChildren (children: ElemSchema[]): string {
   const childTags = children.map(child => {
-    const builder: ElemBuilder = builders[child[0] as ElemType]
+    const builder: ElemBuilder = builders[child.kind]
     return builder(child as ElemSchema)
   })
   return childTags.join(',')
