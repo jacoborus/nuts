@@ -23,7 +23,7 @@ export function parseTag (schema: RawTagSchema): TagSchema {
   const { name } = schema
   const attribs = parseAttribs(schema)
   const children = parseChildren(schema)
-  return ['tag', name, attribs, children]
+  return { kind: 'tag', name, attribs, children }
 }
 
 function parseChildren (schema: RawTagSchema): ElemSchema[] {

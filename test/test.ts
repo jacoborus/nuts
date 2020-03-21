@@ -1,7 +1,7 @@
 const arr = [
   require('./parser/parse-text-test'),
   require('./parser/parse-attribs-test'),
-  // require('./parser/parse-tag-test'),
+  require('./parser/parse-tag-test'),
   // require('./parser/parse-nut-test'),
   require('./builder/build-text-test')
   // require('./builder/build-attribs-test'),

@@ -20,11 +20,16 @@ const baseComp = {
 }
 
 test('Parse#tag', t => {
-  const [kind, name, attribs, children] = parseTag(baseComp)
+  const { kind, name, attribs, children } = parseTag(baseComp)
   t.is(kind, 'tag')
   t.is(name, 'span')
-  t.same(attribs, [['plain', 'id', 'myid']])
-  t.is(children[0][0], 'text')
-  t.is(children[1][0], 'nut')
+  t.same(attribs, [{
+    kind: 'plain',
+    propName: 'id',
+    value: 'myid',
+    variables: []
+  }])
+  t.is(children[0].kind, 'text')
+  t.is(children[1].kind, 'nut')
   t.end()
 })

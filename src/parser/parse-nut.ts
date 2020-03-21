@@ -8,5 +8,6 @@ import {
 export function parseNut (schema: RawNutSchema): NutSchema {
   const { name } = schema
   const attribs = parseAttribs(schema)
-  return ['nut', name, attribs]
+  const props = attribs.filter(attrib => attrib.kind === 'prop') || []
+  return { kind: 'nut', name, props }
 }

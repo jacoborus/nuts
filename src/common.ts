@@ -64,7 +64,7 @@ export interface TemplateSchema {
 export interface NutSchema {
   kind: 'nut'
   name: string
-  // props: any
+  props: AttSchema[]
 }
 export interface TagSchema {
   kind: 'tag'
