@@ -36,9 +36,9 @@ test('Build#TextContent variable', t => {
     kind: 'text',
     mode: 'variable',
     literal: "${box.uno ?? ''}",
-    variables: ['uno']
+    variables: ['uno', 'dos']
   }
-  const result = "renderTextVariable(box => `${box.uno ?? ''}`, ['uno'])"
+  const result = "renderTextVariable(box => `${box.uno ?? ''}`, ['uno','dos'])"
   const built = buildText(schema as TextSchema)
   t.is(built, result)
   t.end()

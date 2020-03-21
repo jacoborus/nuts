@@ -35,5 +35,5 @@ export function buildTextConst (schema: TextSchema): string {
 export function buildTextVar (schema: TextSchema): string {
   const { mode, literal, variables } = schema
   const fn = textKinds[mode]
-  return fn + '(box => `' + literal + "`, ['" + variables.join(',') + "'])"
+  return fn + '(box => `' + literal + "`, ['" + variables.join("','") + "'])"
 }
