@@ -11,7 +11,7 @@ type Box = { [index: string]: any }
 test('DOM: renderTextPlain', t => {
   const str = 'Hello nuts'
   const render = renderTextPlain(str)
-  const comp = render({})
+  const comp = render(getBox({}))
   t.is(comp.elem.textContent, str, 'render ok')
   t.end()
 })
@@ -22,7 +22,7 @@ test('DOM: renderTextConstant', t => {
   }
   const str = 'Hello World!'
   const render = renderTextConstant(box => `Hello ${box.w}!`)
-  const comp = render(scope)
+  const comp = render(getBox(scope))
   t.is(comp.elem.textContent, str, 'render ok')
   t.end()
 })

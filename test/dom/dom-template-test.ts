@@ -1,6 +1,6 @@
 import test from 'tape'
 
-import { Box } from '../../src/dom/dom-common'
+import { Box } from 'boxes'
 import { renderTemplate } from '../../src/dom/dom-template'
 import { renderTag } from '../../src/dom/dom-tag'
 import {

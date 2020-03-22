@@ -1,5 +1,7 @@
-import { BoxController } from 'boxes'
-export type Box = { [index: string]: any }
+import { BoxController, Box } from 'boxes'
+
+type VFn = (box: Box) => void
+export type Setup = (box: Box) => VFn | void
 
 export type RenderComp = (setup?: (box: Box) => void, scope?: Box) => RenderedNut
 

@@ -1,6 +1,5 @@
-import { BoxController, getBox } from 'boxes'
+import { BoxController, getBox, Box } from 'boxes'
 import {
-  Box,
   RenderFn,
   RenderComp,
   RenderedNut

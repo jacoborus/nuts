@@ -10,7 +10,7 @@ import {
 test('DOM: renderAttPlain', t => {
   const elem = document.createElement('span')
   const render = renderAttPlain('uno', 'one')
-  const links = render(elem, {})
+  const links = render(elem, getBox({}))
   t.is(links.length, 0, 'no links')
   t.is(elem.getAttribute('uno'), 'one', 'adds attrib')
   t.end()

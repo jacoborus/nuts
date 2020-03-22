@@ -1,6 +1,5 @@
-import { BoxController } from 'boxes'
+import { BoxController, Box } from 'boxes'
 import {
-  Box,
   RenderAtt,
   RenderFn
 } from './dom-common'

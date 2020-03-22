@@ -1,5 +1,4 @@
-import { on } from 'boxes'
-type Box = { [index: string]: any }
+import { on, Box } from 'boxes'
 
 interface RenderedComp {
   elem: Element | Text | DocumentFragment
