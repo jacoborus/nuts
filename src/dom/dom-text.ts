@@ -9,42 +9,28 @@ interface RenderedComp {
 type RenderFn = (scope: Box) => RenderedComp
 // type Updater = (kind: string, oldValue: any, newValue: any) => void
 
-export function renderTextContent (fns: RenderFn[]): RenderFn {
-  return (scope: Box) => {
-    const fragment = document.createDocumentFragment()
-    const links: string[] = []
-    fns.forEach((render: RenderFn) => {
-      const comp = render(scope)
-      fragment.appendChild(comp.elem)
-      comp.links && comp.links.forEach(link => {
-        links.push(link)
+export function renderTextPlain (prop: string): RenderFn {
+  return () => ({
+    elem: document.createTextNode(prop),
+    links: []
+  })
+}
+
+export function renderTextConstant (literalFn: (box: Box) => string): RenderFn {
+  return (scope: Box) => ({
+    elem: document.createTextNode(literalFn(scope)),
+    links: []
+  })
+}
+
+export function renderTextVariable (literalFn: (box: Box) => string, variables: string[]): RenderFn {
+  return function (scope: Box) {
+    const elem = document.createTextNode(literalFn(scope))
+    const links = variables.map(variable => {
+      return on(scope, variable, (_:string, __: any, ___: any, box: Box) => {
+        elem.textContent = literalFn(box)
       })
     })
-    return { elem: fragment, links }
-  }
-}
-
-export function renderTextPlain (literal: () => string, _: []): RenderFn {
-  return () => ({
-    elem: document.createTextNode(literal()),
-    links: []
-  })
-}
-
-export function renderTextConstant (prop: string): RenderFn {
-  return (scope: Box) => ({
-    elem: document.createTextNode(scope[prop] ?? ''),
-    links: []
-  })
-}
-
-export function renderTextVariable (prop: string): RenderFn {
-  return function (scope: Box) {
-    const elem = document.createTextNode(scope[prop])
-    const evCtrl = on(scope, prop, (_:string, __: string, newValue: any) => {
-      elem.textContent = newValue ?? ''
-    })
-    const links = [evCtrl]
     return { elem, links }
   }
 }
