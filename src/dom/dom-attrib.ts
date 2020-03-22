@@ -11,20 +11,21 @@ export function renderAttPlain (att: string, value: string): RenderAtt {
   }
 }
 
-export function renderAttConstant (att: string, value: string): RenderAtt {
+export function renderAttConstant (att: string, literalFn: (box: Box) => string): RenderAtt {
   return (elem: Element, scope: Box) => {
-    elem.setAttribute(att, scope[value] ?? '')
+    elem.setAttribute(att, literalFn(scope))
     return []
   }
 }
 
-export function renderAttVariable (att: string, value: string): RenderAtt {
+export function renderAttVariable (att: string, literalFn: (box: Box) => string, variables: string[] = []): RenderAtt {
   return (elem: Element, scope: Box) => {
-    elem.setAttribute(att, scope[value])
-    const evCtrl = on(scope, value, (_:string, __: string, newValue: any) => {
-      elem.setAttribute(att, newValue ?? '')
+    elem.setAttribute(att, literalFn(scope))
+    const links = variables.map(variable => {
+      return on(scope, variable, (_:string, __: any, ___: any) => {
+        elem.setAttribute(att, literalFn(scope))
+      })
     })
-    const links = [evCtrl]
     return links
   }
 }

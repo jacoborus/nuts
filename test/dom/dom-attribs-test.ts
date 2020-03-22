@@ -18,26 +18,33 @@ test('DOM: renderAttPlain', t => {
 
 test('DOM renderAttConstant', t => {
   const elem = document.createElement('div')
-  const render = renderAttConstant('uno', 'varname')
-  const box = getBox({ varname: 'one' })
+  const render = renderAttConstant('uno', box => `att ${box.a}`)
+  const box = getBox({ a: 'one' })
   const links = render(elem, box)
   t.is(links.length, 0, 'no links')
-  t.is(elem.getAttribute('uno'), 'one', 'adds attrib')
+  t.is(elem.getAttribute('uno'), 'att one', 'adds attrib')
   t.end()
 })
 
 test('DOM renderAttVariable', t => {
   const elem = document.createElement('div')
-  const render = renderAttVariable('uno', 'varname')
-  const box = getBox({ varname: 'one' })
+  const render = renderAttVariable('uno', box => `att ${box.a} ${box.b.c}`, ['a', 'b.c'])
+  const box = getBox({
+    a: 'one',
+    b: {
+      c: 'uno'
+    }
+  })
   const links = render(elem, box)
-  t.is(links.length, 1, 'one link')
-  t.is(elem.getAttribute('uno'), 'one', 'adds attrib')
-  box.varname = 'two'
-  t.is(elem.getAttribute('uno'), 'two', 'change attrib')
+  t.is(links.length, 2, 'two links')
+  t.is(elem.getAttribute('uno'), 'att one uno', 'adds attrib')
+  box.a = 'two'
+  t.is(elem.getAttribute('uno'), 'att two uno', 'change attrib')
+  box.b.c = 'dos'
+  t.is(elem.getAttribute('uno'), 'att two dos', 'change attrib')
   links.forEach(link => link.off())
-  box.varname = 'three'
-  t.is(elem.getAttribute('uno'), 'two', 'off attrib')
+  box.a = 'three'
+  t.is(elem.getAttribute('uno'), 'att two dos', 'off attrib')
   t.end()
 })
 

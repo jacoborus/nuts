@@ -9,7 +9,8 @@ import {
 } from '../../src/dom/dom-attrib'
 
 function setup (scope: Box) {
-  scope.varname = 'two'
+  scope.a = 'one'
+  scope.b = { c: 'uno' }
 }
 
 test('DOM: renderTemplate', t => {
@@ -21,7 +22,7 @@ test('DOM: renderTemplate', t => {
       'span',
       [
         renderAttPlain('uno', 'one'),
-        renderAttVariable('dos', 'varname')
+        renderAttVariable('dos', box => `att ${box.a} ${box.b.c}`, ['a', 'b.c'])
       ],
       [
         renderTag('span', [], []),
@@ -34,7 +35,7 @@ test('DOM: renderTemplate', t => {
   const comp = render(setup)
 
   comp('#renderTemplate')
-  t.is(target.innerHTML, '<span uno="one" dos="two"><span></span><div></div></span><span></span>', 'render tag full')
+  t.is(target.innerHTML, '<span uno="one" dos="att one uno"><span></span><div></div></span><span></span>', 'render tag full')
 
   t.end()
 })
