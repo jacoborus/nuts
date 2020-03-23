@@ -30,12 +30,12 @@ Create your component controller `mycomponent.js`:
 
 ```js
 // import view
-import * as view from './myview.nuts.js'
+import { createNut } from './myview.nuts.js'
 
-export const render = view.render(function (scope) {
-  scope.myid = 'awesome'
-  scope.count = 0
-  scope.increment = () => ++scope.count
+export const render = createNut(function (box) {
+  box.myid = 'awesome'
+  box.count = 0
+  box.increment = () => ++scope.count
 })
 ```
 
@@ -44,7 +44,8 @@ Render the component in your app:
 ```js
 import { render } from './mycomponent.js'
 
-render('#target')
+const { elem } = render({})
+document.getElementById('target').appendChild(elem)
 ```
 
 Now your app should look like this:
