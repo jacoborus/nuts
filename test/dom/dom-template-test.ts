@@ -17,7 +17,7 @@ test('DOM: renderTemplate', t => {
   const target = document.createElement('div')
   document.body.appendChild(target)
   target.setAttribute('id', 'renderTemplate')
-  const render = renderTemplate([
+  const renderTmpl = renderTemplate([
     renderTag(
       'span',
       [
@@ -32,9 +32,11 @@ test('DOM: renderTemplate', t => {
     renderTag('span', [], [])
   ])
 
-  const comp = render(setup)
+  const { createNut } = renderTmpl
+  const renderNut = createNut(setup)
+  const { elem } = renderNut()
+  target.appendChild(elem)
 
-  comp('#renderTemplate')
   t.is(target.innerHTML, '<span uno="one" dos="att one uno"><span></span><div></div></span><span></span>', 'render tag full')
 
   t.end()

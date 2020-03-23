@@ -1,11 +1,13 @@
 import { BoxController, getBox, Box } from 'boxes'
 import {
   RenderFn,
-  RenderComp,
-  RenderedNut
+  RenderedComp,
+  RenderedTemplate,
+  RenderNut,
+  Setup
 } from './dom-common'
 
-export function renderTemplate (renderFns: RenderFn[]): RenderComp {
+export function renderTemplate (renderFns: RenderFn[]): RenderedTemplate {
   function renderComponent (scope: Box) {
     const fragment = document.createDocumentFragment()
     const links: BoxController[] = []
@@ -16,18 +18,27 @@ export function renderTemplate (renderFns: RenderFn[]): RenderComp {
     })
     return { elem: fragment, links }
   }
-  return (setup?: (box: Box) => void, props: object = {}): RenderedNut => {
-    const scope = getBox(props)
-    if (setup) setup(scope)
-    const comp = renderComponent(scope)
-    let parentNode: Element
-    return function mount (selector: string): () => void {
-      parentNode = document.querySelector(selector) || document.createElement('span')
-      parentNode.appendChild(comp.elem)
-      return function () {
-        comp.links.forEach(link => link.off())
-        parentNode.removeChild(comp.elem)
-      }
-    }
+
+  let finalSetup: Setup = function (_: Box) {}
+
+  function createNut (setup: Setup): RenderNut {
+    finalSetup = setup
+    return renderNut
   }
+
+  function render (scope: object = {}) {
+    const box = getBox(scope)
+    return renderComponent(box)
+  }
+
+  function renderNut (props?: object): RenderedComp {
+    props = props || {}
+    const scope = getBox({ props })
+    const afterMount = finalSetup(scope)
+    const { elem, links } = renderComponent(scope)
+    afterMount && afterMount(scope)
+    return { elem, links }
+  }
+
+  return { render, createNut }
 }

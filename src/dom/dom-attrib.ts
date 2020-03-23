@@ -31,7 +31,9 @@ export function renderAttVariable (att: string, literalFn: (box: Box) => string,
 
 export function renderAttEvent (att: string, value: string): RenderAtt {
   return (elem: Element, scope: Box) => {
-    elem.addEventListener(att, scope[value])
+    elem.addEventListener(att, (e: Event) => {
+      scope[value](e, scope)
+    })
     const evCtrl = { off () { elem.removeEventListener(att, scope[value]) } }
     return [evCtrl as BoxController]
   }

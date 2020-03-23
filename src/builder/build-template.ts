@@ -32,7 +32,7 @@ const builders: Builders = {
 }
 
 function printTemplate (children: string): string {
-  return pretemplate + `export const render = renderTemplate([${children}])`
+  return pretemplate + `export const { render, createNut } = renderTemplate([${children}])`
 }
 
 function buildChildren (children: ElemSchema[]): string {
