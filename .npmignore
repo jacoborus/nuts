@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+*.*~
+.tern-port
+dist
+.cache
+src
+temp-test
+test
