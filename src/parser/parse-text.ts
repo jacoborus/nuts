@@ -1,6 +1,6 @@
 import {
   RawTextSchema,
-  TextChunkType,
+  ChunkType,
   TextSchema
 } from '../common'
 import { createStringParser } from '../tools'
@@ -22,7 +22,7 @@ export function parseText (schema: RawTextSchema): TextSchema {
   }
 }
 
-function getTextMode (str: string): TextChunkType {
+function getTextMode (str: string): ChunkType {
   if (str.match(matchTextVar)) return 'variable'
   if (str.match(matchTextConst)) return 'constant'
   return 'plain'

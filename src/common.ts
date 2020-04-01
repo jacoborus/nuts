@@ -6,30 +6,33 @@ export type TagBuilder = (schema: TagSchema) => string
 export type ElemBuilder = (schema: ElemSchema) => string
 export type NutBuilder = (schema: NutSchema) => string
 
-// TYPES
-export interface Attribs {
-  [ index: string ]: string
-}
-
 export type RawTextSchema = {
   type: string
   data: string
 }
+
 export type RawTagSchema = {
   type: string
   name: string
   attribs: Attribs
   children: RawSchema[]
 }
+
 export type RawNutSchema = {
   type: string
   name: string
   attribs: Attribs
 }
+
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema
 
-export type ElemType = 'tag' | 'text' | 'nut'
+// TYPES
+export interface Attribs {
+  [ index: string ]: string
+}
+export type ElemType = 'tag' | 'text' | 'nut' | 'conditional'
 export type ChunkType = 'plain' | 'constant' | 'variable'
+export type ConditionalType = 'constant' | 'variable'
 export type AttType =
   'plain' |
   'constant' |
@@ -51,8 +54,6 @@ export type FinalAttType =
   'event' |
   'cssclass'
 
-export type TextChunkType = ChunkType
-
 // SCHEMAS
 export interface AttSchema {
   kind: AttType
@@ -60,6 +61,15 @@ export interface AttSchema {
   value: string | number
   variables: string[]
 }
+
+export interface CondSchema {
+  kind: 'conditional'
+  mode: ConditionalType
+  variables: string[]
+  conditions: string[]
+  children: ElemSchema[]
+}
+
 export interface TextSchema {
   kind: 'text'
   mode: ChunkType
@@ -77,7 +87,7 @@ export interface TagSchema {
   attribs: AttSchema[]
   children: ElemSchema[]
 }
-export type ElemSchema = TextSchema | TagSchema | NutSchema
+export type ElemSchema = TextSchema | TagSchema | NutSchema | CondSchema
 
 // PARSERS
 export type NutParser = (schema: RawNutSchema) => NutSchema

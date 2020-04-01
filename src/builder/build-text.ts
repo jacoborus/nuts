@@ -1,9 +1,9 @@
 import {
   TextSchema,
-  TextChunkType
+  ChunkType
 } from '../common'
 
-const textKinds: {[K in TextChunkType]: string} = {
+const textKinds: {[K in ChunkType]: string} = {
   plain: 'renderTextPlain',
   constant: 'renderTextConstant',
   variable: 'renderTextVariable'
