@@ -5,7 +5,10 @@ import {
   matcherVar,
   AttSchema
 } from '../common'
-import { createStringParser } from '../tools'
+import {
+  createStringParser,
+  attIsBoolean
+} from '../tools'
 
 export function parseAttribs (schema: RawTagSchema | RawNutSchema): AttSchema[] {
   const { attribs } = schema
@@ -24,13 +27,13 @@ function getAttType (att: string, value: string) {
   if (att === 'class') return 'cssclass'
   if (att.startsWith('@')) return 'event'
   if (att.startsWith(':')) return 'prop'
-  if (att === '(if)' || att === '(elseif)' || att === '(else)') {
-    return value.startsWith(':')
-      ? 'conditionVar'
-      : 'conditionConst'
+  if (attIsCond(att)) {
+    return value.trim().startsWith(':')
+      ? 'conditionalVar'
+      : 'conditionalConst'
   }
-  if (att.endsWith('-')) {
-    return value.startsWith(':')
+  if (attIsBoolean(att)) {
+    return value.trim().startsWith(':')
       ? 'booleanVar'
       : 'booleanConst'
   }
@@ -41,6 +44,11 @@ function getAttType (att: string, value: string) {
       : 'constant'
 }
 
+const conditionalKeys = ['(if)', '(elseif)', '(else)']
+function attIsCond (att: string): boolean {
+  return conditionalKeys.some(name => name === att)
+}
+
 const parsers = {
   plain: parseAttPlain,
   constant: parseAttConstant,
@@ -48,8 +56,8 @@ const parsers = {
   booleanVar: parseBooleanVar,
   booleanConst: parseBooleanConst,
   event: parseAttEvent,
-  conditionConst: parseCondConst,
-  conditionVar: parseCondVar,
+  conditionalConst: parseConditionalConst,
+  conditionalVar: parseConditionalVar,
   prop: parseProp,
   cssclass: parseClass
 }
@@ -96,43 +104,39 @@ function parseAttEvent (att: string, value: string): AttSchema {
 }
 
 function parseBooleanConst (att: string, value: string): AttSchema {
-  const propName = att.slice(0, -1)
   const val = value.trim()
   return {
     kind: 'booleanConst',
-    propName,
+    propName: att,
     value: val,
     variables: []
   }
 }
 
 function parseBooleanVar (att: string, value: string): AttSchema {
-  const propName = att.slice(0, -1)
   const val = value.trim().slice(1).trim()
   return {
     kind: 'booleanVar',
-    propName,
+    propName: att,
     value: val,
     variables: [val]
   }
 }
 
-function parseCondConst (att: string, value: string): AttSchema {
-  const propName = att.slice(0, -1).slice(1)
+function parseConditionalConst (att: string, value: string): AttSchema {
   return {
-    kind: 'conditionConst',
-    propName,
+    kind: 'conditionalConst',
+    propName: att,
     value: value.trim(),
     variables: []
   }
 }
 
-function parseCondVar (att: string, value: string): AttSchema {
-  const propName = att.slice(0, -1).slice(1)
+function parseConditionalVar (att: string, value: string): AttSchema {
   const val = value.trim().slice(1).trim()
   return {
-    kind: 'conditionVar',
-    propName,
+    kind: 'conditionalVar',
+    propName: att,
     value: val,
     variables: [val]
   }

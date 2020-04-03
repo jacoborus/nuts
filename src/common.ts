@@ -28,9 +28,7 @@ export type RawNutSchema = {
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema
 
 // TYPES
-export interface Attribs {
-  [ index: string ]: string
-}
+export type Attribs = {[index: string]: string}
 export type ElemType = 'tag' | 'text' | 'nut'
 export type NutType = ElemType | 'conditional'
 export type ChunkType = 'plain' | 'constant' | 'variable'
@@ -41,8 +39,8 @@ export type AttType =
   'booleanConst' |
   'booleanVar' |
   'event' |
-  'conditionConst' |
-  'conditionVar' |
+  'conditionalConst' |
+  'conditionalVar' |
   'prop' |
   'cssclass'
 
@@ -95,12 +93,11 @@ export type NutParser = (schema: RawNutSchema) => NutSchema
 export type TagParser = (schema: RawTagSchema) => TagSchema
 export type TextParser = (schema: RawTextSchema) => TextSchema
 export type ElemParser = (schema: RawSchema) => ElemSchema
-export type ElemParsers = {
-  [ K in ElemType ]: ElemParser
-}
-export type AttribParsers = {
-  [K in AttType]: (att: string, value: string) => AttSchema
-}
+export type AttribParser = (att: string, value: string) => AttSchema
+
+export type ElemParsers = {[K in ElemType]: ElemParser}
+export type AttribParsers = {[K in AttType]: AttribParser}
+
 export interface ParseChunkOpts {
   str?: string
   literal: string

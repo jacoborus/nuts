@@ -14,7 +14,7 @@ test('Parse#attribs', t => {
   t.end()
 })
 
-test('ParseAttPlain', t => {
+test('Parse attribute: parseAttPlain', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: 'myId',
@@ -48,7 +48,7 @@ test('ParseAttPlain', t => {
   t.end()
 })
 
-test('ParseAttConstant', t => {
+test('Parse attribute: parseAttConstant', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: '{ myId }',
@@ -83,7 +83,7 @@ test('ParseAttConstant', t => {
   t.end()
 })
 
-test('parseAttVariable', t => {
+test('Parse attribute: parseAttVariable', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: '{: myId }',
@@ -118,7 +118,7 @@ test('parseAttVariable', t => {
   t.end()
 })
 
-test('ParseAttEvent', t => {
+test('Parse attribute: ParseAttEvent', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '@click': 'clicked',
@@ -145,11 +145,11 @@ test('ParseAttEvent', t => {
   t.end()
 })
 
-test('ParseBooleanConst', t => {
+test('Parse attribute: ParseBooleanConst', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
-      'checked-': 'uno',
-      'other-': ' other '
+      checked: 'uno',
+      hidden: ' other '
     }
   })
   const parsed = parseAttribs(schema)
@@ -164,7 +164,7 @@ test('ParseBooleanConst', t => {
   t.same(checked, resultChecked)
   const resultOther = {
     kind: 'booleanConst',
-    propName: 'other',
+    propName: 'hidden',
     value: 'other',
     variables: []
   }
@@ -172,11 +172,11 @@ test('ParseBooleanConst', t => {
   t.end()
 })
 
-test('ParseBooleanVar', t => {
+test('Parse attribute: ParseBooleanVar', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
-      'checked-': ':uno',
-      'other-': ': other '
+      checked: ':uno',
+      hidden: ': other '
     }
   })
   const parsed = parseAttribs(schema)
@@ -191,7 +191,7 @@ test('ParseBooleanVar', t => {
   t.same(checked, resultChecked)
   const resultOther = {
     kind: 'booleanVar',
-    propName: 'other',
+    propName: 'hidden',
     value: 'other',
     variables: ['other']
   }
@@ -199,7 +199,7 @@ test('ParseBooleanVar', t => {
   t.end()
 })
 
-test('ParseCondConst', t => {
+test('Parse attribute: ParseConditionalConst', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(if)': ' uno '
@@ -209,8 +209,8 @@ test('ParseCondConst', t => {
   t.is(parsed.length, 1)
   const [ifcond] = parsed
   const result = {
-    kind: 'conditionConst',
-    propName: 'if',
+    kind: 'conditionalConst',
+    propName: '(if)',
     value: 'uno',
     variables: []
   }
@@ -218,7 +218,7 @@ test('ParseCondConst', t => {
   t.end()
 })
 
-test('ParseCondVar', t => {
+test('Parse attribute: parseConditionalVar', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(if)': ': uno '
@@ -228,8 +228,8 @@ test('ParseCondVar', t => {
   t.is(parsed.length, 1)
   const [ifcond] = parsed
   const result = {
-    kind: 'conditionVar',
-    propName: 'if',
+    kind: 'conditionalVar',
+    propName: '(if)',
     value: 'uno',
     variables: ['uno']
   }
@@ -237,7 +237,7 @@ test('ParseCondVar', t => {
   t.end()
 })
 
-test('ParseProp', t => {
+test('Parse attribute: parseProp', t => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       ':prop1': ' uno   ',
