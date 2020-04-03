@@ -63,3 +63,35 @@ export function createStringParser (matcherType: MatcherType) {
     })
   }
 }
+
+const booleanAttributes = [
+  'async',
+  'autofocus',
+  'autoplay',
+  'checked',
+  'contenteditable',
+  'controls',
+  'default',
+  'defer',
+  'disabled',
+  'formNoValidate',
+  'frameborder',
+  'hidden',
+  'ismap',
+  'itemscope',
+  'loop',
+  'multiple',
+  'muted',
+  'nomodule',
+  'novalidate',
+  'open',
+  'readonly',
+  'required',
+  'reversed',
+  'scoped',
+  'selected',
+  'typemustmatch'
+]
+export function attIsBoolean (att: string) {
+  return booleanAttributes.some(name => att === name)
+}
