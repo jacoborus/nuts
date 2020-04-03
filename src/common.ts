@@ -1,6 +1,7 @@
 export const matcherConst = /{([^}]*)}/
 export const matcherVar = /{:([^}]*)}/
 
+export type ConditionalMode = 'constant' | 'variable'
 export type TextBuilder = (schema: TextSchema) => string
 export type TagBuilder = (schema: TagSchema) => string
 export type ElemBuilder = (schema: ElemSchema) => string
@@ -30,9 +31,9 @@ export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema
 export interface Attribs {
   [ index: string ]: string
 }
-export type ElemType = 'tag' | 'text' | 'nut' | 'conditional'
+export type ElemType = 'tag' | 'text' | 'nut'
+export type NutType = ElemType | 'conditional'
 export type ChunkType = 'plain' | 'constant' | 'variable'
-export type ConditionalType = 'constant' | 'variable'
 export type AttType =
   'plain' |
   'constant' |
@@ -58,13 +59,13 @@ export type FinalAttType =
 export interface AttSchema {
   kind: AttType
   propName: string
-  value: string | number
+  value: string
   variables: string[]
 }
 
 export interface CondSchema {
   kind: 'conditional'
-  mode: ConditionalType
+  mode: ConditionalMode
   variables: string[]
   conditions: string[]
   children: ElemSchema[]

@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import {
-  ElemType,
+  NutType,
   ElemBuilder,
   TagSchema,
   ElemSchema
@@ -11,8 +11,9 @@ import {
 import { buildTag } from './build-tag'
 import { buildText } from './build-text'
 import { buildNut } from './build-nut'
+import { buildConditional } from './build-conditional'
 
-type Builders = {[ K in ElemType ]: ElemBuilder}
+type Builders = {[ K in NutType ]: ElemBuilder}
 
 export function buildTemplate (schema: TagSchema): string {
   const rawChildren = schema.children
@@ -28,7 +29,8 @@ const pretemplate = fs.readFileSync(
 const builders: Builders = {
   tag: buildTag as ElemBuilder,
   text: buildText as ElemBuilder,
-  nut: buildNut as ElemBuilder
+  nut: buildNut as ElemBuilder,
+  conditional: buildConditional as ElemBuilder
 }
 
 function printTemplate (children: string): string {

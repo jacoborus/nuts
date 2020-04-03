@@ -1,19 +1,21 @@
 import { buildText } from './build-text'
 import { buildAttribs } from './build-attribs'
 import { buildNut } from './build-nut'
+import { buildConditional } from './build-conditional'
 
 import {
   TagSchema,
   ElemSchema,
-  ElemType,
+  NutType,
   ElemBuilder
 } from '../common'
 
-type Builders = {[ K in ElemType ]: ElemBuilder}
+type Builders = {[ K in NutType ]: ElemBuilder}
 const builders: Builders = {
   tag: buildTag as ElemBuilder,
   text: buildText as ElemBuilder,
-  nut: buildNut as ElemBuilder
+  nut: buildNut as ElemBuilder,
+  conditional: buildConditional as ElemBuilder
 }
 
 export function buildTag (schema: TagSchema): string {

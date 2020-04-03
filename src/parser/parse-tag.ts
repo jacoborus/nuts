@@ -2,6 +2,7 @@ import { parseAttribs } from './parse-attribs'
 import { parseText } from './parse-text'
 import { parseNut } from './parse-nut'
 import { tagnames } from './tag-names'
+import { parseConditional } from './parse-conditional'
 
 import {
   RawSchema,
@@ -9,11 +10,10 @@ import {
   TagSchema,
   ElemSchema,
   ElemType,
-  ElemParser,
-  ElemParsers
+  ElemParser
 } from '../common'
 
-const parsers: ElemParsers = {
+const parsers = {
   tag: parseTag as ElemParser,
   text: parseText as ElemParser,
   nut: parseNut as ElemParser
@@ -22,7 +22,8 @@ const parsers: ElemParsers = {
 export function parseTag (schema: RawTagSchema): TagSchema {
   const { name } = schema
   const attribs = parseAttribs(schema)
-  const children = parseChildren(schema)
+  const preChildren = parseChildren(schema)
+  const children = parseConditional(preChildren)
   return { kind: 'tag', name, attribs, children }
 }
 
@@ -46,4 +47,16 @@ function getElemType (schema: RawSchema): ElemType {
   }
   if (schema.type === 'text') return 'text'
   throw new Error('Wrong element type')
+}
+
+export function tagIsConditional (schema: RawSchema): boolean {
+  const s = schema as RawTagSchema
+  if (typeof s.attribs === 'undefined') return false
+  const { attribs } = s
+  return !!(Object.keys(attribs).find(att => {
+    return att === '(if)' ||
+      att === '(elseif)' ||
+      att === '(else)' ||
+      att === '(:if)'
+  }))
 }
