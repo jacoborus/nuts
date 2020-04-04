@@ -33,8 +33,8 @@ function parseChildren (schema: RawTagSchema): ElemSchema[] {
   children.forEach((childSchema: RawSchema) => {
     const elemType = getElemType(childSchema)
     const parser = parsers[elemType]
-    const render = parser(childSchema)
-    list.push(render)
+    const ast = parser(childSchema)
+    list.push(ast)
   })
   return list
 }
@@ -47,16 +47,4 @@ function getElemType (schema: RawSchema): ElemType {
   }
   if (schema.type === 'text') return 'text'
   throw new Error('Wrong element type')
-}
-
-export function tagIsConditional (schema: RawSchema): boolean {
-  const s = schema as RawTagSchema
-  if (typeof s.attribs === 'undefined') return false
-  const { attribs } = s
-  return !!(Object.keys(attribs).find(att => {
-    return att === '(if)' ||
-      att === '(elseif)' ||
-      att === '(else)' ||
-      att === '(:if)'
-  }))
 }
