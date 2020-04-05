@@ -9,16 +9,6 @@ import {
   ElemBuilder
 } from '../common'
 
-export function buildChildren (children: ElemSchema[]): string {
-  // next line avoids inner dependency side effect
-  builders.tag = buildTag as ElemBuilder
-  const childTags = children.map(child => {
-    const build = builders[child.kind]
-    return build(child)
-  })
-  return childTags.join(',')
-}
-
 type Builders = {[ K in NutType ]: ElemBuilder}
 const builders: Builders = {
   tag: buildTag as ElemBuilder,
@@ -26,4 +16,14 @@ const builders: Builders = {
   nut: buildNut as ElemBuilder,
   conditionalConst: buildConditional as ElemBuilder,
   conditionalVar: buildConditional as ElemBuilder
+}
+
+export function buildChildren (children: ElemSchema[]): string {
+  // next line avoids circular dependency side effect
+  builders.tag = buildTag as ElemBuilder
+  const childTags = children.map(child => {
+    const build = builders[child.kind]
+    return build(child)
+  })
+  return childTags.join(',')
 }
