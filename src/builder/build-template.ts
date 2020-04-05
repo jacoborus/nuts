@@ -30,7 +30,8 @@ const builders: Builders = {
   tag: buildTag as ElemBuilder,
   text: buildText as ElemBuilder,
   nut: buildNut as ElemBuilder,
-  conditional: buildConditional as ElemBuilder
+  conditionalConst: buildConditional as ElemBuilder,
+  conditionalVar: buildConditional as ElemBuilder
 }
 
 function printTemplate (children: string): string {
