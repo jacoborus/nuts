@@ -44,7 +44,7 @@ function getAttType (att: string, value: string) {
       : 'constant'
 }
 
-const conditionalKeys = ['(if)', '(elseif)', '(else)']
+const conditionalKeys = ['(if)', '(else)']
 function attIsCond (att: string): boolean {
   return conditionalKeys.some(name => name === att)
 }
