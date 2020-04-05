@@ -5,8 +5,9 @@ import {
   TagSchema
 } from '../common'
 
-type Mode = 'constant' | 'variable'
-const attNames = ['(if)', '(elseif)', '(else)', '(:if)']
+import { coalesceDots } from '../tools'
+
+type Mode = 'conditionalConst' | 'conditionalVar'
 
 export function parseConditional (children: ElemSchema[]): ElemSchema[] {
   const schemas = children.map(schema => {
@@ -21,55 +22,53 @@ export function parseConditional (children: ElemSchema[]): ElemSchema[] {
 function tagIsConditional (schema: ElemSchema): boolean {
   const { kind } = schema
   if (kind === 'text' || kind === 'nut') return false
-  console.log(schema)
-  const hasCondition = (schema as TagSchema).attribs.some(att => attIsCond(att.propName))
-  return hasCondition
+  return (schema as TagSchema).attribs
+    .some(({ kind }) => kind === 'conditionalConst' || kind === 'conditionalVar')
 }
 
 export function transformConditional (schema: TagSchema): CondSchema {
-  const mode = getMode(schema.attribs)
-  const condition = getValue(schema.attribs)
-  const variables = getVariables(condition)
-  const tag = cleanConditionalTag(schema)
+  const attrib = getConditionalAttribute(schema.attribs)
+  const kind = getMode(attrib)
+  const value = getValue(attrib)
+  const conditions = schema.name === '(if)'
+    ? [getCondition(value)]
+    : []
+  const variables = [value]
+  const tag = cleanConditionalTag(schema, attrib)
   return {
-    kind: 'conditional',
-    mode,
-    conditions: [condition],
+    kind,
+    conditions,
     variables,
     children: [tag]
   }
 }
 
-export function getMode (attribs: AttSchema[]): Mode {
-  return attribs.some(att => att.propName === (':if'))
-    ? 'variable'
-    : 'constant'
+function getConditionalAttribute (attribs: AttSchema[]): AttSchema {
+  return attribs.find(({ kind }) => {
+    return kind === 'conditionalConst' || kind === 'conditionalVar'
+  }) as AttSchema
 }
 
-export function getValue (attribs: AttSchema[]): string {
-  const attrib = attribs.find(att => attIsCond(att.propName))
-  return attrib ? attrib.value.trim() : ''
+function getMode (attrib: AttSchema): Mode {
+  return attrib.kind === 'conditionalConst'
+    ? 'conditionalConst'
+    : 'conditionalVar'
 }
 
-function attIsCond (att = ''): boolean {
-  return attNames.some(attName => attName === att)
+export function getValue (attrib: AttSchema): string {
+  const { value } = attrib
+  return value.startsWith(':')
+    ? value.slice(1).trim()
+    : value.trim()
 }
 
-export function getConditionalStep (attribs: AttSchema[]): string {
-  const attrib = attribs.find(att => attIsCond(att.propName))
-  return attrib ? attrib.propName : '(if)'
+export function getCondition (value: string): string {
+  const coalesced = coalesceDots(value)
+  return 'box => `box.' + coalesced + '`'
 }
 
-export function getVariables (str: string): string[] {
-  // TODO
-  // TODO
-  // TODO
-  // TODO
-  return str.trim().split('.')
-}
-
-export function cleanConditionalTag (schema: TagSchema): TagSchema {
-  schema.attribs = schema.attribs.filter(attrib => !attIsCond(attrib.propName))
+export function cleanConditionalTag (schema: TagSchema, attrib: AttSchema): TagSchema {
+  schema.attribs = schema.attribs.filter(att => att !== attrib)
   return schema
 }
 
