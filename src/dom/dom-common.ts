@@ -12,10 +12,11 @@ export interface RenderedComp {
   off?: () => void
 }
 
+export type Reprint = (subElem: Element | Text | null, i: number) => void
 export type Off = () => void
 export type RenderNut = (props?: object) => RenderedComp
 export type RenderAtt = (elem: Element, scope: Box) => Off[]
-export type RenderFn = (scope: Box) => RenderedComp
+export type RenderFn = (scope: Box, i?: number, reprint?: Reprint) => RenderedComp
 export type RenderedTemplate = {
   render: RenderFn,
   createNut: (setup: Setup) => RenderNut
