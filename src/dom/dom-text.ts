@@ -26,8 +26,8 @@ export function renderTextVariable (literalFn: (box: Box) => string, variables: 
   return function (scope: Box) {
     const elem = document.createTextNode(literalFn(scope))
     const links = variables.map(variable => {
-      return on(scope, variable, (_:string, __: any, ___: any, box: Box) => {
-        elem.textContent = literalFn(box)
+      return on(scope, variable, () => {
+        elem.textContent = literalFn(scope)
       })
     })
     return { elem, links }

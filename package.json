@@ -39,7 +39,7 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "boxes": "0.37.0",
+    "boxes": "0.39.0",
     "html5parser": "1.1.2"
   },
   "homepage": "https://github.com/jacoborus/nuts#readme"
