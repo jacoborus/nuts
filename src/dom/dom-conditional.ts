@@ -15,26 +15,8 @@ export function renderIfElseConst (condition: CondFn, children: RenderFn[]) {
 }
 
 export function renderIfVar (condition: CondFn, variables: string[], child: RenderFn) {
-  return (scope: Box, i: number, reprint: Reprint) => {
-    let cached = !condition(scope)
-    const comp = cached ? child(scope) : { elem: null, off: null }
-    let childOff = comp.off
-    const off = on(scope, variables[0], (box: Box) => {
-      if (cached === condition(box)) return
-      cached = !cached
-      childOff && childOff()
-      const newComp = child(box)
-      childOff = newComp.off
-      reprint(newComp.elem, i)
-    }).off
-    return {
-      elem: comp.elem,
-      off: () => {
-        off()
-        childOff && childOff()
-      }
-    }
-  }
+  const children = [child, () => ({ elem: null })]
+  return renderIfElseVar(condition, variables, children)
 }
 
 export function renderIfElseVar (condition: CondFn, variables: string[], children: RenderFn[]) {
