@@ -1,4 +1,4 @@
-import { BoxController, getBox, Box } from 'boxes'
+import { getBox, Box } from 'boxes'
 import {
   RenderFn,
   RenderedComp,
@@ -7,18 +7,7 @@ import {
   Setup
 } from './dom-common'
 
-export function renderTemplate (renderFns: RenderFn[]): RenderedTemplate {
-  function renderComponent (scope: Box) {
-    const fragment = document.createDocumentFragment()
-    const links: BoxController[] = []
-    renderFns.forEach(renderFn => {
-      const comp = renderFn(scope)
-      fragment.appendChild(comp.elem)
-      links.push(...comp.links)
-    })
-    return { elem: fragment, links }
-  }
-
+export function renderTemplate (renderFn: RenderFn): RenderedTemplate {
   let finalSetup: Setup = function (_: Box) {}
 
   function createNut (setup: Setup): RenderNut {
@@ -28,16 +17,16 @@ export function renderTemplate (renderFns: RenderFn[]): RenderedTemplate {
 
   function render (scope: object = {}) {
     const box = getBox(scope)
-    return renderComponent(box)
+    return renderFn(box)
   }
 
   function renderNut (props?: object): RenderedComp {
     props = props || {}
     const scope = getBox({ props })
     const afterMount = finalSetup(scope)
-    const { elem, links } = renderComponent(scope)
+    const comp = renderFn(scope)
     afterMount && afterMount(scope)
-    return { elem, links }
+    return comp
   }
 
   return { render, createNut }

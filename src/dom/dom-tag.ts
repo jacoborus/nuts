@@ -1,24 +1,25 @@
-import { BoxController, Box } from 'boxes'
+import { Box } from 'boxes'
 import {
   RenderAtt,
-  RenderFn
+  RenderFn,
+  Off
 } from './dom-common'
 
 export function renderTag (name: string, attribs: RenderAtt[], children: RenderFn[]) {
   return (scope: Box) => {
     const elem = document.createElement(name)
-    const links: BoxController[] = []
+    const offs: Off[] = []
     attribs.forEach(attrib => {
-      links.push(...attrib(elem, scope))
+      offs.push(...attrib(elem, scope))
     })
     children.forEach(childFn => {
       const comp = childFn(scope)
-      elem.appendChild(comp.elem)
-      links.push(...comp.links)
+      comp.elem && elem.appendChild(comp.elem)
+      comp.off && offs.push(comp.off)
     })
     return {
       elem,
-      links
+      off: () => offs.forEach(off => off())
     }
   }
 }

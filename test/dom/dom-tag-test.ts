@@ -27,7 +27,7 @@ test('DOM: renderTag', t => {
   box.a = 'two'
   t.is(comp.elem.outerHTML, '<span uno="one" dos="att two uno"><span></span><div></div></span>', 'change attribute')
 
-  comp.links.forEach(link => link.off())
+  comp.off()
   box.a = 'adios'
   t.is(comp.elem.outerHTML, '<span uno="one" dos="att two uno"><span></span><div></div></span>', 'off attribute')
   t.end()

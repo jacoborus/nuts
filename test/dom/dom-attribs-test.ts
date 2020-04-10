@@ -42,7 +42,7 @@ test('DOM renderAttVariable', t => {
   t.is(elem.getAttribute('uno'), 'att two uno', 'change attrib')
   box.b.c = 'dos'
   t.is(elem.getAttribute('uno'), 'att two dos', 'change attrib')
-  links.forEach(link => link.off())
+  links.forEach(off => off())
   box.a = 'three'
   t.is(elem.getAttribute('uno'), 'att two dos', 'off attrib')
   t.end()
@@ -58,7 +58,7 @@ test('DOM renderAttEvent', t => {
   t.is(box.count, 1, 'click 1')
   elem.click()
   t.is(box.count, 2, 'click 2')
-  links.forEach(link => link.off())
+  links.forEach(off => off())
   elem.click()
   t.is(box.count, 2, 'off')
   t.end()

@@ -1,4 +1,4 @@
-import { BoxController, Box } from 'boxes'
+import { Box } from 'boxes'
 
 type VFn = (box: Box) => void
 export type Setup = (box: Box) => VFn | void
@@ -8,12 +8,13 @@ export type Setup = (box: Box) => VFn | void
 export type RenderedNut = (selector: string) => () => void
 
 export interface RenderedComp {
-  elem: Element | Text | DocumentFragment
-  links: any[]
+  elem: Element | Text | null
+  off?: () => void
 }
 
+export type Off = () => void
 export type RenderNut = (props?: object) => RenderedComp
-export type RenderAtt = (elem: Element, scope: Box) => BoxController[]
+export type RenderAtt = (elem: Element, scope: Box) => Off[]
 export type RenderFn = (scope: Box) => RenderedComp
 export type RenderedTemplate = {
   render: RenderFn,

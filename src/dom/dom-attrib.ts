@@ -1,4 +1,4 @@
-import { on, BoxController, Box } from 'boxes'
+import { on, Box } from 'boxes'
 import {
   RenderAtt
 } from './dom-common'
@@ -23,7 +23,7 @@ export function renderAttVariable (att: string, literalFn: (box: Box) => string,
     const links = variables.map(variable => {
       return on(scope, variable, () => {
         elem.setAttribute(att, literalFn(scope))
-      })
+      }).off
     })
     return links
   }
@@ -33,7 +33,6 @@ export function renderAttEvent (att: string, value: string): RenderAtt {
   return (elem: Element, scope: Box) => {
     const listener = (e: Event) => scope[value](e, scope)
     elem.addEventListener(att, listener)
-    const evCtrl = { off () { elem.removeEventListener(att, listener) } }
-    return [evCtrl as BoxController]
+    return [() => elem.removeEventListener(att, listener)]
   }
 }

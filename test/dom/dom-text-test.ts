@@ -12,7 +12,8 @@ test('DOM: renderTextPlain', t => {
   const str = 'Hello nuts'
   const render = renderTextPlain(str)
   const comp = render(getBox({}))
-  t.is(comp.elem.textContent, str, 'render ok')
+  const elem = comp.elem as Element
+  t.is(elem.textContent, str, 'render ok')
   t.end()
 })
 
@@ -23,7 +24,8 @@ test('DOM: renderTextConstant', t => {
   const str = 'Hello World!'
   const render = renderTextConstant(box => `Hello ${box.w}!`)
   const comp = render(getBox(scope))
-  t.is(comp.elem.textContent, str, 'render ok')
+  const elem = comp.elem as Element
+  t.is(elem.textContent, str, 'render ok')
   t.end()
 })
 
@@ -35,11 +37,12 @@ test('DOM: renderVariable', t => {
   const str2 = 'Hello Mundo!'
   const render = renderTextVariable((box: Box) => `Hello ${box.w}!`, ['w'])
   const comp = render(scope)
-  t.is(comp.elem.textContent, str, 'render ok')
+  const elem = comp.elem as Element
+  t.is(elem.textContent, str, 'render ok')
   scope.w = 'Mundo'
-  t.is(comp.elem.textContent, str2, 'change value')
-  comp.links[0].off()
+  t.is(elem.textContent, str2, 'change value')
+  comp.off && comp.off()
   scope.w = 'Mars'
-  t.is(comp.elem.textContent, str2, 'link.off')
+  t.is(elem.textContent, str2, 'link.off')
   t.end()
 })
