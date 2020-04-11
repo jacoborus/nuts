@@ -12,21 +12,6 @@ import {
   buildAttBoolVar
 } from '../../src/builder/build-attribs'
 
-// test('Build attribs', t => {
-//   const atts: AttSchema[] = [
-//     { kind: 'plain', propName: 'p1', value: 'p2', variables: [] },
-//     { kind: 'constant', propName: 'c1', value: 'c2', variables: [] },
-//     { kind: 'variable', propName: 'v1', value: 'v2', variables: [] },
-//     { kind: 'event', propName: 'e1', value: 'e2', variables: [] },
-//     { kind: 'booleanConst', propName: 'checked', value: 'checkconst', variables: [] },
-//     { kind: 'booleanVar', propName: 'chevar', value: 'checkvar', variables: [] }
-//   ]
-//   const result = "renderAttPlain('p1','p2'),renderAttConstant('c1','c2'),renderAttVariable('v1','v2'),renderAttEvent('e1','e2')"
-//   const built = buildAttribs(atts)
-//   t.is(built, result)
-//   t.end()
-// })
-
 test('Build attribs: plain', t => {
   const schema = {
     kind: 'plain',
@@ -60,7 +45,7 @@ test('Build attribs: variable', t => {
     value: 'testvalue',
     variables: ['t1', 't2']
   }
-  const result = "renderAttVariable('testname',box => `testvalue`, ['t1','t2'])"
+  const result = "renderAttVariable('testname',box => `testvalue`,['t1','t2'])"
   const built = buildAttVariable(schema as AttSchema)
   t.is(built, result)
   t.end()

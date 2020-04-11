@@ -35,7 +35,7 @@ test('Build#Tag', t => {
       }
     ]
   }
-  const result = "renderTag('div',[renderAttPlain('p1','v1'),renderAttVariable('p2',box => `v2`, ['v2'])],[renderTag('span',[],[]),renderTextConstant(box => `c1`, [])])"
+  const result = "renderTag('div',[renderAttPlain('p1','v1'),renderAttVariable('p2',box => `v2`,['v2'])],[renderTag('span',[],[]),renderTextConstant(box => `c1`, [])])"
   const str = buildTag(tagSchema as TagSchema)
   t.is(str, result)
   t.end()

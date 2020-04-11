@@ -5,11 +5,11 @@ import {
   TagSchema
 } from '../common'
 
-import { buildChildren } from './build-children'
+import { buildTag } from './build-tag'
 
 export function buildTemplate (schema: TagSchema): string {
-  const children = buildChildren(schema.children)[0]
-  return printTemplate(children)
+  const child = buildTag(schema)
+  return printTemplate(child)
 }
 
 const pretemplate = fs.readFileSync(

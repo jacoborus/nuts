@@ -13,13 +13,6 @@ const attKinds = {
   cssclass: buildAttClass
 }
 
-// export interface AttSchema {
-//   kind: AttType
-//   propName: string
-//   value: string | number
-//   variables: string[]
-// }
-
 export function buildAttribs (defs: AttSchema[]): string {
   return defs.map((schema) => {
     return attKinds[schema.kind as FinalAttType](schema)
@@ -38,7 +31,7 @@ export function buildAttConstant (schema: AttSchema): string {
 
 export function buildAttVariable (schema: AttSchema): string {
   const literalFn = 'box => `' + schema.value +
-    "`, ['" + schema.variables.join("','") + "']"
+    "`,['" + schema.variables.join("','") + "']"
   return `renderAttVariable('${schema.propName}',${literalFn})`
 }
 
