@@ -86,6 +86,7 @@ export interface TagSchema {
   children: ElemSchema[]
 }
 export type ElemSchema = TextSchema | TagSchema | NutSchema | CondSchema
+export type ElemSchema2 = TextSchema & TagSchema & NutSchema & CondSchema
 
 // PARSERS
 export type NutParser = (schema: RawNutSchema) => NutSchema

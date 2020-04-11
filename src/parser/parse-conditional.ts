@@ -21,7 +21,7 @@ export function parseConditional (children: ElemSchema[]): ElemSchema[] {
 
 function tagIsConditional (schema: ElemSchema): boolean {
   const { kind } = schema
-  if (kind === 'text' || kind === 'nut') return false
+  if (kind !== 'tag') return false
   return (schema as TagSchema).attribs
     .some(({ kind }) => kind === 'conditionalConst' || kind === 'conditionalVar')
 }
@@ -30,7 +30,7 @@ export function transformConditional (schema: TagSchema): CondSchema {
   const attrib = getConditionalAttribute(schema.attribs)
   const kind = getMode(attrib)
   const value = getValue(attrib)
-  const conditions = schema.name === '(if)'
+  const conditions = attrib.propName === '(if)'
     ? [getCondition(value)]
     : []
   const variables = [value]
