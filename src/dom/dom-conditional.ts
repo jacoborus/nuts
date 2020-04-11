@@ -11,7 +11,7 @@ export function renderIfConst (condition: CondFn, child: RenderFn) {
 }
 
 export function renderIfElseConst (condition: CondFn, children: RenderFn[]) {
-  return (scope: Box) => children[+condition(scope)](scope)
+  return (scope: Box) => children[+!condition(scope)](scope)
 }
 
 export function renderIfVar (condition: CondFn, variables: string[], child: RenderFn) {
@@ -21,14 +21,14 @@ export function renderIfVar (condition: CondFn, variables: string[], child: Rend
 
 export function renderIfElseVar (condition: CondFn, variables: string[], children: RenderFn[]) {
   return (scope: Box, i: number, reprint: Reprint) => {
-    let cached = !condition(scope)
-    const comp = children[+cached](scope)
+    let cached = !!condition(scope)
+    const comp = children[+!cached](scope)
     let childOff = comp.off
     const off = on(scope, variables[0], (box: Box) => {
       if (cached === condition(box)) return
       cached = !cached
       childOff && childOff()
-      const newComp = children[+cached](box)
+      const newComp = children[+!cached](box)
       childOff = newComp.off
       reprint(newComp.elem, i)
     }).off
