@@ -18,12 +18,12 @@ const builders: Builders = {
   conditionalVar: buildConditional as ElemBuilder
 }
 
-export function buildChildren (children: ElemSchema[]): string {
+export function buildChildren (children: ElemSchema[]): string[] {
   // next line avoids circular dependency side effect
   builders.tag = buildTag as ElemBuilder
   const childTags = children.map(child => {
     const build = builders[child.kind]
     return build(child)
   })
-  return childTags.join(',')
+  return childTags
 }

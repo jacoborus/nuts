@@ -1,3 +1,5 @@
+import { buildChildren } from './build-children'
+
 import {
   CondSchema
 } from '../common'
@@ -16,20 +18,24 @@ export function buildConditional (schema: CondSchema): string {
 
 function buildIfConst (schema: CondSchema) {
   const { conditions, children } = schema
-  return `renderIfConst(${conditions[0]},${children[0]})`
+  const builtChild = buildChildren([children[0]])[0]
+  return `renderIfConst(${conditions[0]},${builtChild})`
 }
 
 function buildIfElseConst (schema: CondSchema) {
   const { conditions, children } = schema
-  return `renderIfElseConst(${conditions[0]},[${children.join(',')}])`
+  const builtChildren = buildChildren(children).join(',')
+  return `renderIfElseConst(${conditions[0]},[${builtChildren}])`
 }
 
 function buildIfVar (schema: CondSchema) {
   const { conditions, children, variables } = schema
-  return `renderIfVar(${conditions[0]},[${variables[0]}],${children[0]})`
+  const builtChild = buildChildren([children[0]])[0]
+  return `renderIfVar(${conditions[0]},['${variables[0]}'],${builtChild})`
 }
 
 function buildIfElseVar (schema: CondSchema) {
   const { conditions, children, variables } = schema
-  return `renderIfElseVar(${conditions[0]},[${variables[0]}],[${children.join(',')}])`
+  const builtChildren = buildChildren(children).join(',')
+  return `renderIfElseVar(${conditions[0]},['${variables[0]}'],[${builtChildren}])`
 }

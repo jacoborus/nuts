@@ -47,7 +47,7 @@ test('Build template', t => {
       }
     ]
   }
-  const result = "renderTemplate([renderTag('div',[renderAttPlain('p1','p2'),renderAttVariable('v1',box => `v2`, ['v2'])],[renderTag('span',[],[])]),renderTextConstant(box => `c1`, [])])"
+  const result = "renderTemplate(renderTag('div',[renderAttPlain('p1','p2'),renderAttVariable('v1',box => `v2`, ['v2'])],[renderTag('span',[],[])]))"
   const str = buildTemplate(templateSchema as TagSchema)
   t.is(str, pretemplate + 'export const { render, createNut } = ' + result)
   t.end()
