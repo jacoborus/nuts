@@ -23,19 +23,19 @@
     "url": "https://github.com/jacoborus/nuts/issues"
   },
   "devDependencies": {
-    "@types/node": "13.9.3",
+    "@types/node": "13.11.1",
     "@types/tape": "4.2.34",
-    "@typescript-eslint/eslint-plugin": "2.24.0",
-    "@typescript-eslint/parser": "2.24.0",
-    "browserify": "16.5.0",
+    "@typescript-eslint/eslint-plugin": "2.27.0",
+    "@typescript-eslint/parser": "2.27.0",
+    "browserify": "16.5.1",
     "eslint": "6.8.0",
     "eslint-config-standard": "14.1.1",
-    "eslint-plugin-import": "2.20.1",
-    "eslint-plugin-node": "11.0.0",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.1",
     "tape": "4.13.2",
-    "ts-node": "8.8.1",
+    "ts-node": "8.8.2",
     "typescript": "3.8.3"
   },
   "dependencies": {
