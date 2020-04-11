@@ -11,7 +11,7 @@ type Mode = 'conditionalConst' | 'conditionalVar'
 
 export function parseConditional (children: ElemSchema[]): ElemSchema[] {
   const schemas = children.map(schema => {
-    if (!tagIsConditional(schema)) {
+    if (!tagHasConditional(schema)) {
       return schema
     }
     return transformConditional(schema as TagSchema)
@@ -19,7 +19,7 @@ export function parseConditional (children: ElemSchema[]): ElemSchema[] {
   return flattenTags(schemas)
 }
 
-function tagIsConditional (schema: ElemSchema): boolean {
+function tagHasConditional (schema: ElemSchema): boolean {
   const { kind } = schema
   if (kind !== 'tag') return false
   return (schema as TagSchema).attribs
@@ -34,7 +34,12 @@ export function transformConditional (schema: TagSchema): CondSchema {
     ? [getCondition(value)]
     : []
   const variables = [value]
-  const tag = cleanConditionalTag(schema, attrib)
+  const tag = {
+    kind: schema.kind,
+    name: schema.name,
+    attribs: cleanConditionalAttributes(schema),
+    children: schema.children
+  }
   return {
     kind,
     conditions,
@@ -67,9 +72,13 @@ export function getCondition (value: string): string {
   return 'box => !!box.' + coalesced
 }
 
-export function cleanConditionalTag (schema: TagSchema, attrib: AttSchema): TagSchema {
-  schema.attribs = schema.attribs.filter(att => att !== attrib)
-  return schema
+export function cleanConditionalAttributes (schema: TagSchema): AttSchema[] {
+  return schema.attribs.filter(att => att.propName !== '(if)' && att.propName !== '(else)')
+}
+
+function tagIsConditional (tag: ElemSchema): boolean {
+  const kind = tag.kind
+  return kind === 'conditionalConst' || kind === 'conditionalVar'
 }
 
 export function flattenTags (children: ElemSchema[]): ElemSchema[] {
@@ -85,9 +94,7 @@ export function flattenTags (children: ElemSchema[]): ElemSchema[] {
       return finalChildren.push(schema)
     }
     const tag = schema as CondSchema
-    lastConditional.variables.push(...tag.variables)
-    lastConditional.conditions.push(...tag.conditions)
-    lastConditional.children.push(...tag.children)
+    lastConditional.children.push(tag.children[0])
   })
   return finalChildren
 }

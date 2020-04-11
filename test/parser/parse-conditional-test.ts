@@ -51,3 +51,43 @@ test('Parse conditional: if-const', t => {
   t.same(third, baseChildren[2])
   t.end()
 })
+
+test('Parse conditional: if-else-const', t => {
+  const elseTag = {
+    kind: 'tag',
+    name: 'div',
+    attribs: [{
+      kind: 'conditionalConst',
+      propName: '(else)',
+      value: '',
+      variables: []
+    }],
+    children: []
+  }
+  const base = [...baseChildren]
+  base.splice(2, 0, elseTag)
+  const [first, second, third] = parseConditional(base as ElemSchema[])
+  const result = {
+    kind: 'conditionalConst',
+    conditions: ['box => !!box.x?.y'],
+    variables: ['x.y'],
+    children: [
+      {
+        kind: 'tag',
+        name: 'span',
+        attribs: [],
+        children: []
+      },
+      {
+        kind: 'tag',
+        name: 'div',
+        attribs: [],
+        children: []
+      }
+    ]
+  }
+  t.same(first, baseChildren[0])
+  t.same(second, result)
+  t.same(third, baseChildren[2])
+  t.end()
+})
