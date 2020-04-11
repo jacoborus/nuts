@@ -18,6 +18,7 @@ const parsers = {
 }
 
 export function parseChildren (schema: RawTagSchema): ElemSchema[] {
+  parsers.tag = parseTag as ElemParser
   const { children } = schema
   const list: ElemSchema[] = []
   children.forEach((childSchema: RawSchema) => {
