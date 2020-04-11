@@ -41,11 +41,8 @@ test('DOM: renderIfVar', t => {
   const comp = render(box, 2, (subElem, n) => t.same([!!subElem, n], results.shift()))
   const elem = comp.elem as Text
   t.is(elem.textContent, 'hola', 'text content')
-  console.log('0 ======')
   box.x = 0
-  console.log('false ======')
   box.x = false
-  console.log('99 ======')
   box.x = 99
   comp.off()
   box.x = undefined
@@ -67,11 +64,8 @@ test('DOM: renderIfElseVar', t => {
   })
   const elem = comp.elem as Text
   t.is(elem.textContent, 'hola', 'text content')
-  console.log('0 ======')
   box.x = 0
-  console.log('false ======')
   box.x = false
-  console.log('99 ======')
   box.x = 99
   t.end()
 })

@@ -64,7 +64,7 @@ export function getValue (attrib: AttSchema): string {
 
 export function getCondition (value: string): string {
   const coalesced = coalesceDots(value)
-  return 'box => `box.' + coalesced + '`'
+  return 'box => !!box.' + coalesced
 }
 
 export function cleanConditionalTag (schema: TagSchema, attrib: AttSchema): TagSchema {

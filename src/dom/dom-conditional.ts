@@ -21,7 +21,7 @@ export function renderIfVar (condition: CondFn, variables: string[], child: Rend
 
 export function renderIfElseVar (condition: CondFn, variables: string[], children: RenderFn[]) {
   return (scope: Box, i: number, reprint: Reprint) => {
-    let cached = !!condition(scope)
+    let cached = condition(scope)
     const comp = children[+!cached](scope)
     let childOff = comp.off
     const off = on(scope, variables[0], (box: Box) => {

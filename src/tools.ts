@@ -14,12 +14,10 @@ const matchers = {
 
 type MatcherType = 'text' | 'attribute'
 
-export const orNothing = " ?? ''"
-
 export function coalesceDots (str: string): string {
   const arr = str.split('.')
-  if (arr.length === 1) return str + orNothing
-  return arr.join('?.') + orNothing
+  if (arr.length === 1) return str
+  return arr.join('?.')
 }
 
 export function createStringParser (matcherType: MatcherType) {
@@ -58,7 +56,7 @@ export function createStringParser (matcherType: MatcherType) {
     // variable and constant
     return parseChunk({
       str: rest,
-      literal: literal + '${box.' + coalesceDots(prop) + '}',
+      literal: literal + '${box.' + coalesceDots(prop) + " ?? ''}",
       variables
     })
   }
