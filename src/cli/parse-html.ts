@@ -16,11 +16,15 @@ function findTemplate (schemas: Schema[]) {
   return schema
 }
 
-export function parseHTML (input: string) {
+export function parseHTML (input: string): Schema {
   const ast = html.parse(input)
   const schema = ast.map(cleanRawSchema).filter(textEmpty)
   const template = findTemplate(schema)
-  return template || []
+  if (!template) {
+    throw new Error('missing template')
+  } else {
+    return template
+  }
 }
 
 function textEmpty (tag: Schema) {

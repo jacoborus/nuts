@@ -12,7 +12,7 @@ export function renderTemplate (renderFn: RenderFn): RenderedTemplate {
 
   function createNut (setup: Setup): RenderNut {
     finalSetup = setup
-    return renderNut
+    return renderComponent
   }
 
   function render (scope: object = {}) {
@@ -20,7 +20,7 @@ export function renderTemplate (renderFn: RenderFn): RenderedTemplate {
     return renderFn(box)
   }
 
-  function renderNut (props?: object): RenderedComp {
+  function renderComponent (props?: object): RenderedComp {
     props = props || {}
     const scope = getBox({ props })
     const afterMount = finalSetup(scope)

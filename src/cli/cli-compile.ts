@@ -12,11 +12,11 @@ import { buildTemplate } from '../builder/build-template'
 
 const inputPath = path.resolve(process.argv[2])
 const basename = path.basename(inputPath, '.html')
-const rawTemplate = fs.readFileSync(path.resolve(inputPath), 'UTF8')
+const basedir = path.dirname(inputPath)
+const rawTemplate = fs.readFileSync(inputPath, 'UTF8')
 
 const schema = parseHTML(rawTemplate)
 const templateSchema = parseTag(schema as RawTagSchema)
 const str = buildTemplate(templateSchema.children[0] as TagSchema)
 
-const outputFile = path.resolve(basename + '.ts')
-fs.writeFileSync(outputFile, str)
+fs.writeFileSync(path.resolve(basedir, basename + '.ts'), str)
