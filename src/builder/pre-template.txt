@@ -7,5 +7,9 @@ import {
   renderTemplate,
   renderTextPlain,
   renderTextConstant,
-  renderTextVariable
+  renderTextVariable,
+  renderIfConst,
+  renderIfElseConst,
+  renderIfVar,
+  renderIfElseVar
 } from 'nuts'
