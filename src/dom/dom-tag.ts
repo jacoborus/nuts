@@ -14,7 +14,7 @@ function getReprint (parent: Element, vChildren: VChildren): Reprint {
     else if (oldElem && subElem) oldElem.replaceWith(subElem)
     else if (oldElem) oldElem.remove()
     else {
-      const nextIndex = vChildren.findIndex(child => child, i + 1)
+      const nextIndex = vChildren.findIndex(child => child === subElem, i + 1)
       parent.insertBefore(subElem as Element, vChildren[nextIndex] || null)
     }
     vChildren[i] = subElem
