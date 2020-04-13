@@ -2,11 +2,11 @@ import test from 'tape'
 import { parseHTML } from '../../src/cli/parse-html'
 
 const input = `
-<html>
+<template>
   <body>
     <h1 id="hello">Hello world</h1>
   </body>
-</html>
+</template>
 `
 test('CLI compile', t => {
   const schema = parseHTML(input)
