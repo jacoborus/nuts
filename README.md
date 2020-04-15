@@ -17,6 +17,8 @@ Describe your view (`myview.nuts.html`):
 <template>
   <span id="{ myid }">Count: {{: count }}</span>
   <button @click="increment">+1</button>
+  <span (if)="odd">Odd</span>
+  <span (else)>Even</span>
 </template>
 ```
 
@@ -35,7 +37,11 @@ import { createNut } from './myview.nuts.js'
 export const render = createNut(function (box) {
   box.myid = 'awesome'
   box.count = 0
-  box.increment = () => ++scope.count
+  box.odd = false
+  box.increment = () => {
+    ++box.count
+    box.odd = !box.odd
+  }
 })
 ```
 
@@ -54,6 +60,7 @@ Now your app should look like this:
 <div id="target">
   <span id="awesome">Count: 0</span>
   <button>+1</button>
+  <span>Odd</span>
 </div>
 ```
 
