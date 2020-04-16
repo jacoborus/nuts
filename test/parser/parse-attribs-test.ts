@@ -268,3 +268,41 @@ test.skip('ParseClass', t => {
   t.fail()
   t.end()
 })
+
+test('Parse attribute: parseIndexConst', t => {
+  const schema = Object.assign({}, baseComp, {
+    attribs: {
+      '(index)': ' position '
+    }
+  })
+  const parsed = parseAttribs(schema)
+  t.is(parsed.length, 1)
+  const [indexAtt] = parsed
+  const result = {
+    kind: 'indexConst',
+    propName: '(index)',
+    value: 'position',
+    variables: []
+  }
+  t.same(indexAtt, result)
+  t.end()
+})
+
+test('Parse attribute: parseIndexVar', t => {
+  const schema = Object.assign({}, baseComp, {
+    attribs: {
+      '(index)': ': position '
+    }
+  })
+  const parsed = parseAttribs(schema)
+  t.is(parsed.length, 1)
+  const [indexAtt] = parsed
+  const result = {
+    kind: 'indexVar',
+    propName: '(index)',
+    value: 'position',
+    variables: []
+  }
+  t.same(indexAtt, result)
+  t.end()
+})

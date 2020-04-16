@@ -27,13 +27,18 @@ function getAttType (att: string, value: string) {
   if (att === 'class') return 'cssclass'
   if (att.startsWith('@')) return 'event'
   if (att.startsWith(':')) return 'prop'
+  if (att === '(index)') {
+    return valueIsVariable(value)
+      ? 'indexVar'
+      : 'indexConst'
+  }
   if (attIsCond(att)) {
-    return value.trim().startsWith(':')
+    return valueIsVariable(value)
       ? 'conditionalVar'
       : 'conditionalConst'
   }
   if (attIsBoolean(att)) {
-    return value.trim().startsWith(':')
+    return valueIsVariable(value)
       ? 'booleanVar'
       : 'booleanConst'
   }
@@ -42,6 +47,10 @@ function getAttType (att: string, value: string) {
     : value.match(matcherVar)
       ? 'variable'
       : 'constant'
+}
+
+function valueIsVariable (value: string): boolean {
+  return value.trim().startsWith(':')
 }
 
 const conditionalKeys = ['(if)', '(else)']
@@ -59,7 +68,9 @@ const parsers = {
   conditionalConst: parseConditionalConst,
   conditionalVar: parseConditionalVar,
   prop: parseProp,
-  cssclass: parseClass
+  cssclass: parseClass,
+  indexVar: parseIndexVar,
+  indexConst: parseIndexConst
 }
 
 function parseAttPlain (att: string, value: string): AttSchema {
@@ -157,7 +168,26 @@ function parseClass (att: string, value: string): AttSchema {
   return {
     kind: 'cssclass',
     propName: att,
-    value,
+    value: value.trim(),
+    variables: []
+  }
+}
+
+function parseIndexConst (att: string, value: string): AttSchema {
+  return {
+    kind: 'indexConst',
+    propName: att,
+    value: value.trim(),
+    variables: []
+  }
+}
+
+function parseIndexVar (att: string, value: string): AttSchema {
+  const val = value.trim().slice(1).trim()
+  return {
+    kind: 'indexVar',
+    propName: att,
+    value: val,
     variables: []
   }
 }
