@@ -42,7 +42,9 @@ export type AttType =
   'conditionalConst' |
   'conditionalVar' |
   'prop' |
-  'cssclass'
+  'cssclass' |
+  'indexConst' |
+  'indexVar'
 
 export type FinalAttType =
   'plain' |
