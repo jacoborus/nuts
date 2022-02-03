@@ -1,5 +1,5 @@
-import { on, Box } from "boxes";
-import { RenderedComp } from "./dom-common";
+import { on, Box } from 'boxes';
+import { RenderedComp } from './dom-common';
 
 type RenderFn = (scope: Box) => RenderedComp;
 // type Updater = (kind: string, oldValue: any, newValue: any) => void

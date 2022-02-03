@@ -1,13 +1,13 @@
-import test from "tape";
-import { TextSchema } from "../../src/common";
+import test from 'tape';
+import { TextSchema } from '../../src/common';
 
-import { buildText } from "../../src/builder/build-text";
+import { buildText } from '../../src/builder/build-text';
 
-test("Build#TextContent plain", (t) => {
+test('Build#TextContent plain', (t) => {
   const schema = {
-    kind: "text",
-    mode: "plain",
-    literal: "uno",
+    kind: 'text',
+    mode: 'plain',
+    literal: 'uno',
     variables: [],
   };
   const result = "renderTextPlain('uno')";
@@ -16,10 +16,10 @@ test("Build#TextContent plain", (t) => {
   t.end();
 });
 
-test("Build#TextContent constant", (t) => {
+test('Build#TextContent constant', (t) => {
   const schema = {
-    kind: "text",
-    mode: "constant",
+    kind: 'text',
+    mode: 'constant',
     literal: "${box.uno ?? ''}",
     variables: [],
   };
@@ -29,12 +29,12 @@ test("Build#TextContent constant", (t) => {
   t.end();
 });
 
-test("Build#TextContent variable", (t) => {
+test('Build#TextContent variable', (t) => {
   const schema = {
-    kind: "text",
-    mode: "variable",
+    kind: 'text',
+    mode: 'variable',
     literal: "${box.uno ?? ''}",
-    variables: ["uno", "dos"],
+    variables: ['uno', 'dos'],
   };
   const result = "renderTextVariable(box => `${box.uno ?? ''}`, ['uno','dos'])";
   const built = buildText(schema as TextSchema);

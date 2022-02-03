@@ -4,8 +4,8 @@ import {
   matcherConst,
   matcherVar,
   AttSchema,
-} from "../common";
-import { createStringParser, attIsBoolean } from "../tools";
+} from '../common';
+import { createStringParser, attIsBoolean } from '../tools';
 
 export function parseAttribs(schema: RawTagSchema | RawNutSchema): AttSchema[] {
   const { attribs } = schema;
@@ -21,30 +21,30 @@ export function parseAttribs(schema: RawTagSchema | RawNutSchema): AttSchema[] {
 }
 
 function getAttType(att: string, value: string) {
-  if (att === "class") return "cssclass";
-  if (att.startsWith("@")) return "event";
-  if (att.startsWith(":")) return "prop";
-  if (att === "(index)") {
-    return valueIsVariable(value) ? "indexVar" : "indexConst";
+  if (att === 'class') return 'cssclass';
+  if (att.startsWith('@')) return 'event';
+  if (att.startsWith(':')) return 'prop';
+  if (att === '(index)') {
+    return valueIsVariable(value) ? 'indexVar' : 'indexConst';
   }
   if (attIsCond(att)) {
-    return valueIsVariable(value) ? "conditionalVar" : "conditionalConst";
+    return valueIsVariable(value) ? 'conditionalVar' : 'conditionalConst';
   }
   if (attIsBoolean(att)) {
-    return valueIsVariable(value) ? "booleanVar" : "booleanConst";
+    return valueIsVariable(value) ? 'booleanVar' : 'booleanConst';
   }
   return !value.match(matcherConst)
-    ? "plain"
+    ? 'plain'
     : value.match(matcherVar)
-    ? "variable"
-    : "constant";
+    ? 'variable'
+    : 'constant';
 }
 
 function valueIsVariable(value: string): boolean {
-  return value.trim().startsWith(":");
+  return value.trim().startsWith(':');
 }
 
-const conditionalKeys = ["(if)", "(else)"];
+const conditionalKeys = ['(if)', '(else)'];
 function attIsCond(att: string): boolean {
   return conditionalKeys.some((name) => name === att);
 }
@@ -66,7 +66,7 @@ const parsers = {
 
 function parseAttPlain(att: string, value: string): AttSchema {
   return {
-    kind: "plain",
+    kind: 'plain',
     propName: att,
     value,
     variables: [],
@@ -74,10 +74,10 @@ function parseAttPlain(att: string, value: string): AttSchema {
 }
 
 function parseAttConstant(att: string, value: string): AttSchema {
-  const parseStr = createStringParser("attribute");
+  const parseStr = createStringParser('attribute');
   const { literal } = parseStr({ str: value.trim() });
   return {
-    kind: "constant",
+    kind: 'constant',
     propName: att,
     value: literal,
     variables: [],
@@ -85,10 +85,10 @@ function parseAttConstant(att: string, value: string): AttSchema {
 }
 
 function parseAttVariable(att: string, value: string): AttSchema {
-  const parseStr = createStringParser("attribute");
+  const parseStr = createStringParser('attribute');
   const { literal, variables } = parseStr({ str: value.trim() });
   return {
-    kind: "variable",
+    kind: 'variable',
     propName: att,
     value: literal,
     variables,
@@ -98,7 +98,7 @@ function parseAttVariable(att: string, value: string): AttSchema {
 function parseAttEvent(att: string, value: string): AttSchema {
   const propName = att.slice(1);
   return {
-    kind: "event",
+    kind: 'event',
     propName,
     value: value.trim(),
     variables: [],
@@ -108,7 +108,7 @@ function parseAttEvent(att: string, value: string): AttSchema {
 function parseBooleanConst(att: string, value: string): AttSchema {
   const val = value.trim();
   return {
-    kind: "booleanConst",
+    kind: 'booleanConst',
     propName: att,
     value: val,
     variables: [],
@@ -118,7 +118,7 @@ function parseBooleanConst(att: string, value: string): AttSchema {
 function parseBooleanVar(att: string, value: string): AttSchema {
   const val = value.trim().slice(1).trim();
   return {
-    kind: "booleanVar",
+    kind: 'booleanVar',
     propName: att,
     value: val,
     variables: [val],
@@ -127,7 +127,7 @@ function parseBooleanVar(att: string, value: string): AttSchema {
 
 function parseConditionalConst(att: string, value: string): AttSchema {
   return {
-    kind: "conditionalConst",
+    kind: 'conditionalConst',
     propName: att,
     value: value.trim(),
     variables: [],
@@ -137,7 +137,7 @@ function parseConditionalConst(att: string, value: string): AttSchema {
 function parseConditionalVar(att: string, value: string): AttSchema {
   const val = value.trim().slice(1).trim();
   return {
-    kind: "conditionalVar",
+    kind: 'conditionalVar',
     propName: att,
     value: val,
     variables: [val],
@@ -148,7 +148,7 @@ function parseProp(att: string, value: string): AttSchema {
   const propName = att.slice(1);
   const val = value.trim();
   return {
-    kind: "prop",
+    kind: 'prop',
     propName,
     value: val,
     variables: [val],
@@ -157,7 +157,7 @@ function parseProp(att: string, value: string): AttSchema {
 
 function parseClass(att: string, value: string): AttSchema {
   return {
-    kind: "cssclass",
+    kind: 'cssclass',
     propName: att,
     value: value.trim(),
     variables: [],
@@ -166,7 +166,7 @@ function parseClass(att: string, value: string): AttSchema {
 
 function parseIndexConst(att: string, value: string): AttSchema {
   return {
-    kind: "indexConst",
+    kind: 'indexConst',
     propName: att,
     value: value.trim(),
     variables: [],
@@ -176,7 +176,7 @@ function parseIndexConst(att: string, value: string): AttSchema {
 function parseIndexVar(att: string, value: string): AttSchema {
   const val = value.trim().slice(1).trim();
   return {
-    kind: "indexVar",
+    kind: 'indexVar',
     propName: att,
     value: val,
     variables: [],

@@ -1,9 +1,9 @@
-import { TextSchema, ChunkType } from "../common";
+import { TextSchema, ChunkType } from '../common';
 
 const textKinds: { [K in ChunkType]: string } = {
-  plain: "renderTextPlain",
-  constant: "renderTextConstant",
-  variable: "renderTextVariable",
+  plain: 'renderTextPlain',
+  constant: 'renderTextConstant',
+  variable: 'renderTextVariable',
 };
 
 const builders = {
@@ -26,11 +26,11 @@ export function buildTextPlain(schema: TextSchema): string {
 export function buildTextConst(schema: TextSchema): string {
   const { mode, literal } = schema;
   const fn = textKinds[mode];
-  return fn + "(box => `" + literal + "`, [])";
+  return fn + '(box => `' + literal + '`, [])';
 }
 
 export function buildTextVar(schema: TextSchema): string {
   const { mode, literal, variables } = schema;
   const fn = textKinds[mode];
-  return fn + "(box => `" + literal + "`, ['" + variables.join("','") + "'])";
+  return fn + '(box => `' + literal + "`, ['" + variables.join("','") + "'])";
 }

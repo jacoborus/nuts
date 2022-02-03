@@ -1,5 +1,5 @@
-import { Box } from "boxes";
-import { RenderAtt, RenderFn, Off, Reprint } from "./dom-common";
+import { Box } from 'boxes';
+import { RenderAtt, RenderFn, Off, Reprint } from './dom-common';
 
 type VChildren = (Element | Text | null)[];
 function getReprint(parent: Element, vChildren: VChildren): Reprint {

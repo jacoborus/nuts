@@ -1,4 +1,4 @@
-import { AttSchema, FinalAttType } from "../../src/common";
+import { AttSchema, FinalAttType } from '../../src/common';
 
 const attKinds = {
   plain: buildAttPlain,
@@ -15,7 +15,7 @@ export function buildAttribs(defs: AttSchema[]): string {
     .map((schema) => {
       return attKinds[schema.kind as FinalAttType](schema);
     })
-    .join(",");
+    .join(',');
 }
 
 export function buildAttPlain(schema: AttSchema): string {
@@ -23,13 +23,13 @@ export function buildAttPlain(schema: AttSchema): string {
 }
 
 export function buildAttConstant(schema: AttSchema): string {
-  const literalFn = "box => `" + schema.value + "`";
+  const literalFn = 'box => `' + schema.value + '`';
   return `renderAttConstant('${schema.propName}',${literalFn})`;
 }
 
 export function buildAttVariable(schema: AttSchema): string {
   const literalFn =
-    "box => `" + schema.value + "`,['" + schema.variables.join("','") + "']";
+    'box => `' + schema.value + "`,['" + schema.variables.join("','") + "']";
   return `renderAttVariable('${schema.propName}',${literalFn})`;
 }
 

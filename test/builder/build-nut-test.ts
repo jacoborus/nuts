@@ -1,22 +1,22 @@
-import test from "tape";
+import test from 'tape';
 
-import { buildNut } from "../../src/builder/build-nut";
-import { NutSchema } from "../../src/common";
+import { buildNut } from '../../src/builder/build-nut';
+import { NutSchema } from '../../src/common';
 
-test("Build#Nut", (t) => {
+test('Build#Nut', (t) => {
   const nutSchema = {
-    kind: "nut",
-    name: "my-comp",
+    kind: 'nut',
+    name: 'my-comp',
     props: [
       {
-        kind: "plain",
-        propName: "p1",
-        value: "v1",
+        kind: 'plain',
+        propName: 'p1',
+        value: 'v1',
       },
       {
-        kind: "variable",
-        propName: "p2",
-        value: "v2",
+        kind: 'variable',
+        propName: 'p2',
+        value: 'v2',
       },
     ],
   };

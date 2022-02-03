@@ -1,5 +1,5 @@
-import { Box, on } from "boxes";
-import { RenderFn, Reprint } from "./dom-common";
+import { Box, on } from 'boxes';
+import { RenderFn, Reprint } from './dom-common';
 
 type CondFn = (box: Box) => any;
 

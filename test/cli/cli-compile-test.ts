@@ -1,5 +1,5 @@
-import test from "tape";
-import { parseHTML } from "../../src/cli/parse-html";
+import test from 'tape';
+import { parseHTML } from '../../src/cli/parse-html';
 
 const input = `
 <template>
@@ -8,7 +8,7 @@ const input = `
   </body>
 </template>
 `;
-test("CLI compile", (t) => {
+test('CLI compile', (t) => {
   const schema = parseHTML(input);
   t.ok(schema);
   t.end();

@@ -1,11 +1,11 @@
-import { getBox, Box } from "boxes";
+import { getBox, Box } from 'boxes';
 import {
   RenderFn,
   RenderedComp,
   RenderedTemplate,
   RenderNut,
   Setup,
-} from "./dom-common";
+} from './dom-common';
 
 export function renderTemplate(renderFn: RenderFn): RenderedTemplate {
   let finalSetup: Setup = function (_: Box) {};

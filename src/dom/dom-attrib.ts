@@ -1,5 +1,5 @@
-import { on, Box } from "boxes";
-import { RenderAtt } from "./dom-common";
+import { on, Box } from 'boxes';
+import { RenderAtt } from './dom-common';
 
 export function renderAttPlain(att: string, value: string): RenderAtt {
   return (elem: Element) => {

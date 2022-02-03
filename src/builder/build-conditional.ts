@@ -1,9 +1,9 @@
-import { buildChildren } from "./build-children";
+import { buildChildren } from './build-children';
 
-import { CondSchema } from "../common";
+import { CondSchema } from '../common';
 
 export function buildConditional(schema: CondSchema): string {
-  if (schema.kind === "conditionalConst") {
+  if (schema.kind === 'conditionalConst') {
     return schema.children.length === 1
       ? buildIfConst(schema)
       : buildIfElseConst(schema);
@@ -22,7 +22,7 @@ function buildIfConst(schema: CondSchema) {
 
 function buildIfElseConst(schema: CondSchema) {
   const { conditions, children } = schema;
-  const builtChildren = buildChildren(children).join(",");
+  const builtChildren = buildChildren(children).join(',');
   return `renderIfElseConst(${conditions[0]},[${builtChildren}])`;
 }
 
@@ -34,6 +34,6 @@ function buildIfVar(schema: CondSchema) {
 
 function buildIfElseVar(schema: CondSchema) {
   const { conditions, children, variables } = schema;
-  const builtChildren = buildChildren(children).join(",");
+  const builtChildren = buildChildren(children).join(',');
   return `renderIfElseVar(${conditions[0]},['${variables[0]}'],[${builtChildren}])`;
 }

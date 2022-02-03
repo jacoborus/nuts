@@ -1,4 +1,4 @@
-import { Box } from "boxes";
+import { Box } from 'boxes';
 
 type VFn = (box: Box) => void;
 export type Setup = (box: Box) => VFn | void;

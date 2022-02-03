@@ -10,7 +10,7 @@ const arr = [
   require('./builder/build-tag-test'),
   require('./builder/build-nut-test'),
   require('./builder/build-template-test'),
-  require('./cli/cli-compile-test')
-]
+  require('./cli/cli-compile-test'),
+];
 
-console.log('test files:', arr.length)
+console.log('test files:', arr.length);

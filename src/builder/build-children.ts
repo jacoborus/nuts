@@ -1,9 +1,9 @@
-import { buildText } from "./build-text";
-import { buildNut } from "./build-nut";
-import { buildConditional } from "./build-conditional";
-import { buildTag } from "./build-tag";
+import { buildText } from './build-text';
+import { buildNut } from './build-nut';
+import { buildConditional } from './build-conditional';
+import { buildTag } from './build-tag';
 
-import { ElemSchema, NutType, ElemBuilder } from "../common";
+import { ElemSchema, NutType, ElemBuilder } from '../common';
 
 type Builders = { [K in NutType]: ElemBuilder };
 const builders: Builders = {

@@ -1,9 +1,9 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
-import { TagSchema } from "../common";
+import { TagSchema } from '../common';
 
-import { buildTag } from "./build-tag";
+import { buildTag } from './build-tag';
 
 export function buildTemplate(schema: TagSchema): string {
   const child = buildTag(schema);
@@ -11,8 +11,8 @@ export function buildTemplate(schema: TagSchema): string {
 }
 
 const pretemplate = fs.readFileSync(
-  path.resolve(__dirname, "./pre-template.txt"),
-  "UTF8"
+  path.resolve(__dirname, './pre-template.txt'),
+  'UTF8'
 );
 
 function printTemplate(child: string): string {

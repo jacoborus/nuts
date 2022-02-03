@@ -1,5 +1,5 @@
-import test from "tape";
-import { AttSchema } from "../../src/common";
+import test from 'tape';
+import { AttSchema } from '../../src/common';
 
 import {
   buildAttPlain,
@@ -8,13 +8,13 @@ import {
   buildAttEvent,
   buildAttBoolConst,
   buildAttBoolVar,
-} from "../../src/builder/build-attribs";
+} from '../../src/builder/build-attribs';
 
-test("Build attribs: plain", (t) => {
+test('Build attribs: plain', (t) => {
   const schema = {
-    kind: "plain",
-    propName: "testname",
-    value: "testvalue",
+    kind: 'plain',
+    propName: 'testname',
+    value: 'testvalue',
     variables: [],
   };
   const result = "renderAttPlain('testname','testvalue')";
@@ -23,10 +23,10 @@ test("Build attribs: plain", (t) => {
   t.end();
 });
 
-test("Build attribs: constant", (t) => {
+test('Build attribs: constant', (t) => {
   const schema = {
-    kind: "constant",
-    propName: "testname",
+    kind: 'constant',
+    propName: 'testname',
     value: "${box.test?.value ?? ''}",
     variables: [],
   };
@@ -37,12 +37,12 @@ test("Build attribs: constant", (t) => {
   t.end();
 });
 
-test("Build attribs: variable", (t) => {
+test('Build attribs: variable', (t) => {
   const schema = {
-    kind: "variable",
-    propName: "testname",
-    value: "testvalue",
-    variables: ["t1", "t2"],
+    kind: 'variable',
+    propName: 'testname',
+    value: 'testvalue',
+    variables: ['t1', 't2'],
   };
   const result = "renderAttVariable('testname',box => `testvalue`,['t1','t2'])";
   const built = buildAttVariable(schema as AttSchema);
@@ -50,11 +50,11 @@ test("Build attribs: variable", (t) => {
   t.end();
 });
 
-test("Build attribs: event", (t) => {
+test('Build attribs: event', (t) => {
   const schema = {
-    kind: "event",
-    propName: "testname",
-    value: "testvalue",
+    kind: 'event',
+    propName: 'testname',
+    value: 'testvalue',
     variables: [],
   };
   const result = "renderAttEvent('testname','testvalue')";
@@ -63,11 +63,11 @@ test("Build attribs: event", (t) => {
   t.end();
 });
 
-test("Build attribs: boolean constant", (t) => {
+test('Build attribs: boolean constant', (t) => {
   const schema = {
-    kind: "booleanConst",
-    propName: "testname",
-    value: "testvalue",
+    kind: 'booleanConst',
+    propName: 'testname',
+    value: 'testvalue',
     variables: [],
   };
   const result = "renderAttBoolConst('testname','testvalue')";
@@ -76,12 +76,12 @@ test("Build attribs: boolean constant", (t) => {
   t.end();
 });
 
-test("Build attribs: boolean variable", (t) => {
+test('Build attribs: boolean variable', (t) => {
   const schema = {
-    kind: "booleanVar",
-    propName: "testname",
-    value: "test.value",
-    variables: ["test", "value"],
+    kind: 'booleanVar',
+    propName: 'testname',
+    value: 'test.value',
+    variables: ['test', 'value'],
   };
   const result = "renderAttBoolVar('testname','test.value',['test','value'])";
   const built = buildAttBoolVar(schema as AttSchema);

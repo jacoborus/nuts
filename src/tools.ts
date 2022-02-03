@@ -1,4 +1,4 @@
-import { ParseChunkOpts } from "./common";
+import { ParseChunkOpts } from './common';
 
 export const matcherConst = /{([^}]*)}/;
 export const matcherVar = /{:([^}]*)}/;
@@ -10,19 +10,19 @@ const matchers = {
   attribute: matcherConst,
 };
 
-type MatcherType = "text" | "attribute";
+type MatcherType = 'text' | 'attribute';
 
 export function coalesceDots(str: string): string {
-  const arr = str.split(".");
+  const arr = str.split('.');
   if (arr.length === 1) return str;
-  return arr.join("?.");
+  return arr.join('?.');
 }
 
 export function createStringParser(matcherType: MatcherType) {
   const match = matchers[matcherType];
   return function parseChunk({
-    str = "",
-    literal = "",
+    str = '',
+    literal = '',
     variables = [],
   }: Partial<ParseChunkOpts>): ParseChunkOpts {
     if (!str.length) {
@@ -49,7 +49,7 @@ export function createStringParser(matcherType: MatcherType) {
     }
     let prop = st[1].trim();
     const rest = str.substring(st[0].length);
-    const isVariable = prop.startsWith(":");
+    const isVariable = prop.startsWith(':');
     if (isVariable) {
       // variable chunk
       prop = prop.substr(1).trim();
@@ -58,39 +58,39 @@ export function createStringParser(matcherType: MatcherType) {
     // variable and constant
     return parseChunk({
       str: rest,
-      literal: literal + "${box." + coalesceDots(prop) + " ?? ''}",
+      literal: literal + '${box.' + coalesceDots(prop) + " ?? ''}",
       variables,
     });
   };
 }
 
 const booleanAttributes = [
-  "async",
-  "autofocus",
-  "autoplay",
-  "checked",
-  "contenteditable",
-  "controls",
-  "default",
-  "defer",
-  "disabled",
-  "formNoValidate",
-  "frameborder",
-  "hidden",
-  "ismap",
-  "itemscope",
-  "loop",
-  "multiple",
-  "muted",
-  "nomodule",
-  "novalidate",
-  "open",
-  "readonly",
-  "required",
-  "reversed",
-  "scoped",
-  "selected",
-  "typemustmatch",
+  'async',
+  'autofocus',
+  'autoplay',
+  'checked',
+  'contenteditable',
+  'controls',
+  'default',
+  'defer',
+  'disabled',
+  'formNoValidate',
+  'frameborder',
+  'hidden',
+  'ismap',
+  'itemscope',
+  'loop',
+  'multiple',
+  'muted',
+  'nomodule',
+  'novalidate',
+  'open',
+  'readonly',
+  'required',
+  'reversed',
+  'scoped',
+  'selected',
+  'typemustmatch',
 ];
 export function attIsBoolean(att: string) {
   return booleanAttributes.some((name) => att === name);
