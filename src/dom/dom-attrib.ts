@@ -1,38 +1,43 @@
-import { on, Box } from 'boxes'
-import {
-  RenderAtt
-} from './dom-common'
+import { on, Box } from "boxes";
+import { RenderAtt } from "./dom-common";
 
-export function renderAttPlain (att: string, value: string): RenderAtt {
+export function renderAttPlain(att: string, value: string): RenderAtt {
   return (elem: Element) => {
-    elem.setAttribute(att, value)
-    return []
-  }
+    elem.setAttribute(att, value);
+    return [];
+  };
 }
 
-export function renderAttConstant (att: string, literalFn: (box: Box) => string): RenderAtt {
+export function renderAttConstant(
+  att: string,
+  literalFn: (box: Box) => string
+): RenderAtt {
   return (elem: Element, scope: Box) => {
-    elem.setAttribute(att, literalFn(scope))
-    return []
-  }
+    elem.setAttribute(att, literalFn(scope));
+    return [];
+  };
 }
 
-export function renderAttVariable (att: string, literalFn: (box: Box) => string, variables: string[] = []): RenderAtt {
+export function renderAttVariable(
+  att: string,
+  literalFn: (box: Box) => string,
+  variables: string[] = []
+): RenderAtt {
   return (elem: Element, scope: Box) => {
-    elem.setAttribute(att, literalFn(scope))
-    const links = variables.map(variable => {
+    elem.setAttribute(att, literalFn(scope));
+    const links = variables.map((variable) => {
       return on(scope, variable, () => {
-        elem.setAttribute(att, literalFn(scope))
-      }).off
-    })
-    return links
-  }
+        elem.setAttribute(att, literalFn(scope));
+      }).off;
+    });
+    return links;
+  };
 }
 
-export function renderAttEvent (att: string, value: string): RenderAtt {
+export function renderAttEvent(att: string, value: string): RenderAtt {
   return (elem: Element, scope: Box) => {
-    const listener = (e: Event) => scope[value](e, scope)
-    elem.addEventListener(att, listener)
-    return [() => elem.removeEventListener(att, listener)]
-  }
+    const listener = (e: Event) => scope[value](e, scope);
+    elem.addEventListener(att, listener);
+    return [() => elem.removeEventListener(att, listener)];
+  };
 }

@@ -5,7 +5,7 @@
   "main": "./lib/dom/core.js",
   "scripts": {
     "build": "rm -rf lib && tsc && cp ./src/builder/pre-template.txt ./lib/builder/pre-template.txt",
-    "linter": "eslint src/**/**.ts",
+    "lint": "eslint src/**/**.ts && prettier --write ./src/**.ts",
     "test": "tape -r ts-node/register test/test.ts",
     "prepublish": "npm run build",
     "browser-test": "rm -rf temp-test && tsc -p tsconfig-test.json && browserify ./temp-test/test/dom/dom-test.js -o ./temp-test/bundle-test.js"
@@ -25,15 +25,12 @@
   "devDependencies": {
     "@types/node": "13.11.1",
     "@types/tape": "4.2.34",
-    "@typescript-eslint/eslint-plugin": "2.28.0",
-    "@typescript-eslint/parser": "2.28.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "@typescript-eslint/parser": "^5.10.2",
     "browserify": "16.5.1",
-    "eslint": "6.8.0",
-    "eslint-config-standard": "14.1.1",
-    "eslint-plugin-import": "2.20.2",
-    "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "4.2.1",
-    "eslint-plugin-standard": "4.0.1",
+    "eslint": "^8.8.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1",
     "tape": "4.13.2",
     "ts-node": "8.8.2",
     "typescript": "3.8.3"
