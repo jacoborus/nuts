@@ -5,7 +5,7 @@ const baseComp = {
   data: '',
 };
 
-test('Parse#textPlain empty', (t) => {
+test('Parse#textPlain empty', () => {
   const result = {
     kind: 'text',
     mode: 'plain',
@@ -13,11 +13,10 @@ test('Parse#textPlain empty', (t) => {
     variables: [],
   };
   const parsed = parseText(baseComp);
-  t.same(parsed, result);
-  t.end();
+  expect(parsed).toEqual(result);
 });
 
-test('Parse#textPlain', (t) => {
+test('Parse#textPlain', () => {
   const result = {
     kind: 'text',
     mode: 'plain',
@@ -26,11 +25,10 @@ test('Parse#textPlain', (t) => {
   };
   const schema = Object.assign({}, baseComp, { data: 'hola mundo ' });
   const parsed = parseText(schema);
-  t.same(parsed, result);
-  t.end();
+  expect(parsed).toEqual(result);
 });
 
-test('Parse#textConstant', (t) => {
+test('Parse#textConstant', () => {
   const result = {
     kind: 'text',
     mode: 'constant',
@@ -39,11 +37,10 @@ test('Parse#textConstant', (t) => {
   };
   const schema = Object.assign({}, baseComp, { data: 'counter {{ count }}.' });
   const parsed = parseText(schema);
-  t.same(parsed, result);
-  t.end();
+  expect(parsed).toEqual(result);
 });
 
-test('Parse#textVar', (t) => {
+test('Parse#textVar', () => {
   const result = {
     kind: 'text',
     mode: 'variable',
@@ -54,6 +51,5 @@ test('Parse#textVar', (t) => {
     data: 'Fixed {{ constantino }} y {{: valentina }}',
   });
   const parsed = parseText(schema);
-  t.same(parsed, result);
-  t.end();
+  expect(parsed).toEqual(result);
 });

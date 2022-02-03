@@ -1,4 +1,3 @@
-import test from 'tape';
 import { ElemSchema } from '../../src/common';
 
 import { parseConditional } from '../../src/parser/parse-conditional';
@@ -31,7 +30,7 @@ const baseChildren = [
   },
 ];
 
-test('Parse conditional: if-const', (t) => {
+test('Parse conditional: if-const', () => {
   const [first, second, third] = parseConditional(baseChildren as ElemSchema[]);
   const result = {
     kind: 'conditionalConst',
@@ -46,13 +45,12 @@ test('Parse conditional: if-const', (t) => {
       },
     ],
   };
-  t.same(first, baseChildren[0]);
-  t.same(second, result);
-  t.same(third, baseChildren[2]);
-  t.end();
+  expect(first).toEqual(baseChildren[0]);
+  expect(second).toEqual(result);
+  expect(third).toEqual(baseChildren[2]);
 });
 
-test('Parse conditional: if-else-const', (t) => {
+test('Parse conditional: if-else-const', () => {
   const elseTag = {
     kind: 'tag',
     name: 'div',
@@ -88,13 +86,12 @@ test('Parse conditional: if-else-const', (t) => {
       },
     ],
   };
-  t.same(first, baseChildren[0]);
-  t.same(second, result);
-  t.same(third, baseChildren[2]);
-  t.end();
+  expect(first).toEqual(baseChildren[0]);
+  expect(second).toEqual(result);
+  expect(third).toEqual(baseChildren[2]);
 });
 
-test('Parse conditional: if-var', (t) => {
+test('Parse conditional: if-var', () => {
   const iftag = {
     kind: 'tag',
     name: 'span',
@@ -124,13 +121,12 @@ test('Parse conditional: if-var', (t) => {
       },
     ],
   };
-  t.same(first, baseChildren[0]);
-  t.same(second, result);
-  t.same(third, baseChildren[2]);
-  t.end();
+  expect(first).toEqual(baseChildren[0]);
+  expect(second).toEqual(result);
+  expect(third).toEqual(baseChildren[2]);
 });
 
-test('Parse conditional: if-else-var', (t) => {
+test('Parse conditional: if-else-var', () => {
   const ifTag = {
     kind: 'tag',
     name: 'span',
@@ -179,8 +175,7 @@ test('Parse conditional: if-else-var', (t) => {
       },
     ],
   };
-  t.same(first, baseChildren[0], 'pre');
-  t.same(second, result, 'main');
-  t.same(third, baseChildren[2], 'post');
-  t.end();
+  expect(first).toEqual(baseChildren[0]);
+  expect(second).toEqual(result);
+  expect(third).toEqual(baseChildren[2]);
 });

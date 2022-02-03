@@ -1,4 +1,3 @@
-import test from 'tape';
 import { parseNut } from '../../src/parser/parse-nut';
 
 const baseComp = {
@@ -12,22 +11,21 @@ const baseComp = {
   children: [],
 };
 
-test('Parse#nut', (t) => {
+test('Parse#nut', () => {
   const { kind, name, props } = parseNut(baseComp);
-  t.is(kind, 'nut');
-  t.is(name, 'mynut');
+  expect(kind).toBe('nut');
+  expect(name).toBe('mynut');
   const [prop1, prop2] = props;
-  t.same(prop1, {
+  expect(prop1).toEqual({
     kind: 'prop',
     propName: 'prop1',
     value: 'myProp',
     variables: ['myProp'],
   });
-  t.same(prop2, {
+  expect(prop2).toEqual({
     kind: 'prop',
     propName: 'prop2',
     value: 'myProp2',
     variables: ['myProp2'],
   });
-  t.end();
 });

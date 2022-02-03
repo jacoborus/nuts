@@ -1,4 +1,3 @@
-import test from 'tape';
 import { parseAttribs } from '../../src/parser/parse-attribs';
 
 const baseComp = {
@@ -8,13 +7,12 @@ const baseComp = {
   children: [],
 };
 
-test('Parse#attribs', (t) => {
+test('Parse#attribs', () => {
   const parsed = parseAttribs(baseComp);
-  t.same([], parsed);
-  t.end();
+  expect([]).toEqual(parsed);
 });
 
-test('Parse attribute: parseAttPlain', (t) => {
+test('Parse attribute: parseAttPlain', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: 'myId',
@@ -30,25 +28,24 @@ test('Parse attribute: parseAttPlain', (t) => {
     value: 'myId',
     variables: [],
   };
-  t.same(id, resultId);
+  expect(id).toEqual(resultId);
   const resultOther = {
     kind: 'plain',
     propName: 'other',
     value: 'otherAtt',
     variables: [],
   };
-  t.same(other, resultOther);
+  expect(other).toEqual(resultOther);
   const resultAnother = {
     kind: 'plain',
     propName: 'another',
     value: 'anotherAtt',
     variables: [],
   };
-  t.same(another, resultAnother);
-  t.end();
+  expect(another).toEqual(resultAnother);
 });
 
-test('Parse attribute: parseAttConstant', (t) => {
+test('Parse attribute: parseAttConstant', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: '{ myId }',
@@ -57,7 +54,7 @@ test('Parse attribute: parseAttConstant', (t) => {
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 3);
+  expect(parsed.length).toBe(3);
   const [id, other, another] = parsed;
   const resultId = {
     kind: 'constant',
@@ -65,25 +62,24 @@ test('Parse attribute: parseAttConstant', (t) => {
     value: "${box.myId ?? ''}",
     variables: [],
   };
-  t.same(id, resultId);
+  expect(id).toEqual(resultId);
   const resultOther = {
     kind: 'plain',
     propName: 'other',
     value: 'otherAtt',
     variables: [],
   };
-  t.same(other, resultOther);
+  expect(other).toEqual(resultOther);
   const resultAnother = {
     kind: 'constant',
     propName: 'another',
     value: "${box.anotherAtt ?? ''}",
     variables: [],
   };
-  t.same(another, resultAnother);
-  t.end();
+  expect(another).toEqual(resultAnother);
 });
 
-test('Parse attribute: parseAttVariable', (t) => {
+test('Parse attribute: parseAttVariable', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: '{: myId }',
@@ -92,7 +88,7 @@ test('Parse attribute: parseAttVariable', (t) => {
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 3);
+  expect(parsed.length).toBe(3);
   const [id, other, another] = parsed;
   const resultId = {
     kind: 'variable',
@@ -100,25 +96,24 @@ test('Parse attribute: parseAttVariable', (t) => {
     value: "${box.myId ?? ''}",
     variables: ['myId'],
   };
-  t.same(id, resultId);
+  expect(id).toEqual(resultId);
   const resultOther = {
     kind: 'plain',
     propName: 'other',
     value: 'otherAtt',
     variables: [],
   };
-  t.same(other, resultOther);
+  expect(other).toEqual(resultOther);
   const resultAnother = {
     kind: 'variable',
     propName: 'another',
     value: "${box.anotherAtt ?? ''}",
     variables: ['anotherAtt'],
   };
-  t.same(another, resultAnother);
-  t.end();
+  expect(another).toEqual(resultAnother);
 });
 
-test('Parse attribute: ParseAttEvent', (t) => {
+test('Parse attribute: ParseAttEvent', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '@click': 'clicked',
@@ -126,7 +121,7 @@ test('Parse attribute: ParseAttEvent', (t) => {
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 2);
+  expect(parsed.length).toBe(2);
   const [single, double] = parsed;
   const singleRes = {
     kind: 'event',
@@ -134,18 +129,17 @@ test('Parse attribute: ParseAttEvent', (t) => {
     value: 'clicked',
     variables: [],
   };
-  t.same(single, singleRes);
+  expect(single).toEqual(singleRes);
   const doubleRes = {
     kind: 'event',
     propName: 'dblclick',
     value: 'doubleclicked',
     variables: [],
   };
-  t.same(double, doubleRes);
-  t.end();
+  expect(double).toEqual(doubleRes);
 });
 
-test('Parse attribute: ParseBooleanConst', (t) => {
+test('Parse attribute: ParseBooleanConst', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       checked: 'uno',
@@ -153,7 +147,7 @@ test('Parse attribute: ParseBooleanConst', (t) => {
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 2);
+  expect(parsed.length).toBe(2);
   const [checked, other] = parsed;
   const resultChecked = {
     kind: 'booleanConst',
@@ -161,18 +155,17 @@ test('Parse attribute: ParseBooleanConst', (t) => {
     value: 'uno',
     variables: [],
   };
-  t.same(checked, resultChecked);
+  expect(checked).toEqual(resultChecked);
   const resultOther = {
     kind: 'booleanConst',
     propName: 'hidden',
     value: 'other',
     variables: [],
   };
-  t.same(other, resultOther);
-  t.end();
+  expect(other).toEqual(resultOther);
 });
 
-test('Parse attribute: ParseBooleanVar', (t) => {
+test('Parse attribute: ParseBooleanVar', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       checked: ':uno',
@@ -180,7 +173,7 @@ test('Parse attribute: ParseBooleanVar', (t) => {
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 2);
+  expect(parsed.length).toBe(2);
   const [checked, other] = parsed;
   const resultChecked = {
     kind: 'booleanVar',
@@ -188,25 +181,24 @@ test('Parse attribute: ParseBooleanVar', (t) => {
     value: 'uno',
     variables: ['uno'],
   };
-  t.same(checked, resultChecked);
+  expect(checked).toEqual(resultChecked);
   const resultOther = {
     kind: 'booleanVar',
     propName: 'hidden',
     value: 'other',
     variables: ['other'],
   };
-  t.same(other, resultOther);
-  t.end();
+  expect(other).toEqual(resultOther);
 });
 
-test('Parse attribute: ParseConditionalConst', (t) => {
+test('Parse attribute: ParseConditionalConst', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(if)': ' uno ',
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 1);
+  expect(parsed.length).toBe(1);
   const [ifcond] = parsed;
   const result = {
     kind: 'conditionalConst',
@@ -214,18 +206,17 @@ test('Parse attribute: ParseConditionalConst', (t) => {
     value: 'uno',
     variables: [],
   };
-  t.same(ifcond, result);
-  t.end();
+  expect(ifcond).toEqual(result);
 });
 
-test('Parse attribute: parseConditionalVar', (t) => {
+test('Parse attribute: parseConditionalVar', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(if)': ': uno ',
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 1);
+  expect(parsed.length).toBe(1);
   const [ifcond] = parsed;
   const result = {
     kind: 'conditionalVar',
@@ -233,11 +224,10 @@ test('Parse attribute: parseConditionalVar', (t) => {
     value: 'uno',
     variables: ['uno'],
   };
-  t.same(ifcond, result);
-  t.end();
+  expect(ifcond).toEqual(result);
 });
 
-test('Parse attribute: parseProp', (t) => {
+test('Parse attribute: parseProp', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       ':prop1': ' uno   ',
@@ -245,7 +235,7 @@ test('Parse attribute: parseProp', (t) => {
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 2);
+  expect(parsed.length).toBe(2);
   const [prop1, prop2] = parsed;
   const result1 = {
     kind: 'prop',
@@ -253,30 +243,30 @@ test('Parse attribute: parseProp', (t) => {
     value: 'uno',
     variables: ['uno'],
   };
-  t.same(prop1, result1);
+  expect(prop1).toEqual(result1);
   const result2 = {
     kind: 'prop',
     propName: 'prop2',
     value: 'dos',
     variables: ['dos'],
   };
-  t.same(prop2, result2);
-  t.end();
+  expect(prop2).toEqual(result2);
 });
 
-test.skip('ParseClass', (t) => {
-  t.fail();
-  t.end();
-});
+// TODO
+// test.skip('ParseClass', (t) => {
+//   t.fail();
+//   t.end();
+// });
 
-test('Parse attribute: parseIndexConst', (t) => {
+test('Parse attribute: parseIndexConst', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(index)': ' position ',
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 1);
+  expect(parsed.length).toBe(1);
   const [indexAtt] = parsed;
   const result = {
     kind: 'indexConst',
@@ -284,18 +274,17 @@ test('Parse attribute: parseIndexConst', (t) => {
     value: 'position',
     variables: [],
   };
-  t.same(indexAtt, result);
-  t.end();
+  expect(indexAtt).toEqual(result);
 });
 
-test('Parse attribute: parseIndexVar', (t) => {
+test('Parse attribute: parseIndexVar', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(index)': ': position ',
     },
   });
   const parsed = parseAttribs(schema);
-  t.is(parsed.length, 1);
+  expect(parsed.length).toBe(1);
   const [indexAtt] = parsed;
   const result = {
     kind: 'indexVar',
@@ -303,6 +292,5 @@ test('Parse attribute: parseIndexVar', (t) => {
     value: 'position',
     variables: [],
   };
-  t.same(indexAtt, result);
-  t.end();
+  expect(indexAtt).toEqual(result);
 });

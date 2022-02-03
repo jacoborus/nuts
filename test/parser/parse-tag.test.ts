@@ -1,4 +1,3 @@
-import test from 'tape';
 import { parseTag } from '../../src/parser/parse-tag';
 
 const baseComp = {
@@ -19,11 +18,11 @@ const baseComp = {
   ],
 };
 
-test('Parse tag: simple', (t) => {
+test('Parse tag: simple', () => {
   const { kind, name, attribs, children } = parseTag(baseComp);
-  t.is(kind, 'tag');
-  t.is(name, 'span');
-  t.same(attribs, [
+  expect(kind).toBe('tag');
+  expect(name).toBe('span');
+  expect(attribs).toEqual([
     {
       kind: 'plain',
       propName: 'id',
@@ -31,12 +30,12 @@ test('Parse tag: simple', (t) => {
       variables: [],
     },
   ]);
-  t.is(children[0].kind, 'text');
-  t.is(children[1].kind, 'nut');
-  t.end();
+  expect(children[0].kind).toBe('text');
+  expect(children[1].kind).toBe('nut');
 });
 
-test.skip('Parse tag: with conditional const', (t) => {
+// TODO
+test.skip('Parse tag: with conditional const', () => {
   const condComp = {
     type: 'tag',
     name: 'span',
@@ -50,9 +49,9 @@ test.skip('Parse tag: with conditional const', (t) => {
   };
 
   const { kind, name, attribs, children } = parseTag(condComp);
-  t.is(kind, 'tag');
-  t.is(name, 'span');
-  t.same(attribs, [
+  expect(kind).toBe('tag');
+  expect(name).toBe('span');
+  expect(attribs).toEqual([
     {
       kind: 'plain',
       propName: 'id',
@@ -60,7 +59,6 @@ test.skip('Parse tag: with conditional const', (t) => {
       variables: [],
     },
   ]);
-  t.is(children[0].kind, 'text');
-  t.is(children[1].kind, 'nut');
-  t.end();
+  expect(children[0].kind).toBe('text');
+  expect(children[1].kind).toBe('nut');
 });
