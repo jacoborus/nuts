@@ -1,55 +1,89 @@
 import { parseText } from '../../src/parser/parse-text';
 
-const baseComp = {
-  type: 'text',
-  data: '',
-};
-
-test('Parse#textPlain empty', () => {
+test('Parse#text flat and empty', () => {
   const result = {
     kind: 'text',
-    mode: 'plain',
-    literal: '',
-    variables: [],
+    chunks: [],
   };
-  const parsed = parseText(baseComp);
-  expect(parsed).toEqual(result);
-});
-
-test('Parse#textPlain', () => {
-  const result = {
-    kind: 'text',
-    mode: 'plain',
-    literal: 'hola mundo ',
-    variables: [],
-  };
-  const schema = Object.assign({}, baseComp, { data: 'hola mundo ' });
-  const parsed = parseText(schema);
-  expect(parsed).toEqual(result);
-});
-
-test('Parse#textConstant', () => {
-  const result = {
-    kind: 'text',
-    mode: 'constant',
-    literal: "counter ${box.count ?? ''}.",
-    variables: [],
-  };
-  const schema = Object.assign({}, baseComp, { data: 'counter {{ count }}.' });
-  const parsed = parseText(schema);
-  expect(parsed).toEqual(result);
-});
-
-test('Parse#textVar', () => {
-  const result = {
-    kind: 'text',
-    mode: 'variable',
-    literal: "Fixed ${box.constantino ?? ''} y ${box.valentina ?? ''}",
-    variables: ['valentina'],
-  };
-  const schema = Object.assign({}, baseComp, {
-    data: 'Fixed {{ constantino }} y {{: valentina }}',
+  const parsed = parseText({
+    type: 'text',
+    data: '',
   });
+  expect(parsed).toEqual(result);
+});
+
+test('Parse#text flat', () => {
+  const schema = { type: 'text', data: 'hola mundo ' };
+  const result = {
+    kind: 'text',
+    chunks: [
+      {
+        value: 'hola mundo ',
+        dynamic: false,
+        reactive: false,
+      },
+    ],
+  };
+  const parsed = parseText(schema);
+  expect(parsed).toEqual(result);
+});
+
+test('Parse#text dynamic', () => {
+  const schema = { type: 'text', data: 'counter {{ count }}.' };
+  const result = {
+    kind: 'text',
+    chunks: [
+      {
+        value: 'counter ',
+        dynamic: false,
+        reactive: false,
+      },
+      {
+        value: 'count',
+        dynamic: true,
+        reactive: false,
+      },
+      {
+        value: '.',
+        dynamic: false,
+        reactive: false,
+      },
+    ],
+  };
+  const parsed = parseText(schema);
+  expect(parsed).toEqual(result);
+});
+
+test('Parse#text reactive', () => {
+  const schema = {
+    type: 'text',
+    data: 'Normal, {{ dinamico }} y {{: reactivo }}',
+  };
+  const result = {
+    kind: 'text',
+    chunks: [
+      {
+        value: 'Normal, ',
+        dynamic: false,
+        reactive: false,
+      },
+      {
+        value: 'dinamico',
+        dynamic: true,
+        reactive: false,
+      },
+      {
+        value: ' y ',
+        dynamic: false,
+        reactive: false,
+      },
+      {
+        value: 'reactivo',
+        dynamic: true,
+        reactive: true,
+      },
+    ],
+  };
   const parsed = parseText(schema);
   expect(parsed).toEqual(result);
 });
