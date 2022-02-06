@@ -31,22 +31,46 @@ export interface TextSchema {
   chunks: TextChunk[];
 }
 
+export type DirectiveName =
+  | 'if'
+  | 'else'
+  | 'elseif'
+  | 'ref'
+  | 'each'
+  | 'loop'
+  | 'index';
+
 export type AttType = 'regular' | 'boolean';
 export interface AttSchema {
-  kind: AttType;
+  kind: 'attribute';
   name: string;
+  isBoolean: boolean;
   value: string;
   dynamic: boolean;
   reactive: boolean;
 }
 
+export interface EventSchema {
+  kind: 'event';
+  name: string;
+  value: string;
+}
+
+export interface DirectiveSchema {
+  kind: 'directive';
+  name: DirectiveName;
+  value: string;
+}
+
 export interface TagSchema {
   kind: 'tag';
   name: string;
-  attributes: AttSchema[];
-  children: ElemSchema[];
   isVoid: boolean;
   ref?: string;
+  events: EventSchema[];
+  attributes: AttSchema[];
+  directives: DirectiveSchema[];
+  children: ElemSchema[];
 }
 
 export interface CompSchema {
@@ -76,6 +100,8 @@ export interface ForSchema {
 export interface LoopSchema {
   kind: 'loop';
   target: string;
+  index: string;
+  pos: string; // index + 1
   children: ElemSchema[];
 }
 

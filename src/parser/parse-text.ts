@@ -1,5 +1,6 @@
 import { RawTextSchema, TextSchema } from '../retypes';
 import { TextChunk } from '../retypes';
+import { matchDynamic } from '../common';
 
 export function parseText(schema: RawTextSchema): TextSchema {
   const kind = 'text';
@@ -8,8 +9,6 @@ export function parseText(schema: RawTextSchema): TextSchema {
     chunks: parseChunk(schema.data),
   };
 }
-
-const matchDynamic = /{{([^}]*)}}/;
 
 export function coalesceDots(str: string): string {
   const arr = str.split('.');

@@ -12,108 +12,86 @@ test('Parse#attribs', () => {
   expect([]).toEqual(parsed);
 });
 
-test('Parse attribute: parseAttPlain', () => {
+test('Parse attribute: static', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       id: 'myId',
+      hidden: '',
       other: 'otherAtt',
-      another: 'anotherAtt',
     },
   });
   const parsed = parseAttribs(schema);
-  const [id, other, another] = parsed;
+  const [id, hidden, other] = parsed;
   const resultId = {
-    kind: 'plain',
-    propName: 'id',
+    kind: 'attribute',
+    name: 'id',
     value: 'myId',
-    variables: [],
+    isBoolean: false,
+    dynamic: false,
+    reactive: false,
   };
   expect(id).toEqual(resultId);
+  const resultHidden = {
+    kind: 'attribute',
+    name: 'hidden',
+    value: '',
+    isBoolean: true,
+    dynamic: false,
+    reactive: false,
+  };
+  expect(hidden).toEqual(resultHidden);
   const resultOther = {
-    kind: 'plain',
-    propName: 'other',
+    kind: 'attribute',
+    name: 'other',
     value: 'otherAtt',
-    variables: [],
+    isBoolean: false,
+    dynamic: false,
+    reactive: false,
   };
   expect(other).toEqual(resultOther);
-  const resultAnother = {
-    kind: 'plain',
-    propName: 'another',
-    value: 'anotherAtt',
-    variables: [],
-  };
-  expect(another).toEqual(resultAnother);
 });
 
-test('Parse attribute: parseAttConstant', () => {
+test('Parse attribute: dynamic and reactive', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
-      id: '{ myId }',
-      other: 'otherAtt',
-      another: '{ anotherAtt    }',
+      ':id': 'myId',
+      ':hidden': ' hiddenAtt    ',
+      '::reactor': 'reactorAtt',
     },
   });
   const parsed = parseAttribs(schema);
   expect(parsed.length).toBe(3);
-  const [id, other, another] = parsed;
+  const [id, hidden, reactor] = parsed;
   const resultId = {
-    kind: 'constant',
-    propName: 'id',
-    value: "${box.myId ?? ''}",
-    variables: [],
+    kind: 'attribute',
+    name: 'id',
+    value: 'myId',
+    isBoolean: false,
+    dynamic: true,
+    reactive: false,
   };
   expect(id).toEqual(resultId);
-  const resultOther = {
-    kind: 'plain',
-    propName: 'other',
-    value: 'otherAtt',
-    variables: [],
+  const resultHidden = {
+    kind: 'attribute',
+    name: 'hidden',
+    value: 'hiddenAtt',
+    isBoolean: true,
+    dynamic: true,
+    reactive: false,
   };
-  expect(other).toEqual(resultOther);
-  const resultAnother = {
-    kind: 'constant',
-    propName: 'another',
-    value: "${box.anotherAtt ?? ''}",
-    variables: [],
+  expect(hidden).toEqual(resultHidden);
+  const resultReactor = {
+    kind: 'attribute',
+    name: 'reactor',
+    value: 'reactorAtt',
+    isBoolean: false,
+    dynamic: true,
+    reactive: true,
   };
-  expect(another).toEqual(resultAnother);
+  expect(reactor).toEqual(resultReactor);
 });
 
-test('Parse attribute: parseAttVariable', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      id: '{: myId }',
-      other: 'otherAtt',
-      another: '{: anotherAtt    }',
-    },
-  });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(3);
-  const [id, other, another] = parsed;
-  const resultId = {
-    kind: 'variable',
-    propName: 'id',
-    value: "${box.myId ?? ''}",
-    variables: ['myId'],
-  };
-  expect(id).toEqual(resultId);
-  const resultOther = {
-    kind: 'plain',
-    propName: 'other',
-    value: 'otherAtt',
-    variables: [],
-  };
-  expect(other).toEqual(resultOther);
-  const resultAnother = {
-    kind: 'variable',
-    propName: 'another',
-    value: "${box.anotherAtt ?? ''}",
-    variables: ['anotherAtt'],
-  };
-  expect(another).toEqual(resultAnother);
-});
-
-test('Parse attribute: ParseAttEvent', () => {
+test('Parse attribute: event', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '@click': 'clicked',
@@ -125,172 +103,42 @@ test('Parse attribute: ParseAttEvent', () => {
   const [single, double] = parsed;
   const singleRes = {
     kind: 'event',
-    propName: 'click',
+    name: 'click',
     value: 'clicked',
-    variables: [],
   };
   expect(single).toEqual(singleRes);
   const doubleRes = {
     kind: 'event',
-    propName: 'dblclick',
+    name: 'dblclick',
     value: 'doubleclicked',
-    variables: [],
   };
   expect(double).toEqual(doubleRes);
 });
 
-test('Parse attribute: ParseBooleanConst', () => {
+test('Parse attribute: directive', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
-      checked: 'uno',
-      hidden: ' other ',
+      '(loop)': 'loop',
+      '(each)': 'each',
+      '(index)': 'index',
+      '(if)': 'if',
+      '(elseif)': 'elseif',
+      '(else)': 'else',
+      '(ref)': 'ref',
     },
   });
   const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(2);
-  const [checked, other] = parsed;
-  const resultChecked = {
-    kind: 'booleanConst',
-    propName: 'checked',
-    value: 'uno',
-    variables: [],
-  };
-  expect(checked).toEqual(resultChecked);
-  const resultOther = {
-    kind: 'booleanConst',
-    propName: 'hidden',
-    value: 'other',
-    variables: [],
-  };
-  expect(other).toEqual(resultOther);
-});
-
-test('Parse attribute: ParseBooleanVar', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      checked: ':uno',
-      hidden: ': other ',
-    },
+  expect(parsed.length).toBe(7);
+  const results = ['loop', 'each', 'index', 'if', 'elseif', 'else', 'ref'];
+  function getResult(name: string) {
+    return {
+      kind: 'directive',
+      name,
+      value: name,
+    };
+  }
+  results.forEach((name, i) => {
+    const result = getResult(name);
+    expect(parsed[i]).toEqual(result);
   });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(2);
-  const [checked, other] = parsed;
-  const resultChecked = {
-    kind: 'booleanVar',
-    propName: 'checked',
-    value: 'uno',
-    variables: ['uno'],
-  };
-  expect(checked).toEqual(resultChecked);
-  const resultOther = {
-    kind: 'booleanVar',
-    propName: 'hidden',
-    value: 'other',
-    variables: ['other'],
-  };
-  expect(other).toEqual(resultOther);
-});
-
-test('Parse attribute: ParseConditionalConst', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      '(if)': ' uno ',
-    },
-  });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(1);
-  const [ifcond] = parsed;
-  const result = {
-    kind: 'conditionalConst',
-    propName: '(if)',
-    value: 'uno',
-    variables: [],
-  };
-  expect(ifcond).toEqual(result);
-});
-
-test('Parse attribute: parseConditionalVar', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      '(if)': ': uno ',
-    },
-  });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(1);
-  const [ifcond] = parsed;
-  const result = {
-    kind: 'conditionalVar',
-    propName: '(if)',
-    value: 'uno',
-    variables: ['uno'],
-  };
-  expect(ifcond).toEqual(result);
-});
-
-test('Parse attribute: parseProp', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      ':prop1': ' uno   ',
-      ':prop2': ' dos   ',
-    },
-  });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(2);
-  const [prop1, prop2] = parsed;
-  const result1 = {
-    kind: 'prop',
-    propName: 'prop1',
-    value: 'uno',
-    variables: ['uno'],
-  };
-  expect(prop1).toEqual(result1);
-  const result2 = {
-    kind: 'prop',
-    propName: 'prop2',
-    value: 'dos',
-    variables: ['dos'],
-  };
-  expect(prop2).toEqual(result2);
-});
-
-// TODO
-// test.skip('ParseClass', (t) => {
-//   t.fail();
-//   t.end();
-// });
-
-test('Parse attribute: parseIndexConst', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      '(index)': ' position ',
-    },
-  });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(1);
-  const [indexAtt] = parsed;
-  const result = {
-    kind: 'indexConst',
-    propName: '(index)',
-    value: 'position',
-    variables: [],
-  };
-  expect(indexAtt).toEqual(result);
-});
-
-test('Parse attribute: parseIndexVar', () => {
-  const schema = Object.assign({}, baseComp, {
-    attribs: {
-      '(index)': ': position ',
-    },
-  });
-  const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(1);
-  const [indexAtt] = parsed;
-  const result = {
-    kind: 'indexVar',
-    propName: '(index)',
-    value: 'position',
-    variables: [],
-  };
-  expect(indexAtt).toEqual(result);
 });

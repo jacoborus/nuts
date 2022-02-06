@@ -1,5 +1,6 @@
 export const matcherConst = /{([^}]*)}/;
 export const matcherVar = /{:([^}]*)}/;
+export const matchDynamic = /{{([^}]*)}}/;
 
 export type ConditionalMode = 'conditionalConst' | 'conditionalVar';
 export type TextBuilder = (schema: TextSchema) => string;
