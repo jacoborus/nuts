@@ -5,7 +5,7 @@ import {
   EventSchema,
   DirectiveSchema,
   DirectiveName,
-} from '../retypes';
+} from '../types';
 
 const directives = [
   '(if)',

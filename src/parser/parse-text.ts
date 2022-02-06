@@ -1,5 +1,4 @@
-import { RawTextSchema, TextSchema } from '../retypes';
-import { TextChunk } from '../retypes';
+import { RawTextSchema, TextSchema, TextChunk } from '../types';
 import { matchDynamic } from '../common';
 
 export function parseText(schema: RawTextSchema): TextSchema {
