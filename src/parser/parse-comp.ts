@@ -1,9 +1,10 @@
 import {
-  RawTagSchema,
-  TagSchema,
-  DirectiveSchema,
-  TextSchema,
   CompSchema,
+  RawNutSchema,
+  EventSchema,
+  AttSchema,
+  DirAttSchema,
+  DirectiveSchema,
 } from '../types';
 
 import {
@@ -13,44 +14,23 @@ import {
   getEventAttributes,
   getDirectiveAttributes,
 } from './parse-attribs';
-import { parseChildren } from './parse-children';
 import { parseAttDirectives } from './parse-directives';
+import { parseChildren } from './parse-children';
 
-const voidElements = [
-  'area',
-  'base',
-  'br',
-  'col',
-  'embed',
-  'hr',
-  'img',
-  'input',
-  'keygen',
-  'link',
-  'meta',
-  'param',
-  'source',
-  'track',
-  'wbr',
-];
-
-export function parseTag(
-  schema: RawTagSchema
-): TagSchema | TextSchema | DirectiveSchema | CompSchema {
+export function parseComp(schema: RawNutSchema): DirectiveSchema | CompSchema {
   const { name } = schema;
   const attribs = parseAttribs(schema);
   const attributes = getRegularAttributes(attribs);
   const ref = getRefAttribute(attribs);
   const events = getEventAttributes(attribs);
   const directives = getDirectiveAttributes(attribs);
-  const tag: TagSchema = {
-    kind: 'tag',
+  const comp = {
+    kind: 'component',
     name,
+    ref,
+    events,
     attributes,
     children: parseChildren(schema.children),
-    isVoid: voidElements.includes(name),
-    events,
   };
-  if (ref) tag.ref = ref.value;
-  return parseAttDirectives(directives, tag);
+  return parseAttDirectives(directives, comp);
 }

@@ -16,6 +16,7 @@ export type RawNutSchema = {
   type: string;
   name: string;
   attribs: Attribs;
+  children: RawSchema[];
 };
 
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema;
@@ -36,9 +37,9 @@ export type DirectiveName =
   | 'else'
   | 'elseif'
   | 'ref'
-  | 'each'
   | 'loop'
-  | 'index';
+  | 'index'
+  | 'pos';
 
 export type AttType = 'regular' | 'boolean';
 export interface AttSchema {
@@ -50,13 +51,15 @@ export interface AttSchema {
   reactive: boolean;
 }
 
+export type Attributes = AttSchema | EventSchema | DirAttSchema;
+
 export interface EventSchema {
   kind: 'event';
   name: string;
   value: string;
 }
 
-export interface DirectiveSchema {
+export interface DirAttSchema {
   kind: 'directive';
   name: DirectiveName;
   value: string;
@@ -69,13 +72,14 @@ export interface TagSchema {
   ref?: string;
   events: EventSchema[];
   attributes: AttSchema[];
-  directives: DirectiveSchema[];
   children: ElemSchema[];
 }
 
 export interface CompSchema {
   kind: 'component';
   name: string;
+  ref?: string;
+  events: EventSchema[];
   attributes: AttSchema[];
   children: ElemSchema[];
 }
@@ -83,26 +87,19 @@ export interface CompSchema {
 export interface CondSchema {
   kind: 'condition';
   condition: string;
-  dynamic: boolean;
+  target: string;
   reactive: boolean;
   childrenTrue: ElemSchema[];
   childrenFalse: ElemSchema[];
 }
 
-export interface ForSchema {
-  kind: 'for';
-  target: string;
-  item: string;
-  index: string;
-  children: ElemSchema[];
-}
-
 export interface LoopSchema {
   kind: 'loop';
   target: string;
-  index: string;
-  pos: string; // index + 1
+  index?: string;
+  pos?: string; // index + 1
   children: ElemSchema[];
 }
 
-export type ElemSchema = TextSchema | TagSchema | LoopSchema | CondSchema;
+export type DirectiveSchema = LoopSchema | CondSchema;
+export type ElemSchema = TextSchema | TagSchema | DirectiveSchema | CompSchema;

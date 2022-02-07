@@ -3,8 +3,9 @@ import {
   RawTagSchema,
   AttSchema,
   EventSchema,
-  DirectiveSchema,
+  DirAttSchema,
   DirectiveName,
+  Attributes,
 } from '../types';
 
 const directives = [
@@ -12,14 +13,14 @@ const directives = [
   '(else)',
   '(elseif)',
   '(ref)',
-  '(each)',
   '(loop)',
   '(index)',
+  '(pos)',
 ];
 
 export function parseAttribs(
   schema: RawTagSchema | RawNutSchema
-): (AttSchema | EventSchema | DirectiveSchema)[] {
+): (AttSchema | EventSchema | DirAttSchema)[] {
   const { attribs } = schema;
   return Object.keys(attribs).map((att) => {
     const value = attribs[att].trim();
@@ -27,8 +28,8 @@ export function parseAttribs(
     if (attType === 'static' || attType === 'dynamic') {
       return parseRegularAttribute(att, value);
     } else if (attType === 'event') {
-      return parseEvent(att, value);
-    } else return parseDirective(att, value);
+      return parseEventAttribute(att, value);
+    } else return parseDirectiveAttribute(att, value);
   });
 }
 
@@ -54,11 +55,11 @@ function parseRegularAttribute(att: string, value: string): AttSchema {
   };
 }
 
-function parseEvent(att: string, value: string): EventSchema {
+function parseEventAttribute(att: string, value: string): EventSchema {
   return { kind: 'event', name: att.slice(1), value };
 }
 
-function parseDirective(att: string, value: string): DirectiveSchema {
+function parseDirectiveAttribute(att: string, value: string): DirAttSchema {
   return {
     kind: 'directive',
     name: att.slice(1, -1) as DirectiveName,
@@ -94,3 +95,21 @@ const booleanAttributes = [
   'selected',
   'typemustmatch',
 ];
+
+export function getRegularAttributes(atts: Attributes[]): AttSchema[] {
+  return atts.filter((att) => att.kind === 'attribute') as AttSchema[];
+}
+
+export function getRefAttribute(atts: Attributes[]) {
+  return atts.find((att) => att.kind === 'directive' && att.name === 'ref');
+}
+
+export function getEventAttributes(atts: Attributes[]): EventSchema[] {
+  return atts.filter((att) => att.kind === 'event') as EventSchema[];
+}
+
+export function getDirectiveAttributes(atts: Attributes[]): DirAttSchema[] {
+  return atts.filter(
+    (att) => att.kind === 'directive' && att.name !== 'ref'
+  ) as DirAttSchema[];
+}

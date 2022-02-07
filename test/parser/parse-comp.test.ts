@@ -1,4 +1,4 @@
-import { parseNut } from '../../src/parser/parse-nut';
+import { parseComp } from '../../src/parser/parse-comp';
 
 const baseComp = {
   type: 'tag',

@@ -1,5 +1,5 @@
 import { parseText } from './parse-text';
-import { parseNut } from './parse-nut';
+import { parseComp } from './parse-comp';
 import { parseTag } from './parse-tag';
 import { tagnames } from './tag-names';
 
@@ -17,7 +17,7 @@ const parsers = {
   nut: parseNut as ElemParser,
 };
 
-export function parseChildren(schema: RawTagSchema): ElemSchema[] {
+export function parseChildren(schema: RawSchema[]): ElemSchema[] {
   parsers.tag = parseTag as ElemParser;
   const { children } = schema;
   const list: ElemSchema[] = [];
