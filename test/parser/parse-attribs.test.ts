@@ -119,7 +119,6 @@ test('Parse attribute: directive', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       '(loop)': 'loop',
-      '(each)': 'each',
       '(index)': 'index',
       '(if)': 'if',
       '(elseif)': 'elseif',
@@ -128,8 +127,8 @@ test('Parse attribute: directive', () => {
     },
   });
   const parsed = parseAttribs(schema);
-  expect(parsed.length).toBe(7);
-  const results = ['loop', 'each', 'index', 'if', 'elseif', 'else', 'ref'];
+  expect(parsed.length).toBe(6);
+  const results = ['loop', 'index', 'if', 'elseif', 'else', 'ref'];
   function getResult(name: string) {
     return {
       kind: 'directive',
