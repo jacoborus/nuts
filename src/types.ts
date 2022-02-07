@@ -45,8 +45,8 @@ export type AttType = 'regular' | 'boolean';
 export interface AttSchema {
   kind: 'attribute';
   name: string;
-  isBoolean: boolean;
   value: string;
+  isBoolean: boolean;
   dynamic: boolean;
   reactive: boolean;
 }

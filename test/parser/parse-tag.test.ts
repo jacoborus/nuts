@@ -1,9 +1,10 @@
 import { parseTag } from '../../src/parser/parse-tag';
+import { RawTagSchema, TagSchema } from '../../src/types';
 
-const baseComp = {
+const staticTag: RawTagSchema = {
   type: 'tag',
   name: 'span',
-  attribs: { id: 'myid' },
+  attribs: { id: 'myid', class: 'clase', hidden: '' },
   children: [
     {
       type: 'text',
@@ -17,25 +18,41 @@ const baseComp = {
     },
   ],
 };
-
-test('Parse tag: simple', () => {
-  const { kind, name, attribs, children } = parseTag(baseComp);
+test('Parse tag: static', () => {
+  const { kind, name, attributes, children } = parseTag(staticTag) as TagSchema;
   expect(kind).toBe('tag');
   expect(name).toBe('span');
-  expect(attribs).toEqual([
+  expect(attributes).toEqual([
     {
-      kind: 'plain',
-      propName: 'id',
+      kind: 'attribute',
+      name: 'id',
       value: 'myid',
-      variables: [],
+      isBoolean: false,
+      dynamic: false,
+      reactive: false,
+    },
+    {
+      kind: 'attribute',
+      name: 'class',
+      value: 'clase',
+      isBoolean: false,
+      dynamic: false,
+      reactive: false,
+    },
+    {
+      kind: 'attribute',
+      name: 'hidden',
+      value: '',
+      isBoolean: true,
+      dynamic: false,
+      reactive: false,
     },
   ]);
   expect(children[0].kind).toBe('text');
-  expect(children[1].kind).toBe('nut');
+  expect(children[1].kind).toBe('component');
 });
 
-// TODO
-test.skip('Parse tag: with conditional const', () => {
+test.skip('Parse tag: dynamic', () => {
   const condComp = {
     type: 'tag',
     name: 'span',
