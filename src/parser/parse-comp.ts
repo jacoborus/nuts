@@ -1,30 +1,12 @@
-import {
-  CompSchema,
-  RawNutSchema,
-  EventSchema,
-  AttSchema,
-  DirAttSchema,
-  DirectiveSchema,
-} from '../types';
-
-import {
-  parseAttribs,
-  getRegularAttributes,
-  getRefAttribute,
-  getEventAttributes,
-  getDirectiveAttributes,
-} from './parse-attribs';
-import { parseAttDirectives } from './parse-directives';
+import { CompSchema, RawNutSchema, DirectiveSchema } from '../types';
+import { splitAttribs } from './parse-attribs';
+import { parseAttDirectives } from './parse-tag-directives';
 import { parseChildren } from './parse-children';
 
 export function parseComp(schema: RawNutSchema): DirectiveSchema | CompSchema {
   const { name } = schema;
-  const attribs = parseAttribs(schema);
-  const attributes = getRegularAttributes(attribs);
-  const ref = getRefAttribute(attribs);
-  const events = getEventAttributes(attribs);
-  const directives = getDirectiveAttributes(attribs);
-  const comp = {
+  const { ref, events, attributes, directives } = splitAttribs(schema);
+  const comp: CompSchema = {
     kind: 'component',
     name,
     ref,
@@ -32,5 +14,5 @@ export function parseComp(schema: RawNutSchema): DirectiveSchema | CompSchema {
     attributes,
     children: parseChildren(schema.children),
   };
-  return parseAttDirectives(directives, comp);
+  return parseAttDirectives(directives, comp) as CompSchema | DirectiveSchema;
 }

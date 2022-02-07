@@ -9,7 +9,7 @@ import {
 
 export function parseAttDirectives(
   directives: DirAttSchema[],
-  tag: TagSchema | CompSchema
+  tag: TagSchema | CompSchema | LoopSchema
 ): DirectiveSchema | TagSchema | CompSchema {
   const dirObj = {
     loop: directives.find((dir) => dir.name === 'loop'),

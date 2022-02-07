@@ -8,6 +8,8 @@ import {
   Attributes,
 } from '../types';
 
+import { booleanAttributes } from '../common';
+
 const directives = [
   '(if)',
   '(else)',
@@ -20,7 +22,7 @@ const directives = [
 
 export function parseAttribs(
   schema: RawTagSchema | RawNutSchema
-): (AttSchema | EventSchema | DirAttSchema)[] {
+): Attributes[] {
   const { attribs } = schema;
   return Object.keys(attribs).map((att) => {
     const value = attribs[att].trim();
@@ -55,6 +57,16 @@ function parseRegularAttribute(att: string, value: string): AttSchema {
   };
 }
 
+export function splitAttribs(schema: RawTagSchema | RawNutSchema) {
+  const attribs = parseAttribs(schema);
+  return {
+    ref: getRefAttribute(attribs),
+    events: getEventAttributes(attribs),
+    attributes: getRegularAttributes(attribs),
+    directives: getDirectiveAttributes(attribs),
+  };
+}
+
 function parseEventAttribute(att: string, value: string): EventSchema {
   return { kind: 'event', name: att.slice(1), value };
 }
@@ -67,41 +79,13 @@ function parseDirectiveAttribute(att: string, value: string): DirAttSchema {
   };
 }
 
-const booleanAttributes = [
-  'async',
-  'autofocus',
-  'autoplay',
-  'checked',
-  'contenteditable',
-  'controls',
-  'default',
-  'defer',
-  'disabled',
-  'formNoValidate',
-  'frameborder',
-  'hidden',
-  'ismap',
-  'itemscope',
-  'loop',
-  'multiple',
-  'muted',
-  'nomodule',
-  'novalidate',
-  'open',
-  'readonly',
-  'required',
-  'reversed',
-  'scoped',
-  'selected',
-  'typemustmatch',
-];
-
 export function getRegularAttributes(atts: Attributes[]): AttSchema[] {
   return atts.filter((att) => att.kind === 'attribute') as AttSchema[];
 }
 
 export function getRefAttribute(atts: Attributes[]) {
-  return atts.find((att) => att.kind === 'directive' && att.name === 'ref');
+  return atts.find((att) => att.kind === 'directive' && att.name === 'ref')
+    ?.value;
 }
 
 export function getEventAttributes(atts: Attributes[]): EventSchema[] {

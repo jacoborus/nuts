@@ -1,19 +1,19 @@
 export type Attribs = Record<string, string>;
 // SCHEMAS
 export type RawTextSchema = {
-  type: string;
+  type: 'text';
   data: string;
 };
 
 export type RawTagSchema = {
-  type: string;
+  type: 'tag';
   name: string;
   attribs: Attribs;
   children: RawSchema[];
 };
 
 export type RawNutSchema = {
-  type: string;
+  type: 'tag';
   name: string;
   attribs: Attribs;
   children: RawSchema[];

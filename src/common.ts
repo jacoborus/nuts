@@ -1,108 +1,164 @@
-export const matcherConst = /{([^}]*)}/;
-export const matcherVar = /{:([^}]*)}/;
 export const matchDynamic = /{{([^}]*)}}/;
 
-export type ConditionalMode = 'conditionalConst' | 'conditionalVar';
-export type TextBuilder = (schema: TextSchema) => string;
-export type TagBuilder = (schema: TagSchema) => string;
-export type ElemBuilder = (schema: ElemSchema) => string;
-export type NutBuilder = (schema: NutSchema) => string;
+export const booleanAttributes = [
+  'async',
+  'autofocus',
+  'autoplay',
+  'checked',
+  'contenteditable',
+  'controls',
+  'default',
+  'defer',
+  'disabled',
+  'formNoValidate',
+  'frameborder',
+  'hidden',
+  'ismap',
+  'itemscope',
+  'loop',
+  'multiple',
+  'muted',
+  'nomodule',
+  'novalidate',
+  'open',
+  'readonly',
+  'required',
+  'reversed',
+  'scoped',
+  'selected',
+  'typemustmatch',
+];
 
-export type RawTextSchema = {
-  type: string;
-  data: string;
-};
+export const voidElements = [
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+];
 
-export type RawTagSchema = {
-  type: string;
-  name: string;
-  attribs: Attribs;
-  children: RawSchema[];
-};
-
-export type RawNutSchema = {
-  type: string;
-  name: string;
-  attribs: Attribs;
-};
-
-export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema;
-
-// TYPES
-export type Attribs = { [index: string]: string };
-export type ElemType = 'tag' | 'text' | 'nut';
-export type NutType = ElemType | 'conditionalConst' | 'conditionalVar';
-export type ChunkType = 'plain' | 'constant' | 'variable';
-export type AttType =
-  | 'plain'
-  | 'constant'
-  | 'variable'
-  | 'booleanConst'
-  | 'booleanVar'
-  | 'event'
-  | 'conditionalConst'
-  | 'conditionalVar'
-  | 'prop'
-  | 'cssclass'
-  | 'indexConst'
-  | 'indexVar';
-
-export type FinalAttType =
-  | 'plain'
-  | 'constant'
-  | 'variable'
-  | 'booleanConst'
-  | 'booleanVar'
-  | 'event'
-  | 'cssclass';
-
-// SCHEMAS
-export interface AttSchema {
-  kind: AttType;
-  propName: string;
-  value: string;
-  variables: string[];
-}
-
-export interface CondSchema {
-  kind: ConditionalMode;
-  variables: string[];
-  conditions: string[];
-  children: ElemSchema[];
-}
-
-export interface TextSchema {
-  kind: 'text';
-  mode: ChunkType;
-  literal: string;
-  variables: string[];
-}
-export interface NutSchema {
-  kind: 'nut';
-  name: string;
-  props: AttSchema[];
-}
-export interface TagSchema {
-  kind: 'tag';
-  name: string;
-  attribs: AttSchema[];
-  children: ElemSchema[];
-}
-export type ElemSchema = TextSchema | TagSchema | NutSchema | CondSchema;
-export type ElemSchema2 = TextSchema & TagSchema & NutSchema & CondSchema;
-
-// PARSERS
-export type NutParser = (schema: RawNutSchema) => NutSchema;
-export type TagParser = (schema: RawTagSchema) => TagSchema;
-export type TextParser = (schema: RawTextSchema) => TextSchema;
-export type ElemParser = (schema: RawSchema) => ElemSchema;
-export type AttribParser = (att: string, value: string) => AttSchema;
-
-export type ElemParsers = { [K in ElemType]: ElemParser };
-export type AttribParsers = { [K in AttType]: AttribParser };
-
-export interface ParseChunkOpts {
-  str?: string;
-  literal: string;
-  variables: TextSchema['variables'];
-}
+export const tagnames = [
+  'a',
+  'abbr',
+  'acronym',
+  'address',
+  'applet',
+  'area',
+  'article',
+  'aside',
+  'audio',
+  'b',
+  'base',
+  'basefont',
+  'bdi',
+  'bdo',
+  'big',
+  'blockquote',
+  'body',
+  'br',
+  'button',
+  'canvas',
+  'caption',
+  'center',
+  'cite',
+  'code',
+  'col',
+  'colgroup',
+  'datalist',
+  'dd',
+  'del',
+  'details',
+  'dfn',
+  'dialog',
+  'dir',
+  'div',
+  'dl',
+  'dt',
+  'em',
+  'embed',
+  'fieldset',
+  'figcaption',
+  'figure',
+  'font',
+  'footer',
+  'form',
+  'frame',
+  'frameset',
+  'h1',
+  'head',
+  'header',
+  'hr',
+  'html',
+  'i',
+  'iframe',
+  'img',
+  'input',
+  'ins',
+  'kbd',
+  'label',
+  'legend',
+  'li',
+  'link',
+  'main',
+  'map',
+  'mark',
+  'meta',
+  'meter',
+  'nav',
+  'noframes',
+  'noscript',
+  'object',
+  'ol',
+  'optgroup',
+  'option',
+  'output',
+  'p',
+  'param',
+  'pre',
+  'progress',
+  'q',
+  'rp',
+  'rt',
+  'ruby',
+  's',
+  'samp',
+  'script',
+  'section',
+  'select',
+  'small',
+  'source',
+  'span',
+  'strike',
+  'strong',
+  'style',
+  'sub',
+  'summary',
+  'sup',
+  'table',
+  'tbody',
+  'td',
+  'textarea',
+  'tfoot',
+  'th',
+  'thead',
+  'time',
+  'title',
+  'tr',
+  'track',
+  'tt',
+  'u',
+  'ul',
+  'var',
+  'video',
+  'wbr',
+];

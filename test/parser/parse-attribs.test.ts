@@ -1,11 +1,12 @@
 import { parseAttribs } from '../../src/parser/parse-attribs';
+import { RawTagSchema } from '../../src/types';
 
 const baseComp = {
   type: 'tag',
   name: 'tagname',
   attribs: {},
   children: [],
-};
+} as RawTagSchema;
 
 test('Parse#attribs', () => {
   const parsed = parseAttribs(baseComp);
@@ -59,7 +60,7 @@ test('Parse attribute: dynamic and reactive', () => {
       '::reactor': 'reactorAtt',
     },
   });
-  const parsed = parseAttribs(schema);
+  const parsed = parseAttribs(schema as RawTagSchema);
   expect(parsed.length).toBe(3);
   const [id, hidden, reactor] = parsed;
   const resultId = {

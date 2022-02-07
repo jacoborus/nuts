@@ -1,4 +1,5 @@
 import { parseText } from '../../src/parser/parse-text';
+import { RawTextSchema } from '../../src/types';
 
 test('Parse#text flat and empty', () => {
   const result = {
@@ -13,7 +14,7 @@ test('Parse#text flat and empty', () => {
 });
 
 test('Parse#text flat', () => {
-  const schema = { type: 'text', data: 'hola mundo ' };
+  const schema: RawTextSchema = { type: 'text', data: 'hola mundo ' };
   const result = {
     kind: 'text',
     chunks: [
@@ -29,7 +30,7 @@ test('Parse#text flat', () => {
 });
 
 test('Parse#text dynamic', () => {
-  const schema = { type: 'text', data: 'counter {{ count }}.' };
+  const schema: RawTextSchema = { type: 'text', data: 'counter {{ count }}.' };
   const result = {
     kind: 'text',
     chunks: [
@@ -55,7 +56,7 @@ test('Parse#text dynamic', () => {
 });
 
 test('Parse#text reactive', () => {
-  const schema = {
+  const schema: RawTextSchema = {
     type: 'text',
     data: 'Normal, {{ dinamico }} y {{: reactivo }}',
   };
