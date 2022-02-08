@@ -41,19 +41,18 @@ export function parseAttDirectives(
             dirObj?.delseif?.value ||
             dirObj?.delse?.value ||
             '') as string,
-          index: dirObj?.index?.value,
           reactive: false,
           children: [],
         } as CondSchema)
       : null;
 
-  if (conditionalTag) {
-    conditionalTag.children = [tag];
+  if (iterateTag) {
+    iterateTag.children = [tag];
   }
 
-  if (iterateTag) {
-    iterateTag.children = conditionalTag ? [conditionalTag] : [tag];
-    return iterateTag;
+  if (conditionalTag) {
+    conditionalTag.children = iterateTag ? [iterateTag] : [tag];
+    return conditionalTag;
   }
-  return conditionalTag ? conditionalTag : tag;
+  return iterateTag ? iterateTag : tag;
 }

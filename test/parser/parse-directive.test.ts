@@ -1,34 +1,55 @@
 import { parseDirective } from '../../src/parser/parse-directive';
 
-import { RawTagSchema, LoopSchema, CondSchema } from '../../src/types';
+import {
+  RawTagSchema,
+  LoopSchema,
+  CondSchema,
+  RawSchema,
+} from '../../src/types';
+
+const theChildren: RawSchema[] = [
+  {
+    type: 'text',
+    data: 'hola',
+  },
+  {
+    type: 'tag',
+    name: 'my-comp',
+    attribs: {},
+    children: [],
+  },
+];
+
+const childrenResult = [
+  {
+    kind: 'text',
+    chunks: [{ dynamic: false, reactive: false, value: 'hola' }],
+  },
+  {
+    kind: 'component',
+    name: 'my-comp',
+    attributes: [],
+    children: [],
+    events: [],
+    ref: undefined,
+  },
+];
 
 test('Parse directive: loop', () => {
   const loopTag: RawTagSchema = {
     type: 'tag',
     name: 'loop',
     attribs: { '(list)': '', '(index)': 'i', '(pos)': 'p' },
-    children: [
-      {
-        type: 'text',
-        data: 'hola',
-      },
-      {
-        type: 'tag',
-        name: 'my-comp',
-        attribs: {},
-        children: [],
-      },
-    ],
+    children: theChildren,
   };
-  const { kind, target, index, pos, children } = parseDirective(
-    loopTag
-  ) as LoopSchema;
-  expect(kind).toBe('loop');
-  expect(target).toBe('list');
-  expect(index).toBe('i');
-  expect(pos).toBe('p');
-  expect(children[0].kind).toBe('text');
-  expect(children[1].kind).toBe('component');
+  const parsed = parseDirective(loopTag) as LoopSchema;
+  expect(parsed).toEqual({
+    kind: 'loop',
+    target: 'list',
+    index: 'i',
+    pos: 'p',
+    children: childrenResult,
+  });
 });
 
 test('Parse conditional: if', () => {
@@ -36,26 +57,56 @@ test('Parse conditional: if', () => {
     type: 'tag',
     name: 'if',
     attribs: { '(index)': 'i', '(isTrue)': '', '(pos)': 'p' },
+    children: theChildren,
+  };
+  const parsed = parseDirective(loopTag) as CondSchema;
+  expect(parsed).toEqual({
+    kind: 'condition',
+    condition: 'if',
+    target: 'isTrue',
+    reactive: false,
+    children: childrenResult,
+  });
+});
+
+test('Parse conditional: else', () => {
+  const loopTag: RawTagSchema = {
+    type: 'tag',
+    name: 'else',
+    attribs: { '(index)': 'i', '(isTrue)': '', '(pos)': 'p' },
+    children: theChildren,
+  };
+  const parsed = parseDirective(loopTag) as CondSchema;
+  expect(parsed).toEqual({
+    kind: 'condition',
+    condition: 'else',
+    target: 'isTrue',
+    reactive: false,
+    children: childrenResult,
+  });
+});
+
+test('Parse conditional: loop tag with `(if)` directive', () => {
+  const loopTag: RawTagSchema = {
+    type: 'tag',
+    name: 'loop',
+    attribs: { '(index)': 'i', '(list)': '', '(pos)': 'p', '(if)': 'isTrue' },
+    children: theChildren,
+  };
+  const parsed = parseDirective(loopTag) as CondSchema;
+  expect(parsed).toEqual({
+    kind: 'condition',
+    condition: 'if',
+    target: 'isTrue',
+    reactive: false,
     children: [
       {
-        type: 'text',
-        data: 'hola',
-      },
-      {
-        type: 'tag',
-        name: 'my-comp',
-        attribs: {},
-        children: [],
+        kind: 'loop',
+        target: 'list',
+        index: 'i',
+        pos: 'p',
+        children: childrenResult,
       },
     ],
-  };
-  const { kind, target, condition, reactive, children } = parseDirective(
-    loopTag
-  ) as CondSchema;
-  expect(kind).toBe('condition');
-  expect(condition).toBe('if');
-  expect(target).toBe('isTrue');
-  expect(reactive).toBe(false);
-  expect(children[0].kind).toBe('text');
-  expect(children[1].kind).toBe('component');
+  });
 });
