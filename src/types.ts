@@ -89,8 +89,7 @@ export interface CondSchema {
   condition: string;
   target: string;
   reactive: boolean;
-  childrenTrue: ElemSchema[];
-  childrenFalse: ElemSchema[];
+  children: ElemSchema[];
 }
 
 export interface LoopSchema {

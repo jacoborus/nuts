@@ -7,7 +7,7 @@ import {
   CondSchema,
 } from '../../src/types';
 
-const staticTag: RawTagSchema = {
+const staticComp: RawTagSchema = {
   type: 'tag',
   name: 'my-tag',
   attribs: { id: 'myid', class: 'clase', hidden: '' },
@@ -25,9 +25,9 @@ const staticTag: RawTagSchema = {
   ],
 };
 
-test('Parse tag: static', () => {
+test('Parse component: static attributes', () => {
   const { kind, name, attributes, children } = parseComp(
-    staticTag
+    staticComp
   ) as CompSchema;
   expect(kind).toBe('component');
   expect(name).toBe('my-tag');
@@ -61,7 +61,7 @@ test('Parse tag: static', () => {
   expect(children[1].kind).toBe('component');
 });
 
-test('Parse tag: dynamic', () => {
+test('Parse component: dynamic attributes', () => {
   const dynamicTag: RawTagSchema = {
     type: 'tag',
     name: 'my-tag',
@@ -99,7 +99,7 @@ test('Parse tag: dynamic', () => {
   expect(children[0].kind).toBe('text');
 });
 
-test('Parse tag: with loop directive', () => {
+test('Parse component: with loop directive', () => {
   const loopedTag: RawTagSchema = {
     type: 'tag',
     name: 'my-tag',
@@ -127,20 +127,21 @@ test('Parse tag: with loop directive', () => {
   ]);
 });
 
-test('Parse tag: with conditional directive', () => {
+test('Parse component: with conditional directive', () => {
   const ifTag: RawTagSchema = {
     type: 'tag',
     name: 'my-tag',
     attribs: { '(if)': 'isUser', id: 'myid' },
     children: [],
   };
-  const { kind, target, condition, reactive, childrenTrue, childrenFalse } =
-    parseComp(ifTag) as CondSchema;
+  const { kind, target, condition, reactive, children } = parseComp(
+    ifTag
+  ) as CondSchema;
   expect(kind).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
   expect(target).toBe('isUser');
-  const child = childrenTrue[0] as CompSchema;
+  const child = children[0] as CompSchema;
   expect(child.kind).toBe('component');
   expect(child.attributes).toEqual([
     {
@@ -152,11 +153,9 @@ test('Parse tag: with conditional directive', () => {
       reactive: false,
     },
   ]);
-  const childNo = childrenFalse[0] as TagSchema;
-  expect(childNo).toBe(undefined);
 });
 
-test('Parse tag: with loop and conditional directives', () => {
+test('Parse component: with loop and conditional directives', () => {
   const multiTag: RawTagSchema = {
     type: 'tag',
     name: 'span',
@@ -183,7 +182,7 @@ test('Parse tag: with loop and conditional directives', () => {
   expect(cond.condition).toBe('if');
   expect(cond.reactive).toBe(false);
   expect(cond.target).toBe('isUser');
-  const child = cond.childrenTrue[0] as CompSchema;
+  const child = cond.children[0] as CompSchema;
   expect(child.kind).toBe('component');
   expect(child.attributes).toEqual([
     {

@@ -9,7 +9,7 @@ import {
 
 export function parseAttDirectives(
   directives: DirAttSchema[],
-  tag: TagSchema | CompSchema | LoopSchema
+  tag: TagSchema | CompSchema | LoopSchema | CondSchema
 ): DirectiveSchema | TagSchema | CompSchema {
   const dirObj = {
     loop: directives.find((dir) => dir.name === 'loop'),
@@ -43,17 +43,12 @@ export function parseAttDirectives(
             '') as string,
           index: dirObj?.index?.value,
           reactive: false,
-          childrenTrue: [],
-          childrenFalse: [],
+          children: [],
         } as CondSchema)
       : null;
 
   if (conditionalTag) {
-    if (conditionalTag.condition === 'else') {
-      conditionalTag.childrenFalse = [tag];
-    } else {
-      conditionalTag.childrenTrue = [tag];
-    }
+    conditionalTag.children = [tag];
   }
 
   if (iterateTag) {

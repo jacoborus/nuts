@@ -130,13 +130,14 @@ test('Parse tag: with conditional directive', () => {
     attribs: { '(if)': 'isUser', id: 'myid' },
     children: [],
   };
-  const { kind, target, condition, reactive, childrenTrue, childrenFalse } =
-    parseTag(ifTag) as CondSchema;
+  const { kind, target, condition, reactive, children } = parseTag(
+    ifTag
+  ) as CondSchema;
   expect(kind).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
   expect(target).toBe('isUser');
-  const child = childrenTrue[0] as TagSchema;
+  const child = children[0] as TagSchema;
   expect(child.kind).toBe('tag');
   expect(child.attributes).toEqual([
     {
@@ -148,8 +149,6 @@ test('Parse tag: with conditional directive', () => {
       reactive: false,
     },
   ]);
-  const childNo = childrenFalse[0] as TagSchema;
-  expect(childNo).toBe(undefined);
 });
 
 test('Parse tag: with loop and conditional directives', () => {
@@ -179,7 +178,7 @@ test('Parse tag: with loop and conditional directives', () => {
   expect(cond.condition).toBe('if');
   expect(cond.reactive).toBe(false);
   expect(cond.target).toBe('isUser');
-  const child = cond.childrenTrue[0] as TagSchema;
+  const child = cond.children[0] as TagSchema;
   expect(child.kind).toBe('tag');
   expect(child.attributes).toEqual([
     {
