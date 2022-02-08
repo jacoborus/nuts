@@ -1,6 +1,7 @@
 import { parseText } from './parse-text';
-import { parseComp } from './parse-comp';
+import { parseComp } from './parse-subcomp';
 import { parseTag } from './parse-tag';
+import { parseDirective } from './parse-directive';
 import { tagnames } from '../common';
 
 import { RawSchema, RawTagSchema, RawTextSchema, ElemSchema } from '../types';

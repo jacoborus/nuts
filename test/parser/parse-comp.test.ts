@@ -1,4 +1,4 @@
-import { parseComp } from '../../src/parser/parse-comp';
+import { parseComp } from '../../src/parser/parse-subcomp';
 import {
   RawTagSchema,
   SubCompSchema,
