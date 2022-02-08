@@ -75,7 +75,7 @@ export interface TagSchema {
   children: ElemSchema[];
 }
 
-export interface CompSchema {
+export interface SubCompSchema {
   kind: 'component';
   name: string;
   ref?: string;
@@ -101,4 +101,5 @@ export interface LoopSchema {
 }
 
 export type DirectiveSchema = LoopSchema | CondSchema;
-export type ElemSchema = TextSchema | TagSchema | DirectiveSchema | CompSchema;
+export type ElemSchema = TextSchema | TagSchema | DirectiveSchema | SubCompSchema;
+

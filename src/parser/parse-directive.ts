@@ -1,5 +1,5 @@
 import {
-  CompSchema,
+  SubCompSchema,
   RawNutSchema,
   DirectiveSchema,
   LoopSchema,
@@ -11,7 +11,7 @@ import { parseChildren } from './parse-children';
 
 export function parseDirective(
   schema: RawNutSchema
-): DirectiveSchema | CompSchema {
+): DirectiveSchema | SubCompSchema {
   const { name } = schema;
   if (name === 'loop') return parseLoop(schema);
   else return parseConditional(schema);

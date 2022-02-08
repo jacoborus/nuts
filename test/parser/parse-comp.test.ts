@@ -1,8 +1,7 @@
 import { parseComp } from '../../src/parser/parse-comp';
 import {
   RawTagSchema,
-  CompSchema,
-  TagSchema,
+  SubCompSchema,
   LoopSchema,
   CondSchema,
 } from '../../src/types';
@@ -28,7 +27,7 @@ const staticComp: RawTagSchema = {
 test('Parse component: static attributes', () => {
   const { kind, name, attributes, children } = parseComp(
     staticComp
-  ) as CompSchema;
+  ) as SubCompSchema;
   expect(kind).toBe('component');
   expect(name).toBe('my-tag');
   expect(attributes).toEqual([
@@ -75,7 +74,7 @@ test('Parse component: dynamic attributes', () => {
   };
   const { kind, name, attributes, children } = parseComp(
     dynamicTag
-  ) as CompSchema;
+  ) as SubCompSchema;
   expect(kind).toBe('component');
   expect(name).toBe('my-tag');
   expect(attributes).toEqual([
@@ -113,7 +112,7 @@ test('Parse component: with loop directive', () => {
   expect(target).toBe('list');
   expect(index).toBe('i');
   expect(pos).toBe('p');
-  const child = children[0] as CompSchema;
+  const child = children[0] as SubCompSchema;
   expect(child.kind).toBe('component');
   expect(child.attributes).toEqual([
     {
@@ -141,7 +140,7 @@ test('Parse component: with conditional directive', () => {
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
   expect(target).toBe('isUser');
-  const child = children[0] as CompSchema;
+  const child = children[0] as SubCompSchema;
   expect(child.kind).toBe('component');
   expect(child.attributes).toEqual([
     {
@@ -168,21 +167,22 @@ test('Parse component: with loop and conditional directives', () => {
     },
     children: [],
   };
-  const { kind, index, target, pos, children } = parseComp(
+  const { kind, condition, target, reactive, children } = parseComp(
     multiTag
-  ) as LoopSchema;
+  ) as CondSchema;
 
-  expect(kind).toBe('loop');
-  expect(target).toBe('list');
-  expect(index).toBe('i');
-  expect(pos).toBe('p');
-  const cond = children[0] as CondSchema;
+  expect(kind).toBe('condition');
+  expect(condition).toBe('if');
+  expect(reactive).toBe(false);
+  expect(target).toBe('isUser');
 
-  expect(cond.kind).toBe('condition');
-  expect(cond.condition).toBe('if');
-  expect(cond.reactive).toBe(false);
-  expect(cond.target).toBe('isUser');
-  const child = cond.children[0] as CompSchema;
+  const loop = children[0] as LoopSchema;
+  expect(loop.kind).toBe('loop');
+  expect(loop.target).toBe('list');
+  expect(loop.index).toBe('i');
+  expect(loop.pos).toBe('p');
+
+  const child = loop.children[0] as SubCompSchema;
   expect(child.kind).toBe('component');
   expect(child.attributes).toEqual([
     {

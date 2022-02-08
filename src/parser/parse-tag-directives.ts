@@ -4,13 +4,13 @@ import {
   TagSchema,
   DirAttSchema,
   DirectiveSchema,
-  CompSchema,
+  SubCompSchema,
 } from '../types';
 
 export function parseAttDirectives(
   directives: DirAttSchema[],
-  tag: TagSchema | CompSchema | LoopSchema | CondSchema
-): DirectiveSchema | TagSchema | CompSchema {
+  tag: TagSchema | SubCompSchema | LoopSchema | CondSchema
+): DirectiveSchema | TagSchema | SubCompSchema {
   const dirObj = {
     loop: directives.find((dir) => dir.name === 'loop'),
     index: directives.find((dir) => dir.name === 'index'),
@@ -33,6 +33,7 @@ export function parseAttDirectives(
   const conditionalTag =
     dirObj.dif || dirObj.delse || dirObj.delseif
       ? ({
+          // TODO: Fix this unsafe mess
           kind: 'condition',
           condition: (dirObj?.dif?.name ||
             dirObj?.delseif?.name ||

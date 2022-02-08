@@ -164,21 +164,23 @@ test('Parse tag: with loop and conditional directives', () => {
     },
     children: [],
   };
-  const { kind, index, target, pos, children } = parseTag(
+  const { kind, condition, target, reactive, children } = parseTag(
     multiTag
-  ) as LoopSchema;
+  ) as CondSchema;
 
-  expect(kind).toBe('loop');
-  expect(target).toBe('list');
-  expect(index).toBe('i');
-  expect(pos).toBe('p');
-  const cond = children[0] as CondSchema;
+  expect(kind).toBe('condition');
+  expect(condition).toBe('if');
+  expect(reactive).toBe(false);
+  expect(target).toBe('isUser');
 
-  expect(cond.kind).toBe('condition');
-  expect(cond.condition).toBe('if');
-  expect(cond.reactive).toBe(false);
-  expect(cond.target).toBe('isUser');
-  const child = cond.children[0] as TagSchema;
+  const loop = children[0] as LoopSchema;
+
+  expect(loop.kind).toBe('loop');
+  expect(loop.target).toBe('list');
+  expect(loop.index).toBe('i');
+  expect(loop.pos).toBe('p');
+
+  const child = loop.children[0] as TagSchema;
   expect(child.kind).toBe('tag');
   expect(child.attributes).toEqual([
     {
