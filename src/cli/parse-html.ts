@@ -1,44 +1,29 @@
 import * as html from 'html5parser';
+import { parseTemplates } from '../parser/parse-template';
+import { parseScripts } from '../parser/parse-script';
+import { RawSchema, Attribs } from '../types';
 
-type Attribs = Record<string, string>;
-interface Schema {
-  type: string;
-  name?: string;
-  data?: string;
-  attribs?: object | undefined;
-  children?: Schema[];
-}
-
-function findTemplate(schemas: Schema[]) {
-  const schema = schemas.find((schema) => {
-    return schema.type === 'tag' && schema.name === 'template';
-  });
-  return schema;
-}
-
-export function parseHTML(input: string): Schema {
+export function parseHTML(input: string) {
   const ast = html.parse(input);
   const schema = ast.map(cleanRawSchema).filter(textEmpty);
-  const template = findTemplate(schema);
-  if (!template) {
-    throw new Error('missing template');
-  } else {
-    return template;
-  }
+  return {
+    templates: parseTemplates(schema),
+    scripts: parseScripts(schema as RawSchema[]),
+  };
 }
 
-function textEmpty(tag: Schema) {
+function textEmpty(tag: RawSchema): boolean {
   return !(tag.type === 'text' && 'data' in tag && tag.data === '');
 }
 
-function cleanRawSchema(node: html.INode): Schema {
+function cleanRawSchema(node: html.INode): RawSchema {
   if (node.type === 'Text') {
     return {
       type: 'text',
       data: node.value.trim(),
     };
   }
-  const tag: html.ITag = node as html.ITag;
+  const tag: html.ITag = node;
   const children = tag.body
     ? tag.body.map(cleanRawSchema).filter(textEmpty)
     : [];

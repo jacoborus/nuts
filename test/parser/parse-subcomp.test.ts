@@ -1,4 +1,4 @@
-import { parseComp } from '../../src/parser/parse-subcomp';
+import { parseSubcomp } from '../../src/parser/parse-children';
 import {
   RawTagSchema,
   SubCompSchema,
@@ -25,7 +25,7 @@ const staticComp: RawTagSchema = {
 };
 
 test('Parse component: static attributes', () => {
-  const { kind, name, attributes, children } = parseComp(
+  const { kind, name, attributes, children } = parseSubcomp(
     staticComp
   ) as SubCompSchema;
   expect(kind).toBe('component');
@@ -72,7 +72,7 @@ test('Parse component: dynamic attributes', () => {
       },
     ],
   };
-  const { kind, name, attributes, children } = parseComp(
+  const { kind, name, attributes, children } = parseSubcomp(
     dynamicTag
   ) as SubCompSchema;
   expect(kind).toBe('component');
@@ -105,7 +105,7 @@ test('Parse component: with loop directive', () => {
     attribs: { '(loop)': 'list', id: 'myid', '(index)': 'i', '(pos)': 'p' },
     children: [],
   };
-  const { kind, target, index, pos, children } = parseComp(
+  const { kind, target, index, pos, children } = parseSubcomp(
     loopedTag
   ) as LoopSchema;
   expect(kind).toBe('loop');
@@ -133,7 +133,7 @@ test('Parse component: with conditional directive', () => {
     attribs: { '(if)': 'isUser', id: 'myid' },
     children: [],
   };
-  const { kind, target, condition, reactive, children } = parseComp(
+  const { kind, target, condition, reactive, children } = parseSubcomp(
     ifTag
   ) as CondSchema;
   expect(kind).toBe('condition');
@@ -167,7 +167,7 @@ test('Parse component: with loop and conditional directives', () => {
     },
     children: [],
   };
-  const { kind, condition, target, reactive, children } = parseComp(
+  const { kind, condition, target, reactive, children } = parseSubcomp(
     multiTag
   ) as CondSchema;
 

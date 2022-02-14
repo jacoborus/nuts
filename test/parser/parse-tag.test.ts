@@ -1,4 +1,4 @@
-import { parseTag } from '../../src/parser/parse-tag';
+import { parseTag } from '../../src/parser/parse-children';
 import {
   RawTagSchema,
   TagSchema,
