@@ -1,15 +1,9 @@
 import * as html from 'html5parser';
-import { parseTemplates } from '../parser/parse-template';
-import { parseScripts } from '../parser/parse-script';
 import { RawSchema, Attribs } from '../types';
 
 export function parseHTML(input: string) {
   const ast = html.parse(input);
-  const schema = ast.map(cleanRawSchema).filter(textEmpty);
-  return {
-    templates: parseTemplates(schema),
-    scripts: parseScripts(schema as RawSchema[]),
-  };
+  return ast.map(cleanRawSchema).filter(textEmpty);
 }
 
 function textEmpty(tag: RawSchema): boolean {
