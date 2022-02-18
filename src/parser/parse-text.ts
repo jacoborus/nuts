@@ -1,31 +1,22 @@
-import { RawTextSchema, TextSchema, TextChunk } from '../types';
+import { RawTextSchema, TextSchema } from '../types';
 import { matchDynamic } from '../common';
 import { parseExpression } from './parse-expression';
 
-export function parseText(schema: RawTextSchema): TextSchema {
-  const kind = 'text';
-  return {
-    kind,
-    chunks: parseChunk(schema.data),
-  };
-}
-
-export function coalesceDots(str: string): string {
-  const arr = str.split('.');
-  if (arr.length === 1) return str;
-  return arr.join('?.');
+export function parseText(schema: RawTextSchema): TextSchema[] {
+  return parseChunk(schema.data);
 }
 
 export function parseChunk(
   str: string,
-  chunks = [] as TextChunk[]
-): TextChunk[] {
+  chunks = [] as TextSchema[]
+): TextSchema[] {
   // empty string
   if (!str.length) return chunks;
   const st = str.match(matchDynamic);
   // plain text
   if (!st) {
     return chunks.concat({
+      kind: 'text',
       value: str,
       dynamic: false,
       reactive: false,
@@ -38,6 +29,7 @@ export function parseChunk(
     return parseChunk(
       rest,
       chunks.concat({
+        kind: 'text',
         value,
         dynamic: false,
         reactive: false,
@@ -55,6 +47,7 @@ export function parseChunk(
   return parseChunk(
     rest,
     chunks.concat({
+      kind: 'text',
       value: prop,
       dynamic: true,
       reactive: isReactive,
