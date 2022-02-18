@@ -23,7 +23,9 @@ const theChildren: RawSchema[] = [
 const childrenResult = [
   {
     kind: 'text',
-    chunks: [{ dynamic: false, reactive: false, value: 'hola' }],
+    dynamic: false,
+    reactive: false,
+    value: 'hola',
   },
   {
     kind: 'component',

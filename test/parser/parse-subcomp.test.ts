@@ -111,7 +111,7 @@ test('Parse component: with loop directive', () => {
     loopedTag
   ) as LoopSchema;
   expect(kind).toBe('loop');
-  expect(target).toBe('list');
+  expect(target).toEqual([{ scope: 0, value: 'list' }]);
   expect(index).toBe('i');
   expect(pos).toBe('p');
   const child = children[0] as SubCompSchema;
@@ -141,7 +141,7 @@ test('Parse component: with conditional directive', () => {
   expect(kind).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
-  expect(target).toBe('isUser');
+  expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
   const child = children[0] as SubCompSchema;
   expect(child.kind).toBe('component');
   expect(child.attributes).toEqual([
@@ -176,11 +176,11 @@ test('Parse component: with loop and conditional directives', () => {
   expect(kind).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
-  expect(target).toBe('isUser');
+  expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
 
   const loop = children[0] as LoopSchema;
   expect(loop.kind).toBe('loop');
-  expect(loop.target).toBe('list');
+  expect(loop.target).toEqual([{ scope: 0, value: 'list' }]);
   expect(loop.index).toBe('i');
   expect(loop.pos).toBe('p');
 
