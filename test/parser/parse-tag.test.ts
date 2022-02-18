@@ -104,25 +104,33 @@ test('Parse tag: with loop directive', () => {
     attribs: { '(loop)': 'list', id: 'myid', '(index)': 'i', '(pos)': 'p' },
     children: [],
   };
-  const { kind, target, index, pos, children } = parseTag(
-    loopedTag
-  ) as LoopSchema;
-  expect(kind).toBe('loop');
-  expect(target).toBe('list');
-  expect(index).toBe('i');
-  expect(pos).toBe('p');
-  const child = children[0] as TagSchema;
-  expect(child.kind).toBe('tag');
-  expect(child.attributes).toEqual([
-    {
-      kind: 'attribute',
-      name: 'id',
-      value: 'myid',
-      isBoolean: false,
-      dynamic: false,
-      reactive: false,
-    },
-  ]);
+  const parsed = parseTag(loopedTag) as LoopSchema;
+  expect(parsed).toEqual({
+    kind: 'loop',
+    target: [{ scope: 0, value: 'list' }],
+    index: 'i',
+    pos: 'p',
+    children: [
+      {
+        kind: 'tag',
+        name: 'span',
+        isVoid: false,
+        ref: undefined,
+        events: [],
+        attributes: [
+          {
+            kind: 'attribute',
+            name: 'id',
+            value: 'myid',
+            isBoolean: false,
+            dynamic: false,
+            reactive: false,
+          },
+        ],
+        children: [],
+      },
+    ],
+  });
 });
 
 test('Parse tag: with conditional directive', () => {
@@ -138,7 +146,7 @@ test('Parse tag: with conditional directive', () => {
   expect(kind).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
-  expect(target).toBe('isUser');
+  expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
   const child = children[0] as TagSchema;
   expect(child.kind).toBe('tag');
   expect(child.attributes).toEqual([
@@ -173,12 +181,12 @@ test('Parse tag: with loop and conditional directives', () => {
   expect(kind).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
-  expect(target).toBe('isUser');
+  expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
 
   const loop = children[0] as LoopSchema;
 
   expect(loop.kind).toBe('loop');
-  expect(loop.target).toBe('list');
+  expect(loop.target).toEqual([{ scope: 0, value: 'list' }]);
   expect(loop.index).toBe('i');
   expect(loop.pos).toBe('p');
 

@@ -14,12 +14,14 @@ import { tagnames, voidElements } from '../common';
 import { RawSchema, RawTagSchema, RawTextSchema, ElemSchema } from '../types';
 
 export function parseChildren(children: RawSchema[]): ElemSchema[] {
-  return children.map((schema: RawSchema) => {
-    if (isTextNode(schema)) return parseText(schema);
-    if (isTagNode(schema)) return parseTag(schema);
-    if (isDirectiveNode(schema)) return parseDirective(schema);
-    return parseSubcomp(schema);
-  }) as ElemSchema[];
+  const parsed: ElemSchema[] = [];
+  children.forEach((schema: RawSchema) => {
+    if (isTextNode(schema)) return parsed.push(...parseText(schema));
+    if (isTagNode(schema)) return parsed.push(parseTag(schema));
+    if (isDirectiveNode(schema)) return parsed.push(parseDirective(schema));
+    parsed.push(parseSubcomp(schema));
+  });
+  return parsed;
 }
 
 function isTextNode(schema: RawSchema): schema is RawTextSchema {
