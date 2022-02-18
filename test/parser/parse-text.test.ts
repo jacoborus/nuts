@@ -43,6 +43,7 @@ test('Parse#text dynamic', () => {
         value: 'count',
         dynamic: true,
         reactive: false,
+        expr: [{ scope: 0, value: 'count' }],
       },
       {
         value: '.',
@@ -72,6 +73,7 @@ test('Parse#text reactive', () => {
         value: 'dinamico',
         dynamic: true,
         reactive: false,
+        expr: [{ scope: 0, value: 'dinamico' }],
       },
       {
         value: ' y ',
@@ -82,6 +84,7 @@ test('Parse#text reactive', () => {
         value: 'reactivo',
         dynamic: true,
         reactive: true,
+        expr: [{ scope: 0, value: 'reactivo' }],
       },
     ],
   };

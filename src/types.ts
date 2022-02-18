@@ -21,16 +21,22 @@ export type RawNutSchema = {
 
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema;
 
-export interface TextChunk {
-  value: string;
-  dynamic: boolean;
-  reactive: boolean;
-}
-
 export interface TextSchema {
   kind: 'text';
   chunks: TextChunk[];
 }
+
+export interface TextChunk {
+  value: string;
+  dynamic: boolean;
+  reactive: boolean;
+  expr?: Expression;
+}
+
+export type Expression = {
+  scope: number;
+  value: string;
+}[];
 
 export type DirectiveName =
   | 'if'
@@ -101,5 +107,8 @@ export interface LoopSchema {
 }
 
 export type DirectiveSchema = LoopSchema | CondSchema;
-export type ElemSchema = TextSchema | TagSchema | DirectiveSchema | SubCompSchema;
-
+export type ElemSchema =
+  | TextSchema
+  | TagSchema
+  | DirectiveSchema
+  | SubCompSchema;

@@ -1,4 +1,6 @@
-export function parseExpression(input: string) {
+import { Expression } from '../types';
+
+export function parseExpression(input: string): Expression {
   let expr = '';
   let fromParent = 0;
   if (input.startsWith('../')) {

@@ -1,5 +1,6 @@
 import { RawTextSchema, TextSchema, TextChunk } from '../types';
 import { matchDynamic } from '../common';
+import { parseExpression } from './parse-expression';
 
 export function parseText(schema: RawTextSchema): TextSchema {
   const kind = 'text';
@@ -57,6 +58,7 @@ export function parseChunk(
       value: prop,
       dynamic: true,
       reactive: isReactive,
+      expr: parseExpression(prop),
     })
   );
 }
