@@ -19,8 +19,11 @@ export function compileExpression(expr: Expression): string {
   let str = !first.scope ? 'it' : `parent[${first.scope - 1}]?`;
   str = str + `.${print(first.value)}`;
   expr.forEach((chunk) => {
-    if (!chunk.scope) str = str + `?.${print(chunk.value)}`;
-    else str = str + `?.[parent[${chunk.scope - 1}]?.${print(chunk.value)}]`;
+    if (!chunk.scope) {
+      str = str + `?.${print(chunk.value)}`;
+    } else {
+      str = str + `?.[parent[${chunk.scope - 1}]?.${print(chunk.value)}]`;
+    }
   });
   return str + '??""';
 }
