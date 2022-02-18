@@ -6,6 +6,7 @@ import {
   DirectiveSchema,
   SubCompSchema,
 } from '../types';
+import { parseExpression } from './parse-expression';
 
 export function parseAttDirectives(
   directives: DirAttSchema[],
@@ -23,7 +24,7 @@ export function parseAttDirectives(
   const iterateTag = dirObj.loop
     ? ({
         kind: 'loop',
-        target: dirObj.loop.value,
+        target: parseExpression(dirObj.loop.value),
         index: dirObj?.index?.value,
         pos: dirObj?.pos?.value,
         children: [],
@@ -38,10 +39,12 @@ export function parseAttDirectives(
           condition: (dirObj?.dif?.name ||
             dirObj?.delseif?.name ||
             dirObj?.delse?.name) as string,
-          target: (dirObj?.dif?.value ||
-            dirObj?.delseif?.value ||
-            dirObj?.delse?.value ||
-            '') as string,
+          target: parseExpression(
+            dirObj?.dif?.value ||
+              dirObj?.delseif?.value ||
+              dirObj?.delse?.value ||
+              ''
+          ),
           reactive: false,
           children: [],
         } as CondSchema)

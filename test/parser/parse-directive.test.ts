@@ -45,7 +45,7 @@ test('Parse directive: loop', () => {
   const parsed = parseDirective(loopTag) as LoopSchema;
   expect(parsed).toEqual({
     kind: 'loop',
-    target: 'list',
+    target: [{ scope: 0, value: 'list' }],
     index: 'i',
     pos: 'p',
     children: childrenResult,
@@ -63,7 +63,7 @@ test('Parse conditional: if', () => {
   expect(parsed).toEqual({
     kind: 'condition',
     condition: 'if',
-    target: 'isTrue',
+    target: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
     children: childrenResult,
   });
@@ -80,7 +80,7 @@ test('Parse conditional: else', () => {
   expect(parsed).toEqual({
     kind: 'condition',
     condition: 'else',
-    target: 'isTrue',
+    target: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
     children: childrenResult,
   });
@@ -97,12 +97,12 @@ test('Parse conditional: loop tag with `(if)` directive', () => {
   expect(parsed).toEqual({
     kind: 'condition',
     condition: 'if',
-    target: 'isTrue',
+    target: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
     children: [
       {
         kind: 'loop',
-        target: 'list',
+        target: [{ scope: 0, value: 'list' }],
         index: 'i',
         pos: 'p',
         children: childrenResult,

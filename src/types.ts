@@ -94,14 +94,14 @@ export interface SubCompSchema {
 export interface CondSchema {
   kind: 'condition';
   condition: string;
-  target: string;
+  target: Expression;
   reactive: boolean;
   children: ElemSchema[];
 }
 
 export interface LoopSchema {
   kind: 'loop';
-  target: string;
+  target: Expression;
   index?: string;
   pos?: string; // index + 1
   children: ElemSchema[];

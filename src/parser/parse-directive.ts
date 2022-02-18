@@ -8,6 +8,7 @@ import {
 import { splitAttribs } from './parse-attribs';
 import { parseAttDirectives } from './parse-tag-directives';
 import { parseChildren } from './parse-children';
+import { parseExpression } from './parse-expression';
 
 export function parseDirective(
   schema: RawNutSchema
@@ -20,7 +21,8 @@ export function parseDirective(
 function parseLoop(schema: RawNutSchema): LoopSchema {
   const { attributes, directives } = splitAttribs(schema);
   const preTarget = attributes.find((att) => isBetweenParens(att.name))?.name;
-  const target = preTarget?.slice(1, -1) || '';
+  const expr = preTarget?.slice(1, -1) || '';
+  const target = parseExpression(expr);
   const loop: LoopSchema = {
     kind: 'loop',
     target,
@@ -34,7 +36,8 @@ function parseLoop(schema: RawNutSchema): LoopSchema {
 function parseConditional(schema: RawNutSchema): CondSchema {
   const { attributes, directives } = splitAttribs(schema);
   const preTarget = attributes.find((att) => isBetweenParens(att.name))?.name;
-  const target = preTarget?.slice(1, -1) || '';
+  const expr = preTarget?.slice(1, -1) || '';
+  const target = parseExpression(expr);
   const cond: CondSchema = {
     kind: 'condition',
     condition: schema.name,
