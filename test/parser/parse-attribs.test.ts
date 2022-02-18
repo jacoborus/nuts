@@ -56,8 +56,8 @@ test('Parse attribute: dynamic and reactive', () => {
   const schema = Object.assign({}, baseComp, {
     attribs: {
       ':id': 'myId',
-      ':hidden': ' hiddenAtt    ',
-      '::reactor': 'reactorAtt',
+      ':hidden': ' hiddenAtt.val    ',
+      '::reactor': 'reactorAtt.valor',
     },
   });
   const parsed = parseAttribs(schema as RawTagSchema);
@@ -70,24 +70,33 @@ test('Parse attribute: dynamic and reactive', () => {
     isBoolean: false,
     dynamic: true,
     reactive: false,
+    expr: [{ scope: 0, value: 'myId' }],
   };
   expect(id).toEqual(resultId);
   const resultHidden = {
     kind: 'attribute',
     name: 'hidden',
-    value: 'hiddenAtt',
+    value: 'hiddenAtt.val',
     isBoolean: true,
     dynamic: true,
     reactive: false,
+    expr: [
+      { scope: 0, value: 'hiddenAtt' },
+      { scope: 0, value: 'val' },
+    ],
   };
   expect(hidden).toEqual(resultHidden);
   const resultReactor = {
     kind: 'attribute',
     name: 'reactor',
-    value: 'reactorAtt',
+    value: 'reactorAtt.valor',
     isBoolean: false,
     dynamic: true,
     reactive: true,
+    expr: [
+      { scope: 0, value: 'reactorAtt' },
+      { scope: 0, value: 'valor' },
+    ],
   };
   expect(reactor).toEqual(resultReactor);
 });

@@ -9,6 +9,7 @@ import {
 } from '../types';
 
 import { booleanAttributes } from '../common';
+import { parseExpression } from './parse-expression';
 
 const directives = [
   '(if)',
@@ -47,6 +48,7 @@ function parseRegularAttribute(att: string, value: string): AttSchema {
   const dynamic = att.startsWith(':');
   const name = reactive ? att.slice(2) : dynamic ? att.slice(1) : att;
   const isBoolean = booleanAttributes.includes(name);
+  const expr = dynamic ? parseExpression(value) : undefined;
   return {
     kind: 'attribute',
     name,
@@ -54,6 +56,7 @@ function parseRegularAttribute(att: string, value: string): AttSchema {
     value,
     dynamic,
     reactive,
+    expr,
   };
 }
 

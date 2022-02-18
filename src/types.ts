@@ -55,6 +55,7 @@ export interface AttSchema {
   isBoolean: boolean;
   dynamic: boolean;
   reactive: boolean;
+  expr?: Expression;
 }
 
 export type Attributes = AttSchema | EventSchema | DirAttSchema;

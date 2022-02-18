@@ -85,6 +85,7 @@ test('Parse component: dynamic attributes', () => {
       isBoolean: false,
       dynamic: true,
       reactive: false,
+      expr: [{ scope: 0, value: 'uno' }],
     },
     {
       kind: 'attribute',
@@ -93,6 +94,7 @@ test('Parse component: dynamic attributes', () => {
       isBoolean: false,
       dynamic: true,
       reactive: true,
+      expr: [{ scope: 0, value: 'dos' }],
     },
   ]);
   expect(children[0].kind).toBe('text');
