@@ -1,4 +1,4 @@
-import { TagSchema, TextSchema, ElemSchema } from '../types';
+import { TagSchema, TextSchema, FinalSchema } from '../types';
 import { compileAttribs } from './compile-attribs';
 import { compileText } from './compile-text';
 import { compileDirective } from './compile-directive';
@@ -8,9 +8,9 @@ const start = '<';
 const end = '>';
 const voidEnd = '/>';
 
-export function compileChildren(schemas: ElemSchema[]): string {
+export function compileChildren(schemas: FinalSchema[]): string {
   return schemas
-    .map((schema: ElemSchema) => {
+    .map((schema: FinalSchema) => {
       if (isTextNode(schema)) return compileText(schema);
       if (isTagNode(schema)) return compileTag(schema);
       if (isDirectiveNode(schema)) return compileDirective(schema);
@@ -19,23 +19,23 @@ export function compileChildren(schemas: ElemSchema[]): string {
     .join('');
 }
 
-function isTextNode(schema: ElemSchema): schema is TextSchema {
+function isTextNode(schema: FinalSchema): schema is TextSchema {
   return schema.type === 'text';
 }
 
-function isTagNode(schema: ElemSchema): schema is TagSchema {
+function isTagNode(schema: FinalSchema): schema is TagSchema {
   return schema.type === 'tag' && tagnames.includes(schema.name);
 }
 
 const directiveNames = ['if', 'else', 'elseif', 'loop'];
-function isDirectiveNode(schema: ElemSchema): schema is TagSchema {
+function isDirectiveNode(schema: FinalSchema): schema is TagSchema {
   return schema.type === 'tag' && directiveNames.includes(schema.name);
 }
 
 export function compileTag(schema: TagSchema): string {
   const attribs = compileAttribs(schema.attributes);
   const firstEnd = schema.isVoid ? voidEnd : end;
-  const children = compileChildren(schema.children as ElemSchema[]);
+  const children = compileChildren(schema.children as FinalSchema[]);
   const secondEnd = schema.isVoid ? '' : `</${schema.name}>`;
   return start + schema.name + attribs + firstEnd + children + secondEnd;
 }
