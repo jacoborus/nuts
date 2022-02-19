@@ -8,7 +8,7 @@ jest.mock('../../src/compiler/compile-expression', () => {
 });
 
 test('Compile text #simple', () => {
-  const result = '() => hola';
+  const result = 'hola';
   const schema = {
     kind: 'text',
     value: 'hola',
@@ -20,7 +20,7 @@ test('Compile text #simple', () => {
 });
 
 test('Compile text # simple expression', () => {
-  const result = '(it, parent) => x';
+  const result = '${x}';
   const schema = {
     kind: 'text',
     value: 'uno.dos',
