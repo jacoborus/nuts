@@ -45,7 +45,6 @@ export type DirectiveName =
   | 'index'
   | 'pos';
 
-export type AttType = 'regular' | 'boolean';
 export interface AttSchema {
   kind: 'attribute';
   name: string;
