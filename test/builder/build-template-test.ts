@@ -12,17 +12,17 @@ const pretemplate = fs.readFileSync(
 
 test('Build template', (t) => {
   const templateSchema = {
-    kind: 'tag',
+    type: 'tag',
     name: 'div',
     attribs: [
       {
-        kind: 'plain',
+        type: 'plain',
         propName: 'p1',
         value: 'p2',
         variables: [],
       },
       {
-        kind: 'variable',
+        type: 'variable',
         propName: 'v1',
         value: 'v2',
         variables: ['v2'],
@@ -30,7 +30,7 @@ test('Build template', (t) => {
     ],
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         attribs: [],
         children: [],

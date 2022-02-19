@@ -50,7 +50,7 @@ function parseRegularAttribute(att: string, value: string): AttSchema {
   const isBoolean = booleanAttributes.includes(name);
   const expr = dynamic ? parseExpression(value) : undefined;
   return {
-    kind: 'attribute',
+    type: 'attribute',
     name,
     isBoolean,
     value,
@@ -71,32 +71,33 @@ export function splitAttribs(schema: RawTagSchema | RawNutSchema) {
 }
 
 function parseEventAttribute(att: string, value: string): EventSchema {
-  return { kind: 'event', name: att.slice(1), value };
+  return { type: 'event', name: att.slice(1), value };
 }
 
 function parseDirectiveAttribute(att: string, value: string): DirAttSchema {
   return {
-    kind: 'directive',
+    type: 'directive',
     name: att.slice(1, -1) as DirectiveName,
     value: value,
   };
 }
 
 export function getRegularAttributes(atts: Attributes[]): AttSchema[] {
-  return atts.filter((att) => att.kind === 'attribute') as AttSchema[];
+  return atts.filter((att) => att.type === 'attribute') as AttSchema[];
 }
 
 export function getRefAttribute(atts: Attributes[]) {
-  return atts.find((att) => att.kind === 'directive' && att.name === 'ref')
+  return atts.find((att) => att.type === 'directive' && att.name === 'ref')
     ?.value;
 }
 
 export function getEventAttributes(atts: Attributes[]): EventSchema[] {
-  return atts.filter((att) => att.kind === 'event') as EventSchema[];
+  return atts.filter((att) => att.type === 'event') as EventSchema[];
 }
 
 export function getDirectiveAttributes(atts: Attributes[]): DirAttSchema[] {
   return atts.filter(
-    (att) => att.kind === 'directive' && att.name !== 'ref'
+    (att) => att.type === 'directive' && att.name !== 'ref'
   ) as DirAttSchema[];
 }
+

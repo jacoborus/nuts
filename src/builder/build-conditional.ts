@@ -3,7 +3,7 @@ import { buildChildren } from './build-children';
 import { CondSchema } from '../common';
 
 export function buildConditional(schema: CondSchema): string {
-  if (schema.kind === 'conditionalConst') {
+  if (schema.type === 'conditionalConst') {
     return schema.children.length === 1
       ? buildIfConst(schema)
       : buildIfElseConst(schema);

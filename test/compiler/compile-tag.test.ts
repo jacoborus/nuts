@@ -3,13 +3,13 @@ import { TagSchema } from '../../src/types';
 
 test('Compile tag #simple', () => {
   const schema = {
-    kind: 'tag',
+    type: 'tag',
     name: 'span',
     isVoid: false,
     events: [],
     attributes: [
       {
-        kind: 'attribute',
+        type: 'attribute',
         name: 'id',
         value: 'my-id',
         isBoolean: false,
@@ -19,7 +19,7 @@ test('Compile tag #simple', () => {
     ],
     children: [
       {
-        kind: 'text',
+        type: 'text',
         value: 'hola',
         dynamic: false,
         reactive: false,

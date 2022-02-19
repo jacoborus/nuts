@@ -5,17 +5,17 @@ import { TagSchema } from '../../src/common';
 
 test('Build#Tag', (t) => {
   const tagSchema = {
-    kind: 'tag',
+    type: 'tag',
     name: 'div',
     attribs: [
       {
-        kind: 'plain',
+        type: 'plain',
         propName: 'p1',
         value: 'v1',
         variables: [],
       },
       {
-        kind: 'variable',
+        type: 'variable',
         propName: 'p2',
         value: 'v2',
         variables: ['v2'],
@@ -23,13 +23,13 @@ test('Build#Tag', (t) => {
     ],
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         attribs: [],
         children: [],
       },
       {
-        kind: 'text',
+        type: 'text',
         mode: 'constant',
         literal: 'c1',
       },

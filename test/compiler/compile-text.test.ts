@@ -10,7 +10,7 @@ jest.mock('../../src/compiler/compile-expression', () => {
 test('Compile text #simple', () => {
   const result = 'hola';
   const schema = {
-    kind: 'text',
+    type: 'text',
     value: 'hola',
     dynamic: false,
     reactive: false,
@@ -22,7 +22,7 @@ test('Compile text #simple', () => {
 test('Compile text # simple expression', () => {
   const result = '${x}';
   const schema = {
-    kind: 'text',
+    type: 'text',
     value: 'uno.dos',
     dynamic: true,
     reactive: false,

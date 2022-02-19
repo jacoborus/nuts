@@ -18,7 +18,7 @@ export function buildChildren(children: ElemSchema[]): string[] {
   // next line avoids circular dependency side effect
   builders.tag = buildTag as ElemBuilder;
   const childTags = children.map((child) => {
-    const build = builders[child.kind];
+    const build = builders[child.type];
     return build(child);
   });
   return childTags;

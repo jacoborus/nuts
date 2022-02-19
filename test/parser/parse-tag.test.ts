@@ -24,12 +24,12 @@ const staticTag: RawTagSchema = {
   ],
 };
 test('Parse tag: static', () => {
-  const { kind, name, attributes, children } = parseTag(staticTag) as TagSchema;
-  expect(kind).toBe('tag');
+  const { type, name, attributes, children } = parseTag(staticTag) as TagSchema;
+  expect(type).toBe('tag');
   expect(name).toBe('span');
   expect(attributes).toEqual([
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'id',
       value: 'myid',
       isBoolean: false,
@@ -37,7 +37,7 @@ test('Parse tag: static', () => {
       reactive: false,
     },
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'class',
       value: 'clase',
       isBoolean: false,
@@ -45,7 +45,7 @@ test('Parse tag: static', () => {
       reactive: false,
     },
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'hidden',
       value: '',
       isBoolean: true,
@@ -53,8 +53,8 @@ test('Parse tag: static', () => {
       reactive: false,
     },
   ]);
-  expect(children[0].kind).toBe('text');
-  expect(children[1].kind).toBe('component');
+  expect(children[0].type).toBe('text');
+  expect(children[1].type).toBe('component');
 });
 
 test('Parse tag: dynamic', () => {
@@ -69,14 +69,14 @@ test('Parse tag: dynamic', () => {
       },
     ],
   };
-  const { kind, name, attributes, children } = parseTag(
+  const { type, name, attributes, children } = parseTag(
     dynamicTag
   ) as TagSchema;
-  expect(kind).toBe('tag');
+  expect(type).toBe('tag');
   expect(name).toBe('span');
   expect(attributes).toEqual([
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'one',
       value: 'uno',
       isBoolean: false,
@@ -85,7 +85,7 @@ test('Parse tag: dynamic', () => {
       expr: [{ scope: 0, value: 'uno' }],
     },
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'two',
       value: 'dos',
       isBoolean: false,
@@ -94,7 +94,7 @@ test('Parse tag: dynamic', () => {
       expr: [{ scope: 0, value: 'dos' }],
     },
   ]);
-  expect(children[0].kind).toBe('text');
+  expect(children[0].type).toBe('text');
 });
 
 test('Parse tag: with loop directive', () => {
@@ -106,20 +106,20 @@ test('Parse tag: with loop directive', () => {
   };
   const parsed = parseTag(loopedTag) as LoopSchema;
   expect(parsed).toEqual({
-    kind: 'loop',
+    type: 'loop',
     target: [{ scope: 0, value: 'list' }],
     index: 'i',
     pos: 'p',
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         isVoid: false,
         ref: undefined,
         events: [],
         attributes: [
           {
-            kind: 'attribute',
+            type: 'attribute',
             name: 'id',
             value: 'myid',
             isBoolean: false,
@@ -140,18 +140,18 @@ test('Parse tag: with conditional directive', () => {
     attribs: { '(if)': 'isUser', id: 'myid' },
     children: [],
   };
-  const { kind, target, condition, reactive, children } = parseTag(
+  const { type, target, condition, reactive, children } = parseTag(
     ifTag
   ) as CondSchema;
-  expect(kind).toBe('condition');
+  expect(type).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
   expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
   const child = children[0] as TagSchema;
-  expect(child.kind).toBe('tag');
+  expect(child.type).toBe('tag');
   expect(child.attributes).toEqual([
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'id',
       value: 'myid',
       isBoolean: false,
@@ -174,27 +174,27 @@ test('Parse tag: with loop and conditional directives', () => {
     },
     children: [],
   };
-  const { kind, condition, target, reactive, children } = parseTag(
+  const { type, condition, target, reactive, children } = parseTag(
     multiTag
   ) as CondSchema;
 
-  expect(kind).toBe('condition');
+  expect(type).toBe('condition');
   expect(condition).toBe('if');
   expect(reactive).toBe(false);
   expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
 
   const loop = children[0] as LoopSchema;
 
-  expect(loop.kind).toBe('loop');
+  expect(loop.type).toBe('loop');
   expect(loop.target).toEqual([{ scope: 0, value: 'list' }]);
   expect(loop.index).toBe('i');
   expect(loop.pos).toBe('p');
 
   const child = loop.children[0] as TagSchema;
-  expect(child.kind).toBe('tag');
+  expect(child.type).toBe('tag');
   expect(child.attributes).toEqual([
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'id',
       value: 'myid',
       isBoolean: false,

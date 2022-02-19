@@ -5,12 +5,12 @@ import { CondSchema } from '../../src/common';
 
 test('Build#Conditional if-const', (t) => {
   const tagSchema = {
-    kind: 'conditionalConst',
+    type: 'conditionalConst',
     conditions: ['box => !!box.x?.y'],
     variables: ['x.y'],
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         attribs: [],
         children: [],
@@ -25,18 +25,18 @@ test('Build#Conditional if-const', (t) => {
 
 test('Build#Conditional if-else-const', (t) => {
   const tagSchema = {
-    kind: 'conditionalConst',
+    type: 'conditionalConst',
     conditions: ['box => !!box.x?.y'],
     variables: ['x.y'],
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         attribs: [],
         children: [],
       },
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'div',
         attribs: [],
         children: [],
@@ -52,12 +52,12 @@ test('Build#Conditional if-else-const', (t) => {
 
 test('Build#Conditional if-var', (t) => {
   const tagSchema = {
-    kind: 'conditionalVar',
+    type: 'conditionalVar',
     conditions: ['box => !!box.x?.y'],
     variables: ['x.y'],
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         attribs: [],
         children: [],
@@ -73,18 +73,18 @@ test('Build#Conditional if-var', (t) => {
 
 test('Build#Conditional if-else-var', (t) => {
   const tagSchema = {
-    kind: 'conditionalVar',
+    type: 'conditionalVar',
     conditions: ['box => !!box.x?.y'],
     variables: ['x.y'],
     children: [
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'span',
         attribs: [],
         children: [],
       },
       {
-        kind: 'tag',
+        type: 'tag',
         name: 'div',
         attribs: [],
         children: [],

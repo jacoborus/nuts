@@ -12,7 +12,7 @@ import {
 
 test('Build attribs: plain', (t) => {
   const schema = {
-    kind: 'plain',
+    type: 'plain',
     propName: 'testname',
     value: 'testvalue',
     variables: [],
@@ -25,7 +25,7 @@ test('Build attribs: plain', (t) => {
 
 test('Build attribs: constant', (t) => {
   const schema = {
-    kind: 'constant',
+    type: 'constant',
     propName: 'testname',
     value: "${box.test?.value ?? ''}",
     variables: [],
@@ -39,7 +39,7 @@ test('Build attribs: constant', (t) => {
 
 test('Build attribs: variable', (t) => {
   const schema = {
-    kind: 'variable',
+    type: 'variable',
     propName: 'testname',
     value: 'testvalue',
     variables: ['t1', 't2'],
@@ -52,7 +52,7 @@ test('Build attribs: variable', (t) => {
 
 test('Build attribs: event', (t) => {
   const schema = {
-    kind: 'event',
+    type: 'event',
     propName: 'testname',
     value: 'testvalue',
     variables: [],
@@ -65,7 +65,7 @@ test('Build attribs: event', (t) => {
 
 test('Build attribs: boolean constant', (t) => {
   const schema = {
-    kind: 'booleanConst',
+    type: 'booleanConst',
     propName: 'testname',
     value: 'testvalue',
     variables: [],
@@ -78,7 +78,7 @@ test('Build attribs: boolean constant', (t) => {
 
 test('Build attribs: boolean variable', (t) => {
   const schema = {
-    kind: 'booleanVar',
+    type: 'booleanVar',
     propName: 'testname',
     value: 'test.value',
     variables: ['test', 'value'],

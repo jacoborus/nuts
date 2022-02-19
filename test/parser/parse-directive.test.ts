@@ -22,13 +22,13 @@ const theChildren: RawSchema[] = [
 
 const childrenResult = [
   {
-    kind: 'text',
+    type: 'text',
     dynamic: false,
     reactive: false,
     value: 'hola',
   },
   {
-    kind: 'component',
+    type: 'component',
     name: 'my-comp',
     attributes: [],
     children: [],
@@ -46,7 +46,7 @@ test('Parse directive: loop', () => {
   };
   const parsed = parseDirective(loopTag) as LoopSchema;
   expect(parsed).toEqual({
-    kind: 'loop',
+    type: 'loop',
     target: [{ scope: 0, value: 'list' }],
     index: 'i',
     pos: 'p',
@@ -63,7 +63,7 @@ test('Parse conditional: if', () => {
   };
   const parsed = parseDirective(loopTag) as CondSchema;
   expect(parsed).toEqual({
-    kind: 'condition',
+    type: 'condition',
     condition: 'if',
     target: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
@@ -80,7 +80,7 @@ test('Parse conditional: else', () => {
   };
   const parsed = parseDirective(loopTag) as CondSchema;
   expect(parsed).toEqual({
-    kind: 'condition',
+    type: 'condition',
     condition: 'else',
     target: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
@@ -97,13 +97,13 @@ test('Parse conditional: loop tag with `(if)` directive', () => {
   };
   const parsed = parseDirective(loopTag) as CondSchema;
   expect(parsed).toEqual({
-    kind: 'condition',
+    type: 'condition',
     condition: 'if',
     target: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
     children: [
       {
-        kind: 'loop',
+        type: 'loop',
         target: [{ scope: 0, value: 'list' }],
         index: 'i',
         pos: 'p',

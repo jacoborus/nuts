@@ -14,7 +14,7 @@ test('Parse#text flat', () => {
   const schema: RawTextSchema = { type: 'text', data: 'hola mundo ' };
   const result = [
     {
-      kind: 'text',
+      type: 'text',
       value: 'hola mundo ',
       dynamic: false,
       reactive: false,
@@ -28,20 +28,20 @@ test('Parse#text dynamic', () => {
   const schema: RawTextSchema = { type: 'text', data: 'counter {{ count }}.' };
   const result = [
     {
-      kind: 'text',
+      type: 'text',
       value: 'counter ',
       dynamic: false,
       reactive: false,
     },
     {
-      kind: 'text',
+      type: 'text',
       value: 'count',
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'count' }],
     },
     {
-      kind: 'text',
+      type: 'text',
       value: '.',
       dynamic: false,
       reactive: false,
@@ -58,26 +58,26 @@ test('Parse#text reactive', () => {
   };
   const result = [
     {
-      kind: 'text',
+      type: 'text',
       value: 'Normal, ',
       dynamic: false,
       reactive: false,
     },
     {
-      kind: 'text',
+      type: 'text',
       value: 'dinamico',
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'dinamico' }],
     },
     {
-      kind: 'text',
+      type: 'text',
       value: ' y ',
       dynamic: false,
       reactive: false,
     },
     {
-      kind: 'text',
+      type: 'text',
       value: 'reactivo',
       dynamic: true,
       reactive: true,

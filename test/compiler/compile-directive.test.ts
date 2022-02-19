@@ -3,11 +3,11 @@ import { LoopSchema } from '../../src/types';
 
 test('Compile directive #loop', () => {
   const schema = {
-    kind: 'loop',
+    type: 'loop',
     target: [{ scope: 0, value: 'list' }],
     children: [
       {
-        kind: 'text',
+        type: 'text',
         value: 'hola',
         dynamic: false,
         reactive: false,

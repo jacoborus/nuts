@@ -22,7 +22,7 @@ export type RawNutSchema = {
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema;
 
 export interface TextSchema {
-  kind: 'text';
+  type: 'text';
   value: string;
   dynamic: boolean;
   reactive: boolean;
@@ -46,7 +46,7 @@ export type DirectiveName =
   | 'pos';
 
 export interface AttSchema {
-  kind: 'attribute';
+  type: 'attribute';
   name: string;
   value: string;
   isBoolean: boolean;
@@ -58,19 +58,19 @@ export interface AttSchema {
 export type Attributes = AttSchema | EventSchema | DirAttSchema;
 
 export interface EventSchema {
-  kind: 'event';
+  type: 'event';
   name: string;
   value: string;
 }
 
 export interface DirAttSchema {
-  kind: 'directive';
+  type: 'directive';
   name: DirectiveName;
   value: string;
 }
 
 export interface TagSchema {
-  kind: 'tag';
+  type: 'tag';
   name: string;
   isVoid: boolean;
   ref?: string;
@@ -80,7 +80,7 @@ export interface TagSchema {
 }
 
 export interface SubCompSchema {
-  kind: 'component';
+  type: 'component';
   name: string;
   ref?: string;
   events: EventSchema[];
@@ -89,7 +89,7 @@ export interface SubCompSchema {
 }
 
 export interface CondSchema {
-  kind: 'condition';
+  type: 'condition';
   condition: string;
   target: Expression;
   reactive: boolean;
@@ -97,7 +97,7 @@ export interface CondSchema {
 }
 
 export interface LoopSchema {
-  kind: 'loop';
+  type: 'loop';
   target: Expression;
   index?: string;
   pos?: string; // index + 1

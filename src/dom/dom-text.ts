@@ -2,7 +2,7 @@ import { on, Box } from 'boxes';
 import { RenderedComp } from './dom-common';
 
 type RenderFn = (scope: Box) => RenderedComp;
-// type Updater = (kind: string, oldValue: any, newValue: any) => void
+// type Updater = (type: string, oldValue: any, newValue: any) => void
 
 export function renderTextPlain(prop: string): RenderFn {
   return () => ({

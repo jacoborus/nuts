@@ -3,7 +3,7 @@ import { compileChildren } from './compile-tag';
 import { compileExpression } from './compile-expression';
 
 export function compileDirective(directive: DirectiveSchema): string {
-  // if (directive.kind === 'loop') return compileLoop(directive);
+  // if (directive.type === 'loop') return compileLoop(directive);
   return compileLoop(directive as LoopSchema);
   // return compileConditional(directive as CondSchema);
 }

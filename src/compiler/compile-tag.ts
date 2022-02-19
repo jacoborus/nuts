@@ -20,16 +20,16 @@ export function compileChildren(schemas: ElemSchema[]): string {
 }
 
 function isTextNode(schema: ElemSchema): schema is TextSchema {
-  return schema.kind === 'text';
+  return schema.type === 'text';
 }
 
 function isTagNode(schema: ElemSchema): schema is TagSchema {
-  return schema.kind === 'tag' && tagnames.includes(schema.name);
+  return schema.type === 'tag' && tagnames.includes(schema.name);
 }
 
 const directiveNames = ['if', 'else', 'elseif', 'loop'];
 function isDirectiveNode(schema: ElemSchema): schema is TagSchema {
-  return schema.kind === 'tag' && directiveNames.includes(schema.name);
+  return schema.type === 'tag' && directiveNames.includes(schema.name);
 }
 
 export function compileTag(schema: TagSchema): string {

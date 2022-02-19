@@ -24,7 +24,7 @@ function parseLoop(schema: RawNutSchema): LoopSchema {
   const expr = preTarget?.slice(1, -1) || '';
   const target = parseExpression(expr);
   const loop: LoopSchema = {
-    kind: 'loop',
+    type: 'loop',
     target,
     index: directives.find((dir) => dir.name === 'index')?.value || '',
     pos: directives.find((dir) => dir.name === 'pos')?.value || '',
@@ -39,7 +39,7 @@ function parseConditional(schema: RawNutSchema): CondSchema {
   const expr = preTarget?.slice(1, -1) || '';
   const target = parseExpression(expr);
   const cond: CondSchema = {
-    kind: 'condition',
+    type: 'condition',
     condition: schema.name,
     target,
     reactive: false,

@@ -1,6 +1,6 @@
 import { AttSchema, FinalAttType } from '../../src/common';
 
-const attKinds = {
+const atttypes = {
   plain: buildAttPlain,
   constant: buildAttConstant,
   variable: buildAttVariable,
@@ -13,7 +13,7 @@ const attKinds = {
 export function buildAttribs(defs: AttSchema[]): string {
   return defs
     .map((schema) => {
-      return attKinds[schema.kind as FinalAttType](schema);
+      return atttypes[schema.type as FinalAttType](schema);
     })
     .join(',');
 }

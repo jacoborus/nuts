@@ -5,16 +5,16 @@ import { NutSchema } from '../../src/common';
 
 test('Build#Nut', (t) => {
   const nutSchema = {
-    kind: 'nut',
+    type: 'nut',
     name: 'my-comp',
     props: [
       {
-        kind: 'plain',
+        type: 'plain',
         propName: 'p1',
         value: 'v1',
       },
       {
-        kind: 'variable',
+        type: 'variable',
         propName: 'p2',
         value: 'v2',
       },

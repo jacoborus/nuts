@@ -24,6 +24,14 @@ export function parseChildren(children: RawSchema[]): ElemSchema[] {
   return parsed;
 }
 
+// function groupConditionals(children: ElemSchema[]): ElemSchema[] {
+//   const flat: ElemSchema[] = [];
+//   children.forEach((child) => {
+//     if (child.type === 'Cond') flat.push(child);
+//   });
+//   return flat;
+// }
+
 function isTextNode(schema: RawSchema): schema is RawTextSchema {
   return schema.type === 'text';
 }
@@ -43,7 +51,7 @@ export function parseSubcomp(
   const { name } = schema;
   const { ref, events, attributes, directives } = splitAttribs(schema);
   const comp: SubCompSchema = {
-    kind: 'component',
+    type: 'component',
     name,
     ref,
     events,
@@ -59,7 +67,7 @@ export function parseTag(schema: RawTagSchema): ElemSchema {
   const { name } = schema;
   const { ref, events, attributes, directives } = splitAttribs(schema);
   const tag: TagSchema = {
-    kind: 'tag',
+    type: 'tag',
     name,
     isVoid: voidElements.includes(name),
     ref,

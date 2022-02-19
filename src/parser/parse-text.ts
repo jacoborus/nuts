@@ -16,7 +16,7 @@ export function parseChunk(
   // plain text
   if (!st) {
     return chunks.concat({
-      kind: 'text',
+      type: 'text',
       value: str,
       dynamic: false,
       reactive: false,
@@ -29,7 +29,7 @@ export function parseChunk(
     return parseChunk(
       rest,
       chunks.concat({
-        kind: 'text',
+        type: 'text',
         value,
         dynamic: false,
         reactive: false,
@@ -47,7 +47,7 @@ export function parseChunk(
   return parseChunk(
     rest,
     chunks.concat({
-      kind: 'text',
+      type: 'text',
       value: prop,
       dynamic: true,
       reactive: isReactive,

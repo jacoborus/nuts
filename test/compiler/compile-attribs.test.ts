@@ -4,7 +4,7 @@ import { AttSchema } from '../../src/types';
 test('Compile attribs #static', () => {
   const attribs = [
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'id',
       value: 'my-id',
       isBoolean: false,
@@ -12,7 +12,7 @@ test('Compile attribs #static', () => {
       reactive: false,
     },
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'hidden',
       value: 'hyde',
       isBoolean: true,
@@ -30,7 +30,7 @@ test('Compile attribs #static', () => {
 test('Compile attributes #dynamic', () => {
   const attribs = [
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'id',
       value: 'myId',
       isBoolean: false,
@@ -39,7 +39,7 @@ test('Compile attributes #dynamic', () => {
       expr: [{ scope: 0, value: 'myId' }],
     },
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'hidden',
       value: 'hyde',
       isBoolean: true,
@@ -48,7 +48,7 @@ test('Compile attributes #dynamic', () => {
       expr: [{ scope: 0, value: 'hyde' }],
     },
     {
-      kind: 'attribute',
+      type: 'attribute',
       name: 'checked',
       value: 'check',
       isBoolean: true,

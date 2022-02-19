@@ -5,7 +5,7 @@ import { buildText } from '../../src/builder/build-text';
 
 test('Build#TextContent plain', (t) => {
   const schema = {
-    kind: 'text',
+    type: 'text',
     mode: 'plain',
     literal: 'uno',
     variables: [],
@@ -18,7 +18,7 @@ test('Build#TextContent plain', (t) => {
 
 test('Build#TextContent constant', (t) => {
   const schema = {
-    kind: 'text',
+    type: 'text',
     mode: 'constant',
     literal: "${box.uno ?? ''}",
     variables: [],
@@ -31,7 +31,7 @@ test('Build#TextContent constant', (t) => {
 
 test('Build#TextContent variable', (t) => {
   const schema = {
-    kind: 'text',
+    type: 'text',
     mode: 'variable',
     literal: "${box.uno ?? ''}",
     variables: ['uno', 'dos'],
