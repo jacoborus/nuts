@@ -25,7 +25,7 @@ export function compileExpression(expr: Expression): string {
       str = str + `?.[parent[${chunk.scope - 1}]?.${print(chunk.value)}]`;
     }
   });
-  return str + '??""';
+  return str;
 }
 
 function print(str: string): string {
