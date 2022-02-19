@@ -1,6 +1,7 @@
 import { TagSchema, TextSchema, ElemSchema } from '../types';
 import { compileAttribs } from './compile-attribs';
 import { compileText } from './compile-text';
+import { compileDirective } from './compile-directive';
 import { tagnames } from '../common';
 
 const start = '<';
@@ -12,7 +13,7 @@ export function compileChildren(schemas: ElemSchema[]): string {
     .map((schema: ElemSchema) => {
       if (isTextNode(schema)) return compileText(schema);
       if (isTagNode(schema)) return compileTag(schema);
-      // if (isDirectiveNode(schema)) return compileDirective(schema);
+      if (isDirectiveNode(schema)) return compileDirective(schema);
       // return compileSubComp(schema);
     })
     .join('');
