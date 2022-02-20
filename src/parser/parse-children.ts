@@ -4,7 +4,6 @@ import {
   RawNutSchema,
   DirectiveSchema,
   FinalSchema,
-  CondSchema,
   TreeSchema,
 } from '../types';
 
@@ -37,39 +36,43 @@ function groupConditionals(children: ElemSchema[]): FinalSchema[] {
       prev = null;
       return;
     }
-    if (child.condition === 'if') {
+    if (child.kind === 'if') {
       const tree: TreeSchema = {
         type: 'tree',
-        requirement: child.target,
-        yes: child.children as FinalSchema[],
+        kind: 'if',
+        requirement: child.requirement,
+        yes: child.yes,
         no: [],
+        reactive: false,
       };
       flat.push(tree);
       prev = tree;
       return;
     }
-    if (child.condition === 'elseif') {
+    if (child.kind === 'elseif') {
       const tree: TreeSchema = {
         type: 'tree',
-        requirement: child.target,
-        yes: child.children as FinalSchema[],
+        kind: 'elseif',
+        requirement: child.requirement,
+        yes: child.yes,
         no: [],
+        reactive: false,
       };
       const previous: TreeSchema = prev as TreeSchema;
       previous.no = [tree];
       prev = tree;
     }
-    if (child.condition === 'else') {
+    if (child.kind === 'else') {
       const previous: TreeSchema = prev as TreeSchema;
-      previous.no = child.children as unknown as TreeSchema[];
+      previous.no = child.no;
       prev = null;
     }
   });
   return flat;
 }
 
-function isCondition(schema: ElemSchema): schema is CondSchema {
-  return schema.type === 'condition';
+function isCondition(schema: ElemSchema): schema is TreeSchema {
+  return schema.type === 'tree';
 }
 
 function isTextNode(schema: RawSchema): schema is RawTextSchema {
@@ -103,7 +106,7 @@ export function parseSubcomp(
     | DirectiveSchema;
 }
 
-export function parseTag(schema: RawTagSchema): FinalSchema {
+export function parseTag(schema: RawTagSchema): ElemSchema {
   const { name } = schema;
   const { ref, events, attributes, directives } = splitAttribs(schema);
   const tag: TagSchema = {

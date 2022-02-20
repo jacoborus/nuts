@@ -76,7 +76,7 @@ export interface TagSchema {
   ref?: string;
   events: EventSchema[];
   attributes: AttSchema[];
-  children: FinalSchema[];
+  children: ElemSchema[];
 }
 
 export interface SubCompSchema {
@@ -88,19 +88,14 @@ export interface SubCompSchema {
   children: FinalSchema[];
 }
 
+export type TreeKind = 'if' | 'elseif' | 'else';
 export interface TreeSchema {
   type: 'tree';
+  kind: TreeKind;
   requirement: Expression;
   yes: FinalSchema[];
   no: FinalSchema[];
-}
-
-export interface CondSchema {
-  type: 'condition';
-  condition: string;
-  target: Expression;
   reactive: boolean;
-  children: FinalSchema[];
 }
 
 export interface LoopSchema {
@@ -111,7 +106,7 @@ export interface LoopSchema {
   children: FinalSchema[];
 }
 
-export type DirectiveSchema = LoopSchema | CondSchema;
+export type DirectiveSchema = LoopSchema | TreeSchema;
 export type ElemSchema =
   | TextSchema
   | TagSchema

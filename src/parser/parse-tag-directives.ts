@@ -1,16 +1,17 @@
 import {
   LoopSchema,
-  CondSchema,
+  TreeSchema,
   TagSchema,
   DirAttSchema,
   DirectiveSchema,
   SubCompSchema,
+  TreeKind,
 } from '../types';
 import { parseExpression } from './parse-expression';
 
 export function parseAttDirectives(
   directives: DirAttSchema[],
-  tag: TagSchema | SubCompSchema | LoopSchema | CondSchema
+  tag: TagSchema | SubCompSchema | LoopSchema | TreeSchema
 ): DirectiveSchema | TagSchema | SubCompSchema {
   const dirObj = {
     loop: directives.find((dir) => dir.name === 'loop'),
@@ -35,27 +36,35 @@ export function parseAttDirectives(
     dirObj.dif || dirObj.delse || dirObj.delseif
       ? ({
           // TODO: Fix this unsafe mess
-          type: 'condition',
-          condition: (dirObj?.dif?.name ||
+          type: 'tree',
+          kind: (dirObj?.dif?.name ||
             dirObj?.delseif?.name ||
-            dirObj?.delse?.name) as string,
-          target: parseExpression(
+            dirObj?.delse?.name) as TreeKind,
+          requirement: parseExpression(
             dirObj?.dif?.value ||
               dirObj?.delseif?.value ||
               dirObj?.delse?.value ||
               ''
           ),
           reactive: false,
-          children: [],
-        } as CondSchema)
+          yes: [],
+          no: [],
+        } as TreeSchema)
       : null;
 
   if (iterateTag) {
-    iterateTag.children = [tag];
+    iterateTag.children = [tag as TagSchema];
   }
 
   if (conditionalTag) {
-    conditionalTag.children = iterateTag ? [iterateTag] : [tag];
+    const children = iterateTag ? [iterateTag] : ([tag] as TagSchema[]);
+    if (conditionalTag.kind === 'else') {
+      conditionalTag.no = children;
+      conditionalTag.yes = [];
+    } else {
+      conditionalTag.yes = children;
+      conditionalTag.no = [];
+    }
     return conditionalTag;
   }
   return iterateTag ? iterateTag : tag;

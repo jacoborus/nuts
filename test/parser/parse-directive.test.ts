@@ -3,7 +3,7 @@ import { parseDirective } from '../../src/parser/parse-directive';
 import {
   RawTagSchema,
   LoopSchema,
-  CondSchema,
+  TreeSchema,
   RawSchema,
 } from '../../src/types';
 
@@ -61,13 +61,14 @@ test('Parse conditional: if', () => {
     attribs: { '(index)': 'i', '(isTrue)': '', '(pos)': 'p' },
     children: theChildren,
   };
-  const parsed = parseDirective(loopTag) as CondSchema;
+  const parsed = parseDirective(loopTag) as TreeSchema;
   expect(parsed).toEqual({
-    type: 'condition',
-    condition: 'if',
-    target: [{ scope: 0, value: 'isTrue' }],
+    type: 'tree',
+    kind: 'if',
+    requirement: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
-    children: childrenResult,
+    yes: childrenResult,
+    no: [],
   });
 });
 
@@ -78,13 +79,14 @@ test('Parse conditional: else', () => {
     attribs: { '(index)': 'i', '(isTrue)': '', '(pos)': 'p' },
     children: theChildren,
   };
-  const parsed = parseDirective(loopTag) as CondSchema;
+  const parsed = parseDirective(loopTag) as TreeSchema;
   expect(parsed).toEqual({
-    type: 'condition',
-    condition: 'else',
-    target: [{ scope: 0, value: 'isTrue' }],
+    type: 'tree',
+    kind: 'else',
+    requirement: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
-    children: childrenResult,
+    yes: [],
+    no: childrenResult,
   });
 });
 
@@ -95,13 +97,13 @@ test('Parse conditional: loop tag with `(if)` directive', () => {
     attribs: { '(index)': 'i', '(list)': '', '(pos)': 'p', '(if)': 'isTrue' },
     children: theChildren,
   };
-  const parsed = parseDirective(loopTag) as CondSchema;
+  const parsed = parseDirective(loopTag) as TreeSchema;
   expect(parsed).toEqual({
-    type: 'condition',
-    condition: 'if',
-    target: [{ scope: 0, value: 'isTrue' }],
+    type: 'tree',
+    kind: 'if',
+    requirement: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
-    children: [
+    yes: [
       {
         type: 'loop',
         target: [{ scope: 0, value: 'list' }],
@@ -110,5 +112,6 @@ test('Parse conditional: loop tag with `(if)` directive', () => {
         children: childrenResult,
       },
     ],
+    no: [],
   });
 });

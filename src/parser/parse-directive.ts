@@ -3,7 +3,8 @@ import {
   RawNutSchema,
   DirectiveSchema,
   LoopSchema,
-  CondSchema,
+  TreeSchema,
+  TreeKind,
 } from '../types';
 import { splitAttribs } from './parse-attribs';
 import { parseAttDirectives } from './parse-tag-directives';
@@ -33,19 +34,20 @@ function parseLoop(schema: RawNutSchema): LoopSchema {
   return parseAttDirectives(directives, loop) as LoopSchema;
 }
 
-function parseConditional(schema: RawNutSchema): CondSchema {
+function parseConditional(schema: RawNutSchema): TreeSchema {
   const { attributes, directives } = splitAttribs(schema);
   const preTarget = attributes.find((att) => isBetweenParens(att.name))?.name;
   const expr = preTarget?.slice(1, -1) || '';
-  const target = parseExpression(expr);
-  const cond: CondSchema = {
-    type: 'condition',
-    condition: schema.name,
-    target,
+  const requirement = parseExpression(expr);
+  const cond: TreeSchema = {
+    type: 'tree',
+    kind: schema.name as TreeKind,
+    requirement,
     reactive: false,
-    children: parseChildren(schema.children),
+    yes: schema.name !== 'else' ? parseChildren(schema.children) : [],
+    no: schema.name === 'else' ? parseChildren(schema.children) : [],
   };
-  return parseAttDirectives(directives, cond) as CondSchema;
+  return parseAttDirectives(directives, cond) as TreeSchema;
 }
 
 function isBetweenParens(word: string): boolean {
