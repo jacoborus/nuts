@@ -27,9 +27,8 @@ function isTagNode(schema: FinalSchema): schema is TagSchema {
   return schema.type === 'tag' && tagnames.includes(schema.name);
 }
 
-const directiveNames = ['if', 'else', 'elseif', 'loop'];
 function isDirectiveNode(schema: FinalSchema): schema is TagSchema {
-  return schema.type === 'tag' && directiveNames.includes(schema.name);
+  return schema.type === 'tree' || schema.type === 'loop';
 }
 
 export function compileTag(schema: TagSchema): string {
