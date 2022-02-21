@@ -1,4 +1,4 @@
-import { RawTextSchema, RawTagSchema, RawSchema } from '../types';
+import { RawTextSchema, RawTagSchema, RawSchema, ScriptSchema } from '../types';
 import { parseChildren } from '../parser/parse-children';
 import { getTagname, findTagByTagname } from '../tools';
 import { parseHTML } from './parse-html';
@@ -6,7 +6,7 @@ import { parseHTML } from './parse-html';
 export function parseComponent(data: string) {
   const ast = parseHTML(data);
   return {
-    templates: parseTemplates(ast),
+    template: parseTemplates(ast),
     scripts: parseScripts(ast as RawSchema[]),
   };
 }
@@ -28,7 +28,7 @@ export function parseScripts(schemas: RawSchema[]) {
   return scriptSchemas.map(parseScript);
 }
 
-export function parseScript(schema: RawTagSchema) {
+export function parseScript(schema: RawTagSchema): ScriptSchema {
   const child = schema.children[0] as RawTextSchema;
   return {
     name: getTagname(schema),

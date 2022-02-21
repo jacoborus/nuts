@@ -3,7 +3,7 @@ import {
   RawTagSchema,
   TagSchema,
   LoopSchema,
-  CondSchema,
+  TreeSchema,
 } from '../../src/types';
 
 const staticTag: RawTagSchema = {
@@ -140,14 +140,15 @@ test('Parse tag: with conditional directive', () => {
     attribs: { '(if)': 'isUser', id: 'myid' },
     children: [],
   };
-  const { type, target, condition, reactive, children } = parseTag(
+  const { type, kind, requirement, reactive, yes, no } = parseTag(
     ifTag
-  ) as CondSchema;
-  expect(type).toBe('condition');
-  expect(condition).toBe('if');
+  ) as TreeSchema;
+  expect(type).toBe('tree');
+  expect(kind).toBe('if');
   expect(reactive).toBe(false);
-  expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
-  const child = children[0] as TagSchema;
+  expect(requirement).toEqual([{ scope: 0, value: 'isUser' }]);
+  expect(no).toEqual([]);
+  const child = yes[0] as TagSchema;
   expect(child.type).toBe('tag');
   expect(child.attributes).toEqual([
     {
@@ -174,16 +175,17 @@ test('Parse tag: with loop and conditional directives', () => {
     },
     children: [],
   };
-  const { type, condition, target, reactive, children } = parseTag(
+  const { type, kind, requirement, reactive, yes, no } = parseTag(
     multiTag
-  ) as CondSchema;
+  ) as TreeSchema;
 
-  expect(type).toBe('condition');
-  expect(condition).toBe('if');
+  expect(type).toBe('tree');
+  expect(kind).toBe('if');
   expect(reactive).toBe(false);
-  expect(target).toEqual([{ scope: 0, value: 'isUser' }]);
+  expect(requirement).toEqual([{ scope: 0, value: 'isUser' }]);
 
-  const loop = children[0] as LoopSchema;
+  expect(no).toEqual([]);
+  const loop = yes[0] as LoopSchema;
 
   expect(loop.type).toBe('loop');
   expect(loop.target).toEqual([{ scope: 0, value: 'list' }]);

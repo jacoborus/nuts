@@ -118,3 +118,14 @@ export type FinalSchema =
   | LoopSchema
   | TreeSchema
   | SubCompSchema;
+
+export interface ScriptSchema {
+  name: string;
+  lang: string;
+  value: string;
+}
+
+export interface ComponentSchema {
+  template: ElemSchema[];
+  scripts: ScriptSchema[];
+}
