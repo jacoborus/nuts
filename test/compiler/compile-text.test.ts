@@ -1,5 +1,5 @@
 import { compileText } from '../../src/compiler/compile-text';
-import { TextSchema } from '../../src/types';
+import { TextSchema, NodeTypes } from '../../src/types';
 
 jest.mock('../../src/compiler/compile-expression', () => {
   return {
@@ -10,7 +10,7 @@ jest.mock('../../src/compiler/compile-expression', () => {
 test('Compile text #simple', () => {
   const result = 'hola';
   const schema = {
-    type: 'text',
+    type: NodeTypes.TEXT,
     value: 'hola',
     dynamic: false,
     reactive: false,
@@ -22,7 +22,7 @@ test('Compile text #simple', () => {
 test('Compile text # simple expression', () => {
   const result = '${x}';
   const schema = {
-    type: 'text',
+    type: NodeTypes.TEXT,
     value: 'uno.dos',
     dynamic: true,
     reactive: false,

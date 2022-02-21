@@ -5,6 +5,7 @@ import {
   LoopSchema,
   TreeSchema,
   RawSchema,
+  NodeTypes,
 } from '../../src/types';
 
 const theChildren: RawSchema[] = [
@@ -22,13 +23,13 @@ const theChildren: RawSchema[] = [
 
 const childrenResult = [
   {
-    type: 'text',
+    type: NodeTypes.TEXT,
     dynamic: false,
     reactive: false,
     value: 'hola',
   },
   {
-    type: 'component',
+    type: NodeTypes.COMPONENT,
     name: 'my-comp',
     attributes: [],
     children: [],
@@ -46,7 +47,7 @@ test('Parse directive: loop', () => {
   };
   const parsed = parseDirective(loopTag) as LoopSchema;
   expect(parsed).toEqual({
-    type: 'loop',
+    type: NodeTypes.LOOP,
     target: [{ scope: 0, value: 'list' }],
     index: 'i',
     pos: 'p',
@@ -63,7 +64,7 @@ test('Parse conditional: if', () => {
   };
   const parsed = parseDirective(loopTag) as TreeSchema;
   expect(parsed).toEqual({
-    type: 'tree',
+    type: NodeTypes.TREE,
     kind: 'if',
     requirement: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
@@ -81,7 +82,7 @@ test('Parse conditional: else', () => {
   };
   const parsed = parseDirective(loopTag) as TreeSchema;
   expect(parsed).toEqual({
-    type: 'tree',
+    type: NodeTypes.TREE,
     kind: 'else',
     requirement: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
@@ -99,13 +100,13 @@ test('Parse conditional: loop tag with `(if)` directive', () => {
   };
   const parsed = parseDirective(loopTag) as TreeSchema;
   expect(parsed).toEqual({
-    type: 'tree',
+    type: NodeTypes.TREE,
     kind: 'if',
     requirement: [{ scope: 0, value: 'isTrue' }],
     reactive: false,
     yes: [
       {
-        type: 'loop',
+        type: NodeTypes.LOOP,
         target: [{ scope: 0, value: 'list' }],
         index: 'i',
         pos: 'p',

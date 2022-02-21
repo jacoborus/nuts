@@ -1,3 +1,15 @@
+export const enum NodeTypes {
+  TEXT,
+  TAG,
+  ATTRIBUTE,
+  LOOP,
+  TREE,
+  CONDITIONAL,
+  COMPONENT,
+  DIRECTIVE,
+  EVENT,
+}
+
 export type Attribs = Record<string, string>;
 // SCHEMAS
 export type RawTextSchema = {
@@ -22,7 +34,7 @@ export type RawNutSchema = {
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema;
 
 export interface TextSchema {
-  type: 'text';
+  type: NodeTypes.TEXT;
   value: string;
   dynamic: boolean;
   reactive: boolean;
@@ -46,7 +58,7 @@ export type DirectiveName =
   | 'pos';
 
 export interface AttSchema {
-  type: 'attribute';
+  type: NodeTypes.ATTRIBUTE;
   name: string;
   value: string;
   isBoolean: boolean;
@@ -58,19 +70,19 @@ export interface AttSchema {
 export type Attributes = AttSchema | EventSchema | DirAttSchema;
 
 export interface EventSchema {
-  type: 'event';
+  type: NodeTypes.EVENT;
   name: string;
   value: string;
 }
 
 export interface DirAttSchema {
-  type: 'directive';
+  type: NodeTypes.DIRECTIVE;
   name: DirectiveName;
   value: string;
 }
 
 export interface TagSchema {
-  type: 'tag';
+  type: NodeTypes.TAG;
   name: string;
   isVoid: boolean;
   ref?: string;
@@ -80,7 +92,7 @@ export interface TagSchema {
 }
 
 export interface SubCompSchema {
-  type: 'component';
+  type: NodeTypes.COMPONENT;
   name: string;
   ref?: string;
   events: EventSchema[];
@@ -90,7 +102,7 @@ export interface SubCompSchema {
 
 export type TreeKind = 'if' | 'elseif' | 'else';
 export interface TreeSchema {
-  type: 'tree';
+  type: NodeTypes.TREE;
   kind: TreeKind;
   requirement: Expression;
   yes: FinalSchema[];
@@ -99,7 +111,7 @@ export interface TreeSchema {
 }
 
 export interface LoopSchema {
-  type: 'loop';
+  type: NodeTypes.LOOP;
   target: Expression;
   index?: string;
   pos?: string; // index + 1
@@ -126,6 +138,11 @@ export interface ScriptSchema {
 }
 
 export interface ComponentSchema {
-  template: ElemSchema[];
+  template: TemplateSchema;
   scripts: ScriptSchema[];
+}
+
+export interface TemplateSchema {
+  name: string;
+  schema: ElemSchema[];
 }

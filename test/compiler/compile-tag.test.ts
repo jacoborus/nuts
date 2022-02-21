@@ -1,15 +1,15 @@
 import { compileTag } from '../../src/compiler/compile-tag';
-import { TagSchema } from '../../src/types';
+import { TagSchema, NodeTypes } from '../../src/types';
 
 test('Compile tag #simple', () => {
   const schema = {
-    type: 'tag',
+    type: NodeTypes.TAG,
     name: 'span',
     isVoid: false,
     events: [],
     attributes: [
       {
-        type: 'attribute',
+        type: NodeTypes.ATTRIBUTE,
         name: 'id',
         value: 'my-id',
         isBoolean: false,
@@ -19,7 +19,7 @@ test('Compile tag #simple', () => {
     ],
     children: [
       {
-        type: 'text',
+        type: NodeTypes.TEXT,
         value: 'hola',
         dynamic: false,
         reactive: false,

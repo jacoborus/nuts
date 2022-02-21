@@ -1,4 +1,4 @@
-import { RawTextSchema, TextSchema } from '../types';
+import { RawTextSchema, TextSchema, NodeTypes } from '../types';
 import { matchDynamic } from '../common';
 import { parseExpression } from './parse-expression';
 
@@ -16,7 +16,7 @@ export function parseChunk(
   // plain text
   if (!st) {
     return chunks.concat({
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: str,
       dynamic: false,
       reactive: false,
@@ -29,7 +29,7 @@ export function parseChunk(
     return parseChunk(
       rest,
       chunks.concat({
-        type: 'text',
+        type: NodeTypes.TEXT,
         value,
         dynamic: false,
         reactive: false,
@@ -47,7 +47,7 @@ export function parseChunk(
   return parseChunk(
     rest,
     chunks.concat({
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: prop,
       dynamic: true,
       reactive: isReactive,

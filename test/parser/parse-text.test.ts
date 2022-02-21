@@ -1,5 +1,5 @@
 import { parseText } from '../../src/parser/parse-text';
-import { RawTextSchema } from '../../src/types';
+import { RawTextSchema, NodeTypes } from '../../src/types';
 
 test('Parse#text flat and empty', () => {
   const result = [];
@@ -14,7 +14,7 @@ test('Parse#text flat', () => {
   const schema: RawTextSchema = { type: 'text', data: 'hola mundo ' };
   const result = [
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: 'hola mundo ',
       dynamic: false,
       reactive: false,
@@ -28,20 +28,20 @@ test('Parse#text dynamic', () => {
   const schema: RawTextSchema = { type: 'text', data: 'counter {{ count }}.' };
   const result = [
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: 'counter ',
       dynamic: false,
       reactive: false,
     },
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: 'count',
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'count' }],
     },
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: '.',
       dynamic: false,
       reactive: false,
@@ -58,26 +58,26 @@ test('Parse#text reactive', () => {
   };
   const result = [
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: 'Normal, ',
       dynamic: false,
       reactive: false,
     },
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: 'dinamico',
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'dinamico' }],
     },
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: ' y ',
       dynamic: false,
       reactive: false,
     },
     {
-      type: 'text',
+      type: NodeTypes.TEXT,
       value: 'reactivo',
       dynamic: true,
       reactive: true,

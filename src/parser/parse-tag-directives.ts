@@ -6,6 +6,7 @@ import {
   DirectiveSchema,
   SubCompSchema,
   TreeKind,
+  NodeTypes,
 } from '../types';
 import { parseExpression } from './parse-expression';
 
@@ -24,7 +25,7 @@ export function parseAttDirectives(
 
   const iterateTag = dirObj.loop
     ? ({
-        type: 'loop',
+        type: NodeTypes.LOOP,
         target: parseExpression(dirObj.loop.value),
         index: dirObj?.index?.value,
         pos: dirObj?.pos?.value,
@@ -36,7 +37,7 @@ export function parseAttDirectives(
     dirObj.dif || dirObj.delse || dirObj.delseif
       ? ({
           // TODO: Fix this unsafe mess
-          type: 'tree',
+          type: NodeTypes.TREE,
           kind: (dirObj?.dif?.name ||
             dirObj?.delseif?.name ||
             dirObj?.delse?.name) as TreeKind,

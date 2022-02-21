@@ -1,4 +1,4 @@
-import { TagSchema, TextSchema, FinalSchema } from '../types';
+import { TagSchema, TextSchema, FinalSchema, NodeTypes } from '../types';
 import { compileAttribs } from './compile-attribs';
 import { compileText } from './compile-text';
 import { compileDirective } from './compile-directive';
@@ -20,15 +20,15 @@ export function compileChildren(schemas: FinalSchema[]): string {
 }
 
 function isTextNode(schema: FinalSchema): schema is TextSchema {
-  return schema.type === 'text';
+  return schema.type === NodeTypes.TEXT;
 }
 
 function isTagNode(schema: FinalSchema): schema is TagSchema {
-  return schema.type === 'tag' && tagnames.includes(schema.name);
+  return schema.type === NodeTypes.TAG && tagnames.includes(schema.name);
 }
 
 function isDirectiveNode(schema: FinalSchema): schema is TagSchema {
-  return schema.type === 'tree' || schema.type === 'loop';
+  return schema.type === NodeTypes.TREE || schema.type === NodeTypes.LOOP;
 }
 
 export function compileTag(schema: TagSchema): string {

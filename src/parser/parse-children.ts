@@ -5,6 +5,7 @@ import {
   DirectiveSchema,
   FinalSchema,
   TreeSchema,
+  NodeTypes,
 } from '../types';
 
 import { parseText } from './parse-text';
@@ -38,7 +39,7 @@ function groupConditionals(children: ElemSchema[]): FinalSchema[] {
     }
     if (child.kind === 'if') {
       const tree: TreeSchema = {
-        type: 'tree',
+        type: NodeTypes.TREE,
         kind: 'if',
         requirement: child.requirement,
         yes: child.yes,
@@ -51,7 +52,7 @@ function groupConditionals(children: ElemSchema[]): FinalSchema[] {
     }
     if (child.kind === 'elseif') {
       const tree: TreeSchema = {
-        type: 'tree',
+        type: NodeTypes.TREE,
         kind: 'elseif',
         requirement: child.requirement,
         yes: child.yes,
@@ -72,7 +73,7 @@ function groupConditionals(children: ElemSchema[]): FinalSchema[] {
 }
 
 function isCondition(schema: ElemSchema): schema is TreeSchema {
-  return schema.type === 'tree';
+  return schema.type === NodeTypes.TREE;
 }
 
 function isTextNode(schema: RawSchema): schema is RawTextSchema {
@@ -94,7 +95,7 @@ export function parseSubcomp(
   const { name } = schema;
   const { ref, events, attributes, directives } = splitAttribs(schema);
   const comp: SubCompSchema = {
-    type: 'component',
+    type: NodeTypes.COMPONENT,
     name,
     ref,
     events,
@@ -110,7 +111,7 @@ export function parseTag(schema: RawTagSchema): ElemSchema {
   const { name } = schema;
   const { ref, events, attributes, directives } = splitAttribs(schema);
   const tag: TagSchema = {
-    type: 'tag',
+    type: NodeTypes.TAG,
     name,
     isVoid: voidElements.includes(name),
     ref,

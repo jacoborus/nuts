@@ -1,13 +1,13 @@
 import { compileLoop, compileTree } from '../../src/compiler/compile-directive';
-import { LoopSchema, TreeSchema } from '../../src/types';
+import { LoopSchema, TreeSchema, NodeTypes } from '../../src/types';
 
 test('Compile directive #loop', () => {
   const schema = {
-    type: 'loop',
+    type: NodeTypes.LOOP,
     target: [{ scope: 0, value: 'list' }],
     children: [
       {
-        type: 'text',
+        type: NodeTypes.TEXT,
         value: 'hola',
         dynamic: false,
         reactive: false,
@@ -24,11 +24,13 @@ test('Compile directive #loop', () => {
 
 test('Compile directive #tree', () => {
   const schema: TreeSchema = {
-    type: 'tree',
+    type: NodeTypes.TREE,
+    kind: 'if',
+    reactive: false,
     requirement: [{ scope: 0, value: 'enter' }],
     yes: [
       {
-        type: 'text',
+        type: NodeTypes.TEXT,
         value: 'hola',
         dynamic: false,
         reactive: false,
@@ -36,7 +38,7 @@ test('Compile directive #tree', () => {
     ],
     no: [
       {
-        type: 'text',
+        type: NodeTypes.TEXT,
         value: 'adios',
         dynamic: false,
         reactive: false,

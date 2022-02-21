@@ -1,10 +1,10 @@
 import { compileAttribs } from '../../src/compiler/compile-attribs';
-import { AttSchema } from '../../src/types';
+import { AttSchema, NodeTypes } from '../../src/types';
 
 test('Compile attribs #static', () => {
   const attribs = [
     {
-      type: 'attribute',
+      type: NodeTypes.ATTRIBUTE,
       name: 'id',
       value: 'my-id',
       isBoolean: false,
@@ -12,7 +12,7 @@ test('Compile attribs #static', () => {
       reactive: false,
     },
     {
-      type: 'attribute',
+      type: NodeTypes.ATTRIBUTE,
       name: 'hidden',
       value: 'hyde',
       isBoolean: true,
@@ -30,7 +30,7 @@ test('Compile attribs #static', () => {
 test('Compile attributes #dynamic', () => {
   const attribs = [
     {
-      type: 'attribute',
+      type: NodeTypes.ATTRIBUTE,
       name: 'id',
       value: 'myId',
       isBoolean: false,
@@ -39,7 +39,7 @@ test('Compile attributes #dynamic', () => {
       expr: [{ scope: 0, value: 'myId' }],
     },
     {
-      type: 'attribute',
+      type: NodeTypes.ATTRIBUTE,
       name: 'hidden',
       value: 'hyde',
       isBoolean: true,
@@ -48,7 +48,7 @@ test('Compile attributes #dynamic', () => {
       expr: [{ scope: 0, value: 'hyde' }],
     },
     {
-      type: 'attribute',
+      type: NodeTypes.ATTRIBUTE,
       name: 'checked',
       value: 'check',
       isBoolean: true,

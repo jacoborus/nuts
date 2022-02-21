@@ -1,9 +1,16 @@
-import { RawTextSchema, RawTagSchema, RawSchema, ScriptSchema } from '../types';
+import {
+  RawTextSchema,
+  RawTagSchema,
+  RawSchema,
+  ScriptSchema,
+  ComponentSchema,
+  TemplateSchema,
+} from '../types';
 import { parseChildren } from '../parser/parse-children';
 import { getTagname, findTagByTagname } from '../tools';
 import { parseHTML } from './parse-html';
 
-export function parseComponent(data: string) {
+export function parseComponent(data: string): ComponentSchema {
   const ast = parseHTML(data);
   return {
     template: parseTemplates(ast),
@@ -11,12 +18,12 @@ export function parseComponent(data: string) {
   };
 }
 
-export function parseTemplates(schemas: RawSchema[]) {
-  const scriptSchemas = findTagByTagname(schemas, 'template');
-  return scriptSchemas.map(parseTemplate);
+export function parseTemplates(schemas: RawSchema[]): TemplateSchema {
+  const templateTag = findTagByTagname(schemas, 'template');
+  return parseTemplate(templateTag[0]);
 }
 
-export function parseTemplate(schema: RawTagSchema) {
+export function parseTemplate(schema: RawTagSchema): TemplateSchema {
   return {
     name: getTagname(schema),
     schema: parseChildren(schema.children),

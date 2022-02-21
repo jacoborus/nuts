@@ -1,5 +1,5 @@
 import { parseAttribs } from '../../src/parser/parse-attribs';
-import { RawTagSchema } from '../../src/types';
+import { RawTagSchema, NodeTypes } from '../../src/types';
 
 const baseComp = {
   type: 'tag',
@@ -24,7 +24,7 @@ test('Parse attribute: static', () => {
   const parsed = parseAttribs(schema);
   const [id, hidden, other] = parsed;
   const resultId = {
-    type: 'attribute',
+    type: NodeTypes.ATTRIBUTE,
     name: 'id',
     value: 'myId',
     isBoolean: false,
@@ -33,7 +33,7 @@ test('Parse attribute: static', () => {
   };
   expect(id).toEqual(resultId);
   const resultHidden = {
-    type: 'attribute',
+    type: NodeTypes.ATTRIBUTE,
     name: 'hidden',
     value: '',
     isBoolean: true,
@@ -42,7 +42,7 @@ test('Parse attribute: static', () => {
   };
   expect(hidden).toEqual(resultHidden);
   const resultOther = {
-    type: 'attribute',
+    type: NodeTypes.ATTRIBUTE,
     name: 'other',
     value: 'otherAtt',
     isBoolean: false,
@@ -64,7 +64,7 @@ test('Parse attribute: dynamic and reactive', () => {
   expect(parsed.length).toBe(3);
   const [id, hidden, reactor] = parsed;
   const resultId = {
-    type: 'attribute',
+    type: NodeTypes.ATTRIBUTE,
     name: 'id',
     value: 'myId',
     isBoolean: false,
@@ -74,7 +74,7 @@ test('Parse attribute: dynamic and reactive', () => {
   };
   expect(id).toEqual(resultId);
   const resultHidden = {
-    type: 'attribute',
+    type: NodeTypes.ATTRIBUTE,
     name: 'hidden',
     value: 'hiddenAtt.val',
     isBoolean: true,
@@ -87,7 +87,7 @@ test('Parse attribute: dynamic and reactive', () => {
   };
   expect(hidden).toEqual(resultHidden);
   const resultReactor = {
-    type: 'attribute',
+    type: NodeTypes.ATTRIBUTE,
     name: 'reactor',
     value: 'reactorAtt.valor',
     isBoolean: false,
@@ -112,13 +112,13 @@ test('Parse attribute: event', () => {
   expect(parsed.length).toBe(2);
   const [single, double] = parsed;
   const singleRes = {
-    type: 'event',
+    type: NodeTypes.EVENT,
     name: 'click',
     value: 'clicked',
   };
   expect(single).toEqual(singleRes);
   const doubleRes = {
-    type: 'event',
+    type: NodeTypes.EVENT,
     name: 'dblclick',
     value: 'doubleclicked',
   };
@@ -141,7 +141,7 @@ test('Parse attribute: directive', () => {
   const results = ['loop', 'index', 'if', 'elseif', 'else', 'ref'];
   function getResult(name: string) {
     return {
-      type: 'directive',
+      type: NodeTypes.DIRECTIVE,
       name,
       value: name,
     };
