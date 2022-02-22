@@ -4,11 +4,8 @@
   "description": "Reactive template compiler for javascript apps",
   "main": "./lib/dom/core.js",
   "scripts": {
-    "build": "rm -rf lib && tsc && cp ./src/builder/pre-template.txt ./lib/builder/pre-template.txt",
     "lint": "eslint src/**/**.ts && prettier --write ./src/**.ts",
-    "test": "jest",
-    "prepublish": "npm run build",
-    "browser-test": "rm -rf temp-test && tsc -p tsconfig-test.json && browserify ./temp-test/test/dom/dom-test.js -o ./temp-test/bundle-test.js"
+    "test": "jest"
   },
   "bin": {
     "nuts": "./lib/cli/cli-compile.js"
@@ -39,7 +36,9 @@
   },
   "dependencies": {
     "boxes": "^0.44.0",
-    "html5parser": "^2.0.2"
+    "he": "^1.2.0",
+    "html5parser": "^2.0.2",
+    "source-map": "^0.7.3"
   },
   "homepage": "https://github.com/jacoborus/nuts#readme"
 }
