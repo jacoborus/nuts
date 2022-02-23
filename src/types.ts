@@ -15,6 +15,7 @@ export type Attribs = Record<string, string>;
 export type RawTextSchema = {
   type: 'text';
   data: string;
+  start: number;
 };
 
 export type RawTagSchema = {
@@ -33,12 +34,18 @@ export type RawNutSchema = {
 
 export type RawSchema = RawTextSchema | RawTagSchema | RawNutSchema;
 
+interface Loc {
+  line: number;
+  column: number;
+}
+
 export interface TextSchema {
   type: NodeTypes.TEXT;
   value: string;
   dynamic: boolean;
   reactive: boolean;
   expr?: Expression;
+  start: number;
 }
 
 export type Expression = ExpressionChunk[];

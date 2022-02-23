@@ -3,13 +3,22 @@ import { matchDynamic } from '../common';
 import { parseExpression } from './parse-expression';
 
 export function parseText(schema: RawTextSchema): TextSchema[] {
-  return parseChunk(schema.data);
+  const chunks = parseChunk(schema.data);
+  return adjustChunksStart(chunks, schema.start);
+}
+
+function adjustChunksStart(chunks: TextSchema[], index: number): TextSchema[] {
+  return chunks.map((chunk) => {
+    return Object.assign({}, chunk, { start: chunk.start + index });
+  });
 }
 
 export function parseChunk(
-  str: string,
+  input: string,
+  index = 0,
   chunks = [] as TextSchema[]
 ): TextSchema[] {
+  const str = input.slice(index);
   // empty string
   if (!str.length) return chunks;
   const st = str.match(matchDynamic);
@@ -20,38 +29,41 @@ export function parseChunk(
       value: str,
       dynamic: false,
       reactive: false,
+      start: index,
     });
   }
   // plain chunk before interpolation
   if (st.index && st.index !== 0) {
     const value = str.slice(0, st.index);
-    const rest = str.slice(st.index);
     return parseChunk(
-      rest,
+      input,
+      index + st.index,
       chunks.concat({
         type: NodeTypes.TEXT,
         value,
         dynamic: false,
         reactive: false,
+        start: index,
       })
     );
   }
   // interpolation
   let prop = st[1].trim();
-  const rest = str.substring(st[0].length);
   const isReactive = prop.startsWith(':');
   if (isReactive) {
     // dynamic chunk
     prop = prop.slice(1).trim();
   }
   return parseChunk(
-    rest,
+    input,
+    index + st[0].length,
     chunks.concat({
       type: NodeTypes.TEXT,
       value: prop,
       dynamic: true,
       reactive: isReactive,
       expr: parseExpression(prop),
+      start: index,
     })
   );
 }

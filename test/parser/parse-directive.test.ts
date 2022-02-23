@@ -12,6 +12,7 @@ const theChildren: RawSchema[] = [
   {
     type: 'text',
     data: 'hola',
+    start: 0,
   },
   {
     type: 'tag',
@@ -27,6 +28,7 @@ const childrenResult = [
     dynamic: false,
     reactive: false,
     value: 'hola',
+    start: 0,
   },
   {
     type: NodeTypes.COMPONENT,
