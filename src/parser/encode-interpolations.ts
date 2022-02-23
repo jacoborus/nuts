@@ -5,6 +5,7 @@ import lineColumn from 'line-column';
 
 interface StrChunk {
   value: string;
+  original: string;
   interpolation: boolean;
   loc: {
     line: number;
@@ -27,6 +28,7 @@ export function parseString(
   if (!st) {
     return chunks.concat({
       value: str,
+      original: str,
       interpolation: false,
       loc: getLocation(input, index),
     });
@@ -40,6 +42,7 @@ export function parseString(
       input.length - rest.length,
       chunks.concat({
         value,
+        original: value,
         interpolation: false,
         loc: getLocation(input, index),
       })
@@ -52,6 +55,7 @@ export function parseString(
     input.length - rest.length,
     chunks.concat({
       value: '{{' + he.encode(st[1]) + '}}',
+      original: st[0],
       interpolation: true,
       loc: getLocation(input, index),
     })
@@ -78,9 +82,11 @@ interface MappedInterpolation {
 export function mapInterpolations(
   file: string,
   source: string,
+  sourceContent: string,
   chunks: StrAst
 ): MappedInterpolation {
   const map = new SourceMapGenerator({ file });
+  map.setSourceContent(source, sourceContent);
   let code = '';
   chunks.forEach((chunk) => {
     code += chunk.value;

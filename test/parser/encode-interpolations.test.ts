@@ -2,7 +2,8 @@ import he from 'he';
 import {
   parseString,
   mapInterpolations,
-} from '../../src/parser/decode-interpolations';
+} from '../../src/parser/encode-interpolations';
+
 test('parseString', () => {
   const input =
     "testing:\nhola {{ donde.ciudad }} nuts\n y {{ cuando['#<dia'].1 }}";
@@ -10,6 +11,7 @@ test('parseString', () => {
   expect(chunks).toEqual([
     {
       value: 'testing:\nhola ',
+      original: 'testing:\nhola ',
       interpolation: false,
       loc: {
         line: 1,
@@ -18,6 +20,7 @@ test('parseString', () => {
     },
     {
       value: '{{ donde.ciudad }}',
+      original: '{{ donde.ciudad }}',
       interpolation: true,
       loc: {
         line: 2,
@@ -26,6 +29,7 @@ test('parseString', () => {
     },
     {
       value: ' nuts\n y ',
+      original: ' nuts\n y ',
       interpolation: false,
       loc: {
         line: 2,
@@ -34,6 +38,7 @@ test('parseString', () => {
     },
     {
       value: '{{ cuando[&#x27;#&#x3C;dia&#x27;].1 }}',
+      original: "{{ cuando['#<dia'].1 }}",
       interpolation: true,
       loc: {
         line: 3,
@@ -41,7 +46,10 @@ test('parseString', () => {
       },
     },
   ]);
-  expect(mapInterpolations('file', 'source', chunks).code).toBe(
-    he.encode(input)
-  );
+  const generated = mapInterpolations('file', 'source', input, chunks);
+  expect(generated.code).toBe(he.encode(input));
+  const map = generated.map.toJSON();
+  expect(map.sources).toEqual(['source']);
+  expect(map.file).toBe('file');
+  expect(map.sourcesContent).toEqual([input]);
 });
