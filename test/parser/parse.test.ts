@@ -26,7 +26,7 @@ test('parseScript', () => {
         {
           type: NodeTypes.ATTRIBUTE,
           name: 'att',
-          value: '"dos"',
+          value: 'dos',
           dynamic: false,
           reactive: false,
           isBoolean: false,

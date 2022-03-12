@@ -145,7 +145,14 @@ export function parseAttribute(reader: Reader): AttSchema {
   reader.advance(prename + 1);
   let value = '';
   if (separator[0] === '=') {
-    value = reader.toNext(/\s|>/);
+    reader.toNext(/"|'/);
+    const quote = reader.char();
+    reader.next();
+    const rest = reader.slice();
+    const closerPos = rest.indexOf(quote);
+    value = reader.slice(0, closerPos);
+    reader.advance(value);
+    reader.next();
   }
   const end = reader.getIndex();
 
