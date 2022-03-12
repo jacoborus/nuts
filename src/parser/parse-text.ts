@@ -1,69 +1,40 @@
-import { RawTextSchema, TextSchema, NodeTypes } from '../types';
-import { matchDynamic } from '../common';
+import { TextSchema, NodeTypes } from '../types';
 import { parseExpression } from './parse-expression';
+import { Reader } from './reader';
 
-export function parseText(schema: RawTextSchema): TextSchema[] {
-  const chunks = parseChunk(schema.data);
-  return adjustChunksStart(chunks, schema.start);
-}
-
-function adjustChunksStart(chunks: TextSchema[], index: number): TextSchema[] {
-  return chunks.map((chunk) => {
-    return Object.assign({}, chunk, { start: chunk.start + index });
-  });
-}
-
-export function parseChunk(
-  input: string,
-  index = 0,
+export function parseText(
+  reader: Reader,
   chunks = [] as TextSchema[]
 ): TextSchema[] {
-  const str = input.slice(index);
-  // empty string
-  if (!str.length) return chunks;
-  const st = str.match(matchDynamic);
-  // plain text
-  if (!st) {
-    return chunks.concat({
+  if (reader.char() === '<') return chunks;
+  if (reader.isX('{{')) {
+    const start = reader.getIndex();
+    const reactive = reader.isX('{{:');
+    const value = reader.toNext(/\}\}/) + '}}';
+    reader.next();
+    const end = reader.getIndex();
+    reader.next();
+    const chunk: TextSchema = {
       type: NodeTypes.TEXT,
-      value: str,
-      dynamic: false,
-      reactive: false,
-      start: index,
-    });
-  }
-  // plain chunk before interpolation
-  if (st.index && st.index !== 0) {
-    const value = str.slice(0, st.index);
-    return parseChunk(
-      input,
-      index + st.index,
-      chunks.concat({
-        type: NodeTypes.TEXT,
-        value,
-        dynamic: false,
-        reactive: false,
-        start: index,
-      })
-    );
-  }
-  // interpolation
-  let prop = st[1].trim();
-  const isReactive = prop.startsWith(':');
-  if (isReactive) {
-    // dynamic chunk
-    prop = prop.slice(1).trim();
-  }
-  return parseChunk(
-    input,
-    index + st[0].length,
-    chunks.concat({
-      type: NodeTypes.TEXT,
-      value: prop,
+      value,
       dynamic: true,
-      reactive: isReactive,
-      expr: parseExpression(prop),
-      start: index,
-    })
-  );
+      reactive,
+      start,
+      end,
+    };
+    const firstCharPos = reactive ? 3 : 2;
+    chunk.expr = parseExpression(value.slice(firstCharPos, -2));
+    return parseText(reader, chunks.concat(chunk));
+  }
+  const start = reader.getIndex();
+  const value = reader.toNext(/(\{\{)|</);
+  const chunk: TextSchema = {
+    type: NodeTypes.TEXT,
+    value,
+    dynamic: false,
+    reactive: false,
+    start,
+    end: reader.getIndex() - 1,
+  };
+  return parseText(reader, chunks.concat(chunk));
 }

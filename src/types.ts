@@ -119,8 +119,7 @@ export interface ScriptSchema extends Item {
 
 export interface TemplateSchema extends Item {
   type: NodeTypes.TEMPLATE;
-  name: string;
-  attributes: AttSchema;
+  attributes: AttSchema[];
   schema: ElemSchema[];
 }
 

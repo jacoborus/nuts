@@ -21,11 +21,12 @@ export class Reader {
       ? this.source.slice(this.index + start, this.index + end)
       : this.source.slice(this.index + start);
   }
+  next(amount = 1): string {
+    this.index += amount;
+    return this.source[this.index];
+  }
   getNext(): string {
     return this.source[this.index + 1];
-  }
-  next(): string {
-    return this.source[++this.index];
   }
   toNextWord(): string {
     while (this.source[this.index] && this.source[this.index].match(/\s/))
@@ -33,9 +34,12 @@ export class Reader {
     return this.source[this.index];
   }
   toNext(r: RegExp) {
-    const first = this.index;
-    while (!this.source[this.index].match(r)) ++this.index;
-    return this.source.slice(first, this.index);
+    const rest = this.slice();
+    const m = rest.match(r);
+    if (!m || !('0' in m)) throw new Error('string not found');
+    const result = this.slice(0, m.index);
+    this.advance(m.index as number);
+    return result;
   }
   findNext(r: RegExp): number {
     const str = this.slice();
@@ -50,12 +54,16 @@ export class Reader {
     return this.source.slice(this.index, this.index + 4) === '<!--';
   }
   isScriptTag(): boolean {
-    const str = this.source.slice(this.index, this.index + 8);
+    const str = this.slice(0, 8);
     return !!str.match(/<script\s/);
   }
-  isTagClosing(): boolean {
-    const str = this.source.slice(this.index, this.index + 2);
-    return str === '</';
+  isTemplate(): boolean {
+    const str = this.slice(0, 10);
+    return !!str.match(/<template\s/);
+  }
+  isTagClosing(tagname = ''): boolean {
+    const str = this.slice(0, 2 + tagname.length);
+    return str === '</' + tagname;
   }
   isTagHeadEnd(): boolean {
     return this.source[this.index] === '>';
@@ -67,5 +75,8 @@ export class Reader {
   advance(amount: number | string) {
     const realAmount = typeof amount === 'number' ? amount : amount.length;
     this.index += realAmount;
+  }
+  isX(chars: string) {
+    return this.slice(0, chars.length) === chars;
   }
 }

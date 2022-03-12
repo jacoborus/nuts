@@ -15,7 +15,7 @@ export function parseExpression(input: string): Expression {
     fromParent = 0;
     return {
       scope,
-      value,
+      value: value.trim(),
     };
   });
 }

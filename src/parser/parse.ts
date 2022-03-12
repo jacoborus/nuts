@@ -1,6 +1,13 @@
-import { ScriptSchema, CommentSchema, NodeTypes, RootSchema } from '../types';
+import {
+  TemplateSchema,
+  ScriptSchema,
+  CommentSchema,
+  NodeTypes,
+  RootSchema,
+} from '../types';
 import { Reader } from './reader';
 import { parseAttribs } from './parse-attribs';
+import { parseChildren } from './parse-children';
 
 export function parseFile(sourceFile: string, source: string): RootSchema {
   const reader = new Reader(sourceFile, source);
@@ -23,6 +30,11 @@ export function parseFile(sourceFile: string, source: string): RootSchema {
     if (reader.isScriptTag()) {
       const script = parseScript(reader);
       file.scripts.push(script);
+      continue;
+    }
+    if (reader.isTemplate()) {
+      const template = parseTemplate(reader);
+      if (!file.template) file.template = template;
       continue;
     }
   }
@@ -48,11 +60,26 @@ export function parseScript(reader: Reader): ScriptSchema {
   reader.advance(bodyEnd + 8);
   reader.toNext(/>/);
   const end = reader.getIndex();
-
   return {
     type: NodeTypes.SCRIPT,
     value: body,
     attributes,
+    start,
+    end,
+  };
+}
+
+export function parseTemplate(reader: Reader): TemplateSchema {
+  const start = reader.getIndex();
+  reader.advance('<template ');
+  const attributes = parseAttribs(reader);
+  reader.toNext(/>/);
+  const schema = parseChildren(reader, 'template');
+  const end = reader.getIndex();
+  return {
+    type: NodeTypes.TEMPLATE,
+    attributes,
+    schema,
     start,
     end,
   };
