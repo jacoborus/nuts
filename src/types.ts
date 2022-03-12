@@ -69,6 +69,7 @@ export interface AttSchema extends Item {
   name: string;
   value: string;
   isBoolean: boolean;
+  isEvent: boolean;
   dynamic: boolean;
   reactive: boolean;
   expr?: Expression;
@@ -127,7 +128,8 @@ export interface RootSchema {
   type: NodeTypes.COMPONENT;
   sourceFile: string;
   source: string;
-  children: ElemSchema[];
-  template: TemplateSchema;
+  template?: TemplateSchema;
   scripts: ScriptSchema[];
+  comments: CommentSchema[];
+  children: ElemSchema[];
 }

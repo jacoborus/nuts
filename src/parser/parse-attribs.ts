@@ -1,104 +1,84 @@
-import {
-  RawNutSchema,
-  RawTagSchema,
-  AttSchema,
-  EventSchema,
-  DirAttSchema,
-  DirectiveName,
-  Attributes,
-  NodeTypes,
-} from '../types';
-
+import { AttSchema, NodeTypes } from '../types';
 import { booleanAttributes } from '../common';
-import { parseExpression } from './parse-expression';
+import { Reader } from './reader';
 
-const directives = [
-  '(if)',
-  '(else)',
-  '(elseif)',
-  '(ref)',
-  '(loop)',
-  '(index)',
-  '(pos)',
-];
+export function parseAttribs(reader: Reader): AttSchema[] {
+  const attribs: AttSchema[] = [];
+  reader.toNextWord();
 
-export function parseAttribs(
-  schema: RawTagSchema | RawNutSchema
-): Attributes[] {
-  const { attribs } = schema;
-  return Object.keys(attribs).map((att) => {
-    const value = attribs[att].trim();
-    const attType = getAttType(att);
-    if (attType === 'static' || attType === 'dynamic') {
-      return parseRegularAttribute(att, value);
-    } else if (attType === 'event') {
-      return parseEventAttribute(att, value);
-    } else return parseDirectiveAttribute(att, value);
-  });
+  while (!reader.isTagHeadEnd()) {
+    attribs.push(parseAttribute(reader));
+    if (reader.char() === '>') break;
+    reader.toNextWord();
+  }
+  reader.next();
+  return attribs;
 }
 
-function getAttType(att: string) {
-  if (att.startsWith(':')) return 'dynamic';
-  if (att.startsWith('@')) return 'event';
-  if (directives.includes(att)) return 'directive';
-  return 'static';
-}
-
-function parseRegularAttribute(att: string, value: string): AttSchema {
-  const reactive = att.startsWith('::');
-  const dynamic = att.startsWith(':');
-  const name = reactive ? att.slice(2) : dynamic ? att.slice(1) : att;
+export function parseAttribute(reader: Reader): AttSchema {
+  const start = reader.getIndex();
+  const rest = reader.slice();
+  const separator = rest.match(/\s|=/);
+  if (!separator || !separator.index) throw new Error('Wrong attribute name');
+  const prename = rest.slice(0, separator.index);
+  const { name, dynamic, reactive, isEvent } = readAttribName(prename);
   const isBoolean = booleanAttributes.includes(name);
-  const expr = dynamic ? parseExpression(value) : undefined;
+  reader.advance(prename + 1);
+  let value = '';
+  if (separator[0] === '=') {
+    reader.toNext(/"|'/);
+    const quote = reader.char();
+    reader.next();
+    const rest = reader.slice();
+    const closerPos = rest.indexOf(quote);
+    value = reader.slice(0, closerPos);
+    reader.advance(value);
+  }
+  const end = reader.getIndex();
+  reader.next();
+
   return {
     type: NodeTypes.ATTRIBUTE,
     name,
-    isBoolean,
     value,
+    isBoolean,
+    isEvent,
     dynamic,
     reactive,
-    expr,
+    expr: [],
+    start,
+    end,
   };
 }
 
-export function splitAttribs(schema: RawTagSchema | RawNutSchema) {
-  const attribs = parseAttribs(schema);
-  return {
-    ref: getRefAttribute(attribs),
-    events: getEventAttributes(attribs),
-    attributes: getRegularAttributes(attribs),
-    directives: getDirectiveAttributes(attribs),
-  };
-}
-
-function parseEventAttribute(att: string, value: string): EventSchema {
-  return { type: NodeTypes.EVENT, name: att.slice(1), value };
-}
-
-function parseDirectiveAttribute(att: string, value: string): DirAttSchema {
-  return {
-    type: NodeTypes.DIRECTIVE,
-    name: att.slice(1, -1) as DirectiveName,
-    value: value,
-  };
-}
-
-export function getRegularAttributes(atts: Attributes[]): AttSchema[] {
-  return atts.filter((att) => att.type === NodeTypes.ATTRIBUTE) as AttSchema[];
-}
-
-export function getRefAttribute(atts: Attributes[]) {
-  return atts.find(
-    (att) => att.type === NodeTypes.DIRECTIVE && att.name === 'ref'
-  )?.value;
-}
-
-export function getEventAttributes(atts: Attributes[]): EventSchema[] {
-  return atts.filter((att) => att.type === NodeTypes.EVENT) as EventSchema[];
-}
-
-export function getDirectiveAttributes(atts: Attributes[]): DirAttSchema[] {
-  return atts.filter(
-    (att) => att.type === NodeTypes.DIRECTIVE && att.name !== 'ref'
-  ) as DirAttSchema[];
+function readAttribName(name: string) {
+  if (name.startsWith('::')) {
+    return {
+      dynamic: true,
+      reactive: true,
+      isEvent: false,
+      name: name.slice(2),
+    };
+  } else if (name.startsWith(':')) {
+    return {
+      dynamic: true,
+      reactive: false,
+      isEvent: false,
+      name: name.slice(1),
+    };
+  } else if (name.startsWith('@')) {
+    return {
+      dynamic: false,
+      reactive: false,
+      isEvent: true,
+      name: name.slice(1),
+    };
+  } else {
+    return {
+      dynamic: false,
+      reactive: false,
+      isEvent: false,
+      name,
+    };
+  }
 }
