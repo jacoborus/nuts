@@ -12,12 +12,13 @@ export const enum NodeTypes {
   TEMPLATE,
 }
 
+export const directiveTags = ['if', 'else', 'elseif', 'loop'];
 export const directiveNames = [
   'if',
   'else',
   'elseif',
-  'ref',
   'loop',
+  'ref',
   'index',
   'pos',
 ];
@@ -70,6 +71,7 @@ export interface TagSchema extends Item {
   attributes: AttSchema[];
   events: EventSchema[];
   children: ElemSchema[];
+  isDirective?: boolean;
 }
 
 export interface AttSchema extends Item {

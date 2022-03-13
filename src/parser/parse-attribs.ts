@@ -1,4 +1,4 @@
-import { AttSchema, directiveNames, NodeTypes } from '../types';
+import { AttSchema, NodeTypes, directiveNames, directiveTags } from '../types';
 import { booleanAttributes } from '../common';
 import { Reader } from './reader';
 import { parseExpression } from './parse-expression';
@@ -19,14 +19,15 @@ export function parseAttribs(reader: Reader): AttSchema[] {
 export function parseAttribute(reader: Reader): AttSchema {
   const start = reader.getIndex();
   const rest = reader.slice();
-  const separator = rest.match(/\s|=/);
+  const separator = rest.match(/\s|=|>/);
   if (!separator || !separator.index) throw new Error('Wrong attribute name');
-  const prename = rest.slice(0, separator.index);
+  const prename = reader.slice(0, separator.index);
   const { name, dynamic, reactive, isEvent, isDirective } =
     readAttribName(prename);
   const isBoolean = booleanAttributes.includes(name);
-  reader.advance(prename + 1);
+  reader.advance(prename);
   let value = '';
+  let end = 0;
   if (separator[0] === '=') {
     reader.toNext(/"|'/);
     const quote = reader.char();
@@ -35,9 +36,12 @@ export function parseAttribute(reader: Reader): AttSchema {
     const closerPos = rest.indexOf(quote);
     value = reader.slice(0, closerPos);
     reader.advance(value);
+    end = reader.getIndex();
+  } else {
+    end = reader.getIndex() - 1;
   }
-  const expr = dynamic || isDirective ? parseExpression(value) : [];
-  const end = reader.getIndex();
+  const expr =
+    dynamic || directiveTags.includes(name) ? parseExpression(value) : [];
   reader.next();
 
   return {

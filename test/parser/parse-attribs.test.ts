@@ -3,7 +3,7 @@ import { Reader } from '../../src/parser/reader';
 import { NodeTypes } from '../../src/types';
 
 test('parse attributes: simple', () => {
-  const reader = new Reader('x', `att="dos">  `);
+  const reader = new Reader('x', `att="dos" >  `);
   const schema = parseAttribs(reader);
   expect(schema[0]).toEqual({
     type: NodeTypes.ATTRIBUTE,
@@ -87,4 +87,38 @@ test('parse attributes: directive', () => {
     start: 0,
     end: 9,
   });
+});
+
+test('parse attributes: directive target', () => {
+  const reader = new Reader('x', `(lista) (pos)="p">  `);
+  const schema = parseAttribs(reader);
+  const result = [
+    {
+      type: NodeTypes.ATTRIBUTE,
+      name: '(lista)',
+      value: '',
+      dynamic: false,
+      reactive: false,
+      isBoolean: false,
+      isDirective: false,
+      isEvent: false,
+      expr: [],
+      start: 0,
+      end: 6,
+    },
+    {
+      type: NodeTypes.ATTRIBUTE,
+      name: 'pos',
+      value: 'p',
+      dynamic: false,
+      reactive: false,
+      isBoolean: false,
+      isDirective: true,
+      isEvent: false,
+      expr: [],
+      start: 8,
+      end: 16,
+    },
+  ];
+  expect(schema).toEqual(result);
 });
