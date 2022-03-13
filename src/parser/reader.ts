@@ -51,7 +51,7 @@ export class Reader {
     return this.index < this.source.length - 2;
   }
   isCommentTag(): boolean {
-    return this.source.slice(this.index, this.index + 4) === '<!--';
+    return this.slice(0, 4) === '<!--';
   }
   isScriptTag(): boolean {
     const str = this.slice(0, 8);
