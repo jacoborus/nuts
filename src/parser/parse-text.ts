@@ -7,8 +7,8 @@ export function parseText(
   chunks = [] as TextSchema[]
 ): TextSchema[] {
   if (reader.char() === '<') return chunks;
+  const start = reader.getIndex();
   if (reader.isX('{{')) {
-    const start = reader.getIndex();
     const reactive = reader.isX('{{:');
     const value = reader.toNext(/\}\}/) + '}}';
     reader.next();
@@ -26,7 +26,6 @@ export function parseText(
     chunk.expr = parseExpression(value.slice(firstCharPos, -2));
     return parseText(reader, chunks.concat(chunk));
   }
-  const start = reader.getIndex();
   const value = reader.toNext(/(\{\{)|</);
   const chunk: TextSchema = {
     type: NodeTypes.TEXT,

@@ -9,9 +9,6 @@ const parsed = parseComponent(data);
 // const pretty = JSON.stringify(parsed, null, 2);
 // process.stdout.write(pretty);
 const compiled = compileComponent(parsed);
-// console.log('======');
-// console.log(compiled);
-// console.log('======');
 fs.writeFileSync('render.js', compiled);
 
 const it = {
@@ -36,3 +33,4 @@ const it = {
 };
 
 console.log(compiled);
+

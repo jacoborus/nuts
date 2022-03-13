@@ -66,7 +66,8 @@ export class Reader {
     return str === '</' + tagname;
   }
   isTagHeadEnd(): boolean {
-    return this.source[this.index] === '>';
+    const rest = this.slice();
+    return !!rest.match(/^\s*>/);
   }
   indexOf(text: string): number {
     const str = this.slice();

@@ -33,7 +33,6 @@ export interface ExpressionChunk {
 }
 
 export type ElemSchema =
-  // | DirectiveSchema
   | SubCompSchema
   | LoopSchema
   | TreeSchema

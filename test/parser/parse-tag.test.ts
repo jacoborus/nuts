@@ -2,7 +2,7 @@ import { parseTag } from '../../src/parser/parse-tag';
 import { Reader } from '../../src/parser/reader';
 import { TagSchema, NodeTypes } from '../../src/types';
 
-test.only('Parse tag: static', () => {
+test('Parse tag: static', () => {
   const reader = new Reader('x', '<span id="myid" class="clase">hola</span>');
   const tag = parseTag(reader) as TagSchema;
   const result: TagSchema = {
