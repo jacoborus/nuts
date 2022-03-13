@@ -101,8 +101,10 @@ function convertDirectiveAtts(schemas: ElemSchema[]): ElemSchema[] {
         .filter(({ isDirective }) => isDirective)
         .map((att) => [att.name, att])
     );
-    console.log(JSON.stringify(directives, null, 2));
     if (directives.loop) return tagToLoop(schema);
+    if (directives.if || directives.elseif || directives.else) {
+      return tagToTree(schema);
+    }
     return schema;
   });
 }
@@ -130,6 +132,30 @@ function tagToLoop(tag: TagSchema): LoopSchema {
     children: [clearTagDirectives(tag)],
     start: loopAtt.start,
     end: loopAtt.end,
+  };
+}
+
+function tagToTree(tag: TagSchema): TreeSchema {
+  const treeAtt = tag.attributes.find(
+    (att) => att.isDirective && ['if', 'else', 'elseif'].includes(att.name)
+  ) as AttSchema;
+  const target = treeAtt.value;
+  if (!target) {
+    throw new Error('Loop tag missing target:' + JSON.stringify(tag, null, 2));
+  }
+  const children = [clearTagDirectives(tag)];
+  const isYes = ['if', 'elseif'].includes(treeAtt.name);
+  const yes = isYes ? children : [];
+  const no = isYes ? [] : children;
+  return {
+    type: NodeTypes.TREE,
+    kind: treeAtt.name as TreeKind,
+    reactive: false,
+    requirement: parseExpression(target),
+    yes,
+    no,
+    start: treeAtt.start,
+    end: treeAtt.end,
   };
 }
 

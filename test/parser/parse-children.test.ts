@@ -200,7 +200,7 @@ test('Parse children: with simple loop directive', () => {
   expect(tag).toEqual(result);
 });
 
-test.skip('Parse children: with simple conditional directive', () => {
+test('Parse children: with simple conditional directive', () => {
   const reader = new Reader('x', '<span (if)="saludo">hola</span></div>');
   const tag = parseChildren(reader, 'div') as ElemSchema[];
   const result: ElemSchema[] = [
