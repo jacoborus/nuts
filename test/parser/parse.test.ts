@@ -30,6 +30,7 @@ test('parseScript', () => {
         dynamic: false,
         reactive: false,
         isBoolean: false,
+        isDirective: false,
         isEvent: false,
         expr: [],
         start: 8,

@@ -12,6 +12,15 @@ export const enum NodeTypes {
   TEMPLATE,
 }
 
+export const directiveNames = [
+  'if',
+  'else',
+  'elseif',
+  'ref',
+  'loop',
+  'index',
+  'pos',
+];
 export type DirectiveName =
   | 'if'
   | 'else'
@@ -72,6 +81,7 @@ export interface AttSchema extends Item {
   dynamic: boolean;
   reactive: boolean;
   expr?: Expression;
+  isDirective?: boolean;
 }
 
 export interface EventSchema extends Item {

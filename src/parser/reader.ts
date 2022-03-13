@@ -7,7 +7,7 @@ export class Reader {
     this.source = source;
     this.index = index;
   }
-  getIndex() {
+  getIndex(): number {
     return this.index;
   }
   setIndex(index: number): void {
@@ -33,7 +33,7 @@ export class Reader {
       ++this.index;
     return this.source[this.index];
   }
-  toNext(r: RegExp) {
+  toNext(r: RegExp): string {
     const rest = this.slice();
     const m = rest.match(r);
     if (!m || !('0' in m)) throw new Error('string not found');
