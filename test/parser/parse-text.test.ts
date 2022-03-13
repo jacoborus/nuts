@@ -55,7 +55,6 @@ test('Parse#text dynamic', () => {
     },
   ];
   const parsed = parseText(reader);
-  console.log(JSON.stringify(parsed, null, 2));
   expect(parsed).toEqual(result);
 });
 
