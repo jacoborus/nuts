@@ -36,6 +36,7 @@ export function parseAttribute(reader: Reader): AttSchema {
     const closerPos = rest.indexOf(quote);
     value = reader.slice(0, closerPos);
     reader.advance(value);
+    value = value.trim();
     end = reader.getIndex();
     reader.next();
   } else {

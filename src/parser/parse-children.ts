@@ -112,7 +112,9 @@ function tagToLoop(tag: TagSchema): LoopSchema {
     (att) => att.name === 'loop' && att.isDirective
   ) as AttSchema;
   const target = loopAtt.value;
-  if (!target) throw new Error('Loop tag missing target');
+  if (!target) {
+    throw new Error('Loop tag missing target:' + JSON.stringify(tag, null, 2));
+  }
   const pos = tag.attributes.find(
     (att) => att.name === 'pos' && att.isDirective
   )?.value;
