@@ -4,6 +4,7 @@ import { Reader } from './reader';
 import { TagSchema, NodeTypes } from '../types';
 import { parseChildren } from './parse-children';
 
+const directiveTags = ['if', 'else', 'elseif', 'loop'];
 export function parseTag(reader: Reader): TagSchema {
   const start = reader.getIndex();
   reader.next();
@@ -23,6 +24,7 @@ export function parseTag(reader: Reader): TagSchema {
     attributes,
     events: [],
     children,
+    isDirective: directiveTags.includes(name),
     start,
     end,
   };

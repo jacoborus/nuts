@@ -104,7 +104,7 @@ export interface LoopSchema extends Item {
 }
 
 export type TreeKind = 'if' | 'elseif' | 'else';
-export interface TreeSchema {
+export interface TreeSchema extends Item {
   type: NodeTypes.TREE;
   kind: TreeKind;
   requirement: Expression;

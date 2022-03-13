@@ -15,6 +15,7 @@ test('Parse children: simple', () => {
       isVoid: false,
       attributes: [],
       events: [],
+      isDirective: false,
       children: [
         {
           type: NodeTypes.TEXT,
@@ -42,6 +43,7 @@ test('Parse children: simple', () => {
       isVoid: false,
       attributes: [],
       events: [],
+      isDirective: false,
       children: [
         {
           type: NodeTypes.TAG,
@@ -49,6 +51,7 @@ test('Parse children: simple', () => {
           isVoid: false,
           attributes: [],
           events: [],
+          isDirective: false,
           children: [
             {
               type: NodeTypes.TEXT,
@@ -65,6 +68,177 @@ test('Parse children: simple', () => {
       ],
       start: 22,
       end: 43,
+    },
+  ];
+  expect(tag).toEqual(result);
+});
+
+test('Parse children: with simple loop tag', () => {
+  const reader = new Reader(
+    'x',
+    '<loop (lista) (index)="i" (pos)="p">hola</loop></div>'
+  );
+  const tag = parseChildren(reader, 'div') as ElemSchema[];
+  const result: ElemSchema[] = [
+    {
+      type: NodeTypes.LOOP,
+      target: [
+        {
+          scope: 0,
+          value: 'lista',
+        },
+      ],
+      index: 'i',
+      pos: 'p',
+      children: [
+        {
+          type: NodeTypes.TEXT,
+          value: 'hola',
+          dynamic: false,
+          reactive: false,
+          start: 36,
+          end: 39,
+        },
+      ],
+      start: 0,
+      end: 46,
+    },
+  ];
+  expect(tag).toEqual(result);
+});
+
+test('Parse children: with simple conditional tag', () => {
+  const reader = new Reader('x', '<if (isUser)>hola</if></div>');
+  const tag = parseChildren(reader, 'div') as ElemSchema[];
+  const result: ElemSchema[] = [
+    {
+      type: NodeTypes.TREE,
+      kind: 'if',
+      reactive: false,
+      requirement: [
+        {
+          scope: 0,
+          value: 'isUser',
+        },
+      ],
+      yes: [
+        {
+          type: NodeTypes.TEXT,
+          value: 'hola',
+          dynamic: false,
+          reactive: false,
+          start: 13,
+          end: 16,
+        },
+      ],
+      no: [],
+      start: 0,
+      end: 21,
+    },
+  ];
+  expect(tag).toEqual(result);
+});
+
+test('Parse children: with simple loop directive', () => {
+  const reader = new Reader('x', '<span (loop)="list">item</span></div>');
+  const tag = parseChildren(reader, 'div') as ElemSchema[];
+  const result: ElemSchema[] = [
+    {
+      type: NodeTypes.LOOP,
+      target: [
+        {
+          scope: 0,
+          value: 'list',
+        },
+      ],
+      index: undefined,
+      pos: undefined,
+      children: [
+        {
+          type: NodeTypes.TAG,
+          name: 'span',
+          isVoid: false,
+          attributes: [],
+          events: [],
+          isDirective: false,
+          children: [
+            {
+              type: NodeTypes.TEXT,
+              value: 'item',
+              dynamic: false,
+              reactive: false,
+              start: 20,
+              end: 23,
+            },
+          ],
+          start: 0,
+          end: 30,
+        },
+      ],
+      start: 6,
+      end: 18,
+      source: {
+        type: NodeTypes.ATTRIBUTE,
+        name: 'loop',
+        value: 'list',
+        isBoolean: false,
+        isEvent: false,
+        dynamic: false,
+        reactive: false,
+        expr: [
+          {
+            scope: 0,
+            value: 'list',
+          },
+        ],
+        isDirective: true,
+        start: 6,
+        end: 18,
+      },
+    },
+  ];
+  expect(tag).toEqual(result);
+});
+
+test.skip('Parse children: with simple conditional directive', () => {
+  const reader = new Reader('x', '<span (if)="saludo">hola</span></div>');
+  const tag = parseChildren(reader, 'div') as ElemSchema[];
+  const result: ElemSchema[] = [
+    {
+      type: NodeTypes.TREE,
+      kind: 'if',
+      requirement: [
+        {
+          scope: 0,
+          value: 'saludo',
+        },
+      ],
+      yes: [
+        {
+          type: NodeTypes.TAG,
+          name: 'span',
+          isVoid: false,
+          attributes: [],
+          events: [],
+          isDirective: false,
+          children: [
+            {
+              type: NodeTypes.TEXT,
+              value: 'hola',
+              dynamic: false,
+              reactive: false,
+              start: 20,
+              end: 23,
+            },
+          ],
+          start: 0,
+          end: 30,
+        },
+      ],
+      no: [],
+      reactive: false,
+      start: 6,
+      end: 18,
     },
   ];
   expect(tag).toEqual(result);

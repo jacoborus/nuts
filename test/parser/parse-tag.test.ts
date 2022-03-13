@@ -9,6 +9,7 @@ test('Parse tag: static', () => {
     type: NodeTypes.TAG,
     name: 'span',
     isVoid: false,
+    isDirective: false,
     attributes: [
       {
         type: NodeTypes.ATTRIBUTE,

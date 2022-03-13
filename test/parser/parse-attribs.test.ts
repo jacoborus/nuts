@@ -89,6 +89,27 @@ test('parse attributes: directive', () => {
   });
 });
 
+test('parse attributes: simple directive target', () => {
+  const reader = new Reader('x', `(lista)>  `);
+  const schema = parseAttribs(reader);
+  const result = [
+    {
+      type: NodeTypes.ATTRIBUTE,
+      name: '(lista)',
+      value: '',
+      dynamic: false,
+      reactive: false,
+      isBoolean: false,
+      isDirective: false,
+      isEvent: false,
+      expr: [],
+      start: 0,
+      end: 6,
+    },
+  ];
+  expect(schema).toEqual(result);
+});
+
 test('parse attributes: directive target', () => {
   const reader = new Reader('x', `(lista) (pos)="p">  `);
   const schema = parseAttribs(reader);

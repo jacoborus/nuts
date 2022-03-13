@@ -24,7 +24,7 @@ export function parseAttribute(reader: Reader): AttSchema {
   const prename = reader.slice(0, separator.index);
   const { name, dynamic, reactive, isEvent, isDirective } =
     readAttribName(prename);
-  const isBoolean = booleanAttributes.includes(name);
+  const isBoolean = !isDirective && booleanAttributes.includes(name);
   reader.advance(prename);
   let value = '';
   let end = 0;
@@ -37,12 +37,12 @@ export function parseAttribute(reader: Reader): AttSchema {
     value = reader.slice(0, closerPos);
     reader.advance(value);
     end = reader.getIndex();
+    reader.next();
   } else {
     end = reader.getIndex() - 1;
   }
   const expr =
     dynamic || directiveTags.includes(name) ? parseExpression(value) : [];
-  reader.next();
 
   return {
     type: NodeTypes.ATTRIBUTE,
