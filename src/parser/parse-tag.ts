@@ -14,7 +14,6 @@ import { parseAttribs } from './parse-attribs';
 import { Reader } from './reader';
 import { extractLoopAtts } from './util';
 import { parseChildren } from './parse-children';
-import { parseExpression } from '../../lib/parser/parse-expression';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop'];
 
@@ -57,13 +56,8 @@ export function parseTagHead(reader: Reader): TagHead {
 }
 
 export function parseLoop(reader: Reader): LoopSchema {
-  const start = reader.getIndex();
-  const { name, attributes, selfClosed } = parseTagHead(reader);
+  const { attributes, children, start, end } = parseTag(reader);
   const { pos, index, target } = extractLoopAtts(attributes);
-  const children = selfClosed ? [] : parseChildren(reader, name);
-  reader.toNext(/>/);
-  const end = reader.getIndex();
-  reader.next();
   return {
     type: NodeTypes.LOOP,
     target,
@@ -81,18 +75,7 @@ export function parseTree(reader: Reader): TreeSchema {
 }
 
 export function parseSubcomp(reader: Reader): SubCompSchema {
-  const start = reader.getIndex();
-  reader.next();
-  const name = reader.toNext(/\s|>|\/>/);
-  const selfClosed = ['>', '/'].includes(reader.char());
-  const attributes = selfClosed ? [] : parseAttribs(reader);
-  if (reader.char() === '>') reader.next();
-  if (reader.char() === '/') reader.next(2);
-  const children = selfClosed ? [] : parseChildren(reader, name);
-  reader.advance(name);
-  reader.toNext(/>/);
-  const end = reader.getIndex();
-  reader.next();
+  const { attributes, children, name, start, end } = parseTag(reader);
   return {
     type: NodeTypes.SUBCOMPONENT,
     name,
@@ -105,13 +88,12 @@ export function parseSubcomp(reader: Reader): SubCompSchema {
 }
 
 export function parseComment(reader: Reader): CommentSchema {
+  const type = NodeTypes.COMMENT;
   const start = reader.getIndex();
   reader.advance('<!--');
   const value = reader.toNext(/-->/);
-  reader.advance(2);
-  const type = NodeTypes.COMMENT;
-  const end = reader.getIndex();
-  reader.next();
+  reader.advance('-->');
+  const end = reader.getIndex() - 1;
   return { type, value, start, end };
 }
 
@@ -133,16 +115,11 @@ export function parseScript(reader: Reader): ScriptSchema {
 }
 
 export function parseTemplate(reader: Reader): TemplateSchema {
-  const start = reader.getIndex();
-  reader.advance('<template ');
-  const attributes = parseAttribs(reader);
-  reader.toNext(/>/);
-  const schema = parseChildren(reader, 'template');
-  const end = reader.getIndex();
+  const { attributes, children, start, end } = parseTag(reader);
   return {
     type: NodeTypes.TEMPLATE,
     attributes,
-    schema,
+    schema: children,
     start,
     end,
   };
