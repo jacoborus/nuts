@@ -1,13 +1,6 @@
-import {
-  TemplateSchema,
-  ScriptSchema,
-  CommentSchema,
-  NodeTypes,
-  RootSchema,
-} from '../types';
+import { NodeTypes, RootSchema } from '../types';
 import { Reader } from './reader';
-import { parseAttribs } from './parse-attribs';
-import { parseChildren } from './parse-children';
+import { parseComment, parseScript, parseTemplate } from './parse-tag';
 
 export function parseFile(sourceFile: string, source: string): RootSchema {
   const reader = new Reader(sourceFile, source);
@@ -39,48 +32,4 @@ export function parseFile(sourceFile: string, source: string): RootSchema {
     }
   }
   return file;
-}
-
-export function parseComment(reader: Reader): CommentSchema {
-  const start = reader.getIndex();
-  const closerIndex = reader.indexOf('-->');
-  const type = NodeTypes.COMMENT;
-  const value = reader.slice(4, closerIndex);
-  const end = start + closerIndex + 2;
-  reader.setIndex(end + 1);
-  return { type, value, start, end };
-}
-
-export function parseScript(reader: Reader): ScriptSchema {
-  const start = reader.getIndex();
-  reader.advance('<script ');
-  const attributes = parseAttribs(reader);
-  const bodyEnd = reader.findNext(/<\/script/);
-  const body = reader.slice(0, bodyEnd);
-  reader.advance(bodyEnd + 8);
-  reader.toNext(/>/);
-  const end = reader.getIndex();
-  return {
-    type: NodeTypes.SCRIPT,
-    value: body,
-    attributes,
-    start,
-    end,
-  };
-}
-
-export function parseTemplate(reader: Reader): TemplateSchema {
-  const start = reader.getIndex();
-  reader.advance('<template ');
-  const attributes = parseAttribs(reader);
-  reader.toNext(/>/);
-  const schema = parseChildren(reader, 'template');
-  const end = reader.getIndex();
-  return {
-    type: NodeTypes.TEMPLATE,
-    attributes,
-    schema,
-    start,
-    end,
-  };
 }

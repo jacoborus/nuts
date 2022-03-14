@@ -1,7 +1,13 @@
+import {
+  CommentSchema,
+  NodeTypes,
+  ScriptSchema,
+  TagSchema,
+  TemplateSchema,
+} from '../types';
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
 import { Reader } from './reader';
-import { TagSchema, NodeTypes } from '../types';
 import { parseChildren } from './parse-children';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop'];
@@ -25,6 +31,51 @@ export function parseTag(reader: Reader): TagSchema {
     events: [],
     children,
     isDirective: directiveTags.includes(name),
+    start,
+    end,
+  };
+}
+
+export function parseComment(reader: Reader): CommentSchema {
+  const start = reader.getIndex();
+  reader.advance('<!--');
+  const value = reader.toNext(/-->/);
+  reader.advance(2);
+  const type = NodeTypes.COMMENT;
+  const end = reader.getIndex();
+  reader.next();
+  return { type, value, start, end };
+}
+
+export function parseScript(reader: Reader): ScriptSchema {
+  const start = reader.getIndex();
+  reader.advance('<script ');
+  const attributes = parseAttribs(reader);
+  const bodyEnd = reader.findNext(/<\/script/);
+  const body = reader.slice(0, bodyEnd);
+  reader.advance(bodyEnd + 8);
+  reader.toNext(/>/);
+  const end = reader.getIndex();
+  return {
+    type: NodeTypes.SCRIPT,
+    value: body,
+    attributes,
+    start,
+    end,
+  };
+}
+
+export function parseTemplate(reader: Reader): TemplateSchema {
+  const start = reader.getIndex();
+  reader.advance('<template ');
+  const attributes = parseAttribs(reader);
+  reader.toNext(/>/);
+  const schema = parseChildren(reader, 'template');
+  const end = reader.getIndex();
+  return {
+    type: NodeTypes.TEMPLATE,
+    attributes,
+    schema,
     start,
     end,
   };
