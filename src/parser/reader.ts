@@ -1,3 +1,10 @@
+import { tagnames } from '../common';
+import { directiveTags } from '../types';
+
+const allTags = tagnames.concat(directiveTags);
+const regexStr = '^<(' + allTags.concat().join('|') + ')(\\s|>)';
+const allTagsExp = new RegExp(regexStr);
+
 export class Reader {
   sourceFile: string;
   source: string;
@@ -54,12 +61,24 @@ export class Reader {
     return this.slice(0, 4) === '<!--';
   }
   isScriptTag(): boolean {
-    const str = this.slice(0, 8);
-    return !!str.match(/<script\s/);
+    const str = this.slice(0, 12);
+    return !!str.match(/^<script(\s|>)/);
   }
   isTemplate(): boolean {
-    const str = this.slice(0, 10);
-    return !!str.match(/<template\s/);
+    const str = this.slice(0, 12);
+    return !!str.match(/^<template(\s|>)/);
+  }
+  isCustomComp(): boolean {
+    const rest = this.slice();
+    return !rest.match(allTagsExp);
+  }
+  isLoop(): boolean {
+    const str = this.slice(0, 12);
+    return !!str.match(/^<loop(\s|>)/);
+  }
+  isTree(): boolean {
+    const str = this.slice(0, 12);
+    return !!str.match(/^<(if|elseif|else)(\s|>)/);
   }
   isTagClosing(tagname = ''): boolean {
     const str = this.slice(0, 2 + tagname.length);

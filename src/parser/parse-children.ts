@@ -9,8 +9,13 @@ import {
 } from '../types';
 import { Reader } from './reader';
 import { parseText } from './parse-text';
-import { parseTag } from './parse-tag';
-import { parseComment } from './parse-file';
+import {
+  parseTag,
+  parseComment,
+  parseSubcomp,
+  parseLoop,
+  parseTree,
+} from './parse-tag';
 import { parseExpression } from './parse-expression';
 import { directiveTags } from '../types';
 
@@ -23,6 +28,18 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
     }
     if (reader.isCommentTag()) {
       schema.push(parseComment(reader));
+      continue;
+    }
+    if (reader.isLoop()) {
+      schema.push(parseLoop(reader));
+      continue;
+    }
+    if (reader.isTree()) {
+      schema.push(parseTree(reader));
+      continue;
+    }
+    if (reader.isCustomComp()) {
+      schema.push(parseSubcomp(reader));
       continue;
     }
     schema.push(parseTag(reader));

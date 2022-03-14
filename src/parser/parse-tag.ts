@@ -1,9 +1,12 @@
 import {
   CommentSchema,
+  LoopSchema,
   NodeTypes,
   ScriptSchema,
+  SubCompSchema,
   TagSchema,
   TemplateSchema,
+  TreeSchema,
 } from '../types';
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
@@ -11,6 +14,7 @@ import { Reader } from './reader';
 import { parseChildren } from './parse-children';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop'];
+
 export function parseTag(reader: Reader): TagSchema {
   const start = reader.getIndex();
   reader.next();
@@ -31,6 +35,40 @@ export function parseTag(reader: Reader): TagSchema {
     events: [],
     children,
     isDirective: directiveTags.includes(name),
+    start,
+    end,
+  };
+}
+
+export function parseLoop(reader: Reader): LoopSchema {
+  // TODO: parseDirective
+  // TODO: parseDirective
+}
+
+export function parseTree(reader: Reader): TreeSchema {
+  // TODO: parseDirective
+  // TODO: parseDirective
+}
+
+export function parseSubcomp(reader: Reader): SubCompSchema {
+  const start = reader.getIndex();
+  reader.next();
+  const name = reader.toNext(/\s|>|\/>/);
+  const selfClosed = ['>', '/'].includes(reader.char());
+  const attributes = selfClosed ? [] : parseAttribs(reader);
+  if (reader.char() === '>') reader.next();
+  if (reader.char() === '/') reader.next(2);
+  const children = selfClosed ? [] : parseChildren(reader, name);
+  reader.advance(name);
+  reader.toNext(/>/);
+  const end = reader.getIndex();
+  reader.next();
+  return {
+    type: NodeTypes.SUBCOMPONENT,
+    name,
+    attributes,
+    events: [],
+    children,
     start,
     end,
   };
