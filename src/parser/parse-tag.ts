@@ -6,13 +6,14 @@ import {
   SubCompSchema,
   TagSchema,
   TemplateSchema,
+  TreeKind,
   TreeSchema,
   AttSchema,
 } from '../types';
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
 import { Reader } from './reader';
-import { extractLoopAtts } from './util';
+import { extractLoopAtts, extractTreeRequirement } from './util';
 import { parseChildren } from './parse-children';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop'];
@@ -70,8 +71,21 @@ export function parseLoop(reader: Reader): LoopSchema {
 }
 
 export function parseTree(reader: Reader): TreeSchema {
-  // TODO: parseDirective
-  // TODO: parseDirective
+  const { attributes, children, name, start, end } = parseTag(reader);
+  const isYes = ['if', 'elseif'].includes(name);
+  const yes = isYes ? children : [];
+  const no = !isYes ? children : [];
+  const requirement = isYes ? extractTreeRequirement(attributes) : [];
+  return {
+    type: NodeTypes.TREE,
+    kind: name as TreeKind,
+    requirement,
+    yes,
+    no,
+    reactive: false,
+    start,
+    end,
+  };
 }
 
 export function parseSubcomp(reader: Reader): SubCompSchema {

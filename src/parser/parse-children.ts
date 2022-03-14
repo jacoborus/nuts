@@ -18,7 +18,7 @@ import {
 } from './parse-tag';
 import { parseExpression } from './parse-expression';
 import { directiveTags } from '../types';
-import { extractLoopAtts } from './util';
+import { extractLoopAtts, extractTreeRequirement } from './util';
 
 export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
   const schema = [] as ElemSchema[];
@@ -139,26 +139,23 @@ function tagToLoop(tag: TagSchema): LoopSchema {
 }
 
 function tagToTree(tag: TagSchema): TreeSchema {
-  const treeAtt = tag.attributes.find(
+  const requirement = extractTreeRequirement(tag.attributes);
+  const { start, end, name } = tag.attributes.find(
     (att) => att.isDirective && ['if', 'else', 'elseif'].includes(att.name)
   ) as AttSchema;
-  const target = treeAtt.value;
-  if (!target) {
-    throw new Error('Loop tag missing target:' + JSON.stringify(tag, null, 2));
-  }
   const children = [clearTagDirectives(tag)];
-  const isYes = ['if', 'elseif'].includes(treeAtt.name);
+  const isYes = ['if', 'elseif'].includes(name);
   const yes = isYes ? children : [];
   const no = isYes ? [] : children;
   return {
     type: NodeTypes.TREE,
-    kind: treeAtt.name as TreeKind,
+    kind: name as TreeKind,
     reactive: false,
-    requirement: parseExpression(target),
+    requirement,
     yes,
     no,
-    start: treeAtt.start,
-    end: treeAtt.end,
+    start,
+    end,
   };
 }
 

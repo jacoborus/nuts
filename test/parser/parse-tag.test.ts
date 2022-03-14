@@ -4,12 +4,14 @@ import {
   parseSubcomp,
   parseScript,
   parseTag,
+  parseTree,
 } from '../../src/parser/parse-tag';
 import {
   LoopSchema,
   NodeTypes,
   SubCompSchema,
   TagSchema,
+  TreeSchema,
 } from '../../src/types';
 import { Reader } from '../../src/parser/reader';
 
@@ -190,6 +192,91 @@ test('Parse loop', () => {
     ],
     start: 0,
     end: 46,
+  };
+  expect(tag).toEqual(result);
+});
+
+test('Parse tree if', () => {
+  const reader = new Reader('x', '<if (isUser)>hola</if></div>');
+  const tag = parseTree(reader) as TreeSchema;
+  const result: TreeSchema = {
+    type: NodeTypes.TREE,
+    kind: 'if',
+    reactive: false,
+    requirement: [
+      {
+        scope: 0,
+        value: 'isUser',
+      },
+    ],
+    yes: [
+      {
+        type: NodeTypes.TEXT,
+        value: 'hola',
+        dynamic: false,
+        reactive: false,
+        start: 13,
+        end: 16,
+      },
+    ],
+    no: [],
+    start: 0,
+    end: 21,
+  };
+  expect(tag).toEqual(result);
+});
+
+test('Parse tree elseif', () => {
+  const reader = new Reader('x', '<elseif (isUser)>hola</elseif></div>');
+  const tag = parseTree(reader) as TreeSchema;
+  const result: TreeSchema = {
+    type: NodeTypes.TREE,
+    kind: 'elseif',
+    reactive: false,
+    requirement: [
+      {
+        scope: 0,
+        value: 'isUser',
+      },
+    ],
+    yes: [
+      {
+        type: NodeTypes.TEXT,
+        value: 'hola',
+        dynamic: false,
+        reactive: false,
+        start: 17,
+        end: 20,
+      },
+    ],
+    no: [],
+    start: 0,
+    end: 29,
+  };
+  expect(tag).toEqual(result);
+});
+
+test('Parse tree else', () => {
+  const reader = new Reader('x', '<else (isUser)>hola</else></div>');
+  const tag = parseTree(reader) as TreeSchema;
+  const result: TreeSchema = {
+    type: NodeTypes.TREE,
+    kind: 'else',
+    reactive: false,
+    requirement: [],
+    yes: [],
+    no: [
+      {
+        type: NodeTypes.TEXT,
+        value: 'hola',
+        dynamic: false,
+        reactive: false,
+        start: 15,
+        end: 18,
+      },
+    ],
+    start: 0,
+    end: 25,
   };
   expect(tag).toEqual(result);
 });
