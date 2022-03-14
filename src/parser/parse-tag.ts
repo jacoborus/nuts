@@ -16,7 +16,7 @@ import { Reader } from './reader';
 import { extractLoopAtts, extractTreeRequirement } from './util';
 import { parseChildren } from './parse-children';
 
-const directiveTags = ['if', 'else', 'elseif', 'loop'];
+const directiveTags = ['if', 'else', 'elseif', 'loop', 'target'];
 
 interface TagHead {
   name: string;
