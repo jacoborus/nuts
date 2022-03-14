@@ -18,6 +18,7 @@ import {
 } from './parse-tag';
 import { parseExpression } from './parse-expression';
 import { directiveTags } from '../types';
+import { extractLoopAtts } from './util';
 
 export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
   const schema = [] as ElemSchema[];
@@ -59,21 +60,7 @@ function convertDirectiveTags(schemas: ElemSchema[]): ElemSchema[] {
 }
 
 function getLoopSchema(tag: TagSchema): LoopSchema {
-  const indexAtt = tag.attributes.find(
-    (att) => att.isDirective && att.name === 'index'
-  );
-  const index = indexAtt ? indexAtt.value : undefined;
-  const posAtt = tag.attributes.find(
-    (att) => att.isDirective && att.name === 'pos'
-  );
-  const pos = posAtt ? posAtt.value : undefined;
-  const pretarget = tag.attributes
-    .find(
-      ({ name, value }) =>
-        name.startsWith('(') && name.endsWith(')') && value === ''
-    )
-    ?.name.slice(1, -1);
-  const target = pretarget ? parseExpression(pretarget) : [];
+  const { pos, index, target } = extractLoopAtts(tag.attributes);
   return {
     type: NodeTypes.LOOP,
     target,

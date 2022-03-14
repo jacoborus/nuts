@@ -1,11 +1,17 @@
 import {
-  parseTag,
-  parseSubcomp,
   parseComment,
+  parseLoop,
+  parseSubcomp,
   parseScript,
+  parseTag,
 } from '../../src/parser/parse-tag';
+import {
+  LoopSchema,
+  NodeTypes,
+  SubCompSchema,
+  TagSchema,
+} from '../../src/types';
 import { Reader } from '../../src/parser/reader';
-import { SubCompSchema, TagSchema, NodeTypes } from '../../src/types';
 
 test('Parse tag: static', () => {
   const reader = new Reader('x', '<span id="myid" class="clase">hola</span>');
@@ -152,6 +158,38 @@ test('Parse subcomponent', () => {
     ],
     start: 0,
     end: 54,
+  };
+  expect(tag).toEqual(result);
+});
+
+test('Parse loop', () => {
+  const reader = new Reader(
+    'x',
+    '<loop (lista) (index)="i" (pos)="p">hola</loop></div>'
+  );
+  const tag = parseLoop(reader) as LoopSchema;
+  const result: LoopSchema = {
+    type: NodeTypes.LOOP,
+    target: [
+      {
+        scope: 0,
+        value: 'lista',
+      },
+    ],
+    index: 'i',
+    pos: 'p',
+    children: [
+      {
+        type: NodeTypes.TEXT,
+        value: 'hola',
+        dynamic: false,
+        reactive: false,
+        start: 36,
+        end: 39,
+      },
+    ],
+    start: 0,
+    end: 46,
   };
   expect(tag).toEqual(result);
 });

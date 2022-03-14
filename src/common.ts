@@ -1,5 +1,3 @@
-export const matchDynamic = /{{([^}]*)}}/;
-
 export const booleanAttributes = [
   'async',
   'autofocus',

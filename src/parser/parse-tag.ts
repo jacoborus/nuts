@@ -12,7 +12,9 @@ import {
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
 import { Reader } from './reader';
+import { extractLoopAtts } from './util';
 import { parseChildren } from './parse-children';
+import { parseExpression } from '../../lib/parser/parse-expression';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop'];
 
@@ -56,18 +58,17 @@ export function parseTagHead(reader: Reader): TagHead {
 
 export function parseLoop(reader: Reader): LoopSchema {
   const start = reader.getIndex();
-  const {
-    name,
-    // attributes,
-    selfClosed,
-  } = parseTagHead(reader);
+  const { name, attributes, selfClosed } = parseTagHead(reader);
+  const { pos, index, target } = extractLoopAtts(attributes);
   const children = selfClosed ? [] : parseChildren(reader, name);
   reader.toNext(/>/);
   const end = reader.getIndex();
   reader.next();
   return {
     type: NodeTypes.LOOP,
-    target: [],
+    target,
+    pos,
+    index,
     children,
     start,
     end,
