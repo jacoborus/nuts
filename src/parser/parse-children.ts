@@ -34,10 +34,10 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
       schema.push(parseLoop(reader));
       continue;
     }
-    if (reader.isTree()) {
-      schema.push(parseTree(reader));
-      continue;
-    }
+    // if (reader.isTree()) {
+    //   schema.push(parseTree(reader));
+    //   continue;
+    // }
     if (reader.isCustomComp()) {
       schema.push(parseSubcomp(reader));
       continue;

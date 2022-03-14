@@ -17,9 +17,6 @@ export class Reader {
   getIndex(): number {
     return this.index;
   }
-  setIndex(index: number): void {
-    this.index = index;
-  }
   char(): string {
     return this.source[this.index];
   }
@@ -32,14 +29,6 @@ export class Reader {
     this.index += amount;
     return this.source[this.index];
   }
-  getNext(): string {
-    return this.source[this.index + 1];
-  }
-  toNextWord(): string {
-    while (this.source[this.index] && this.source[this.index].match(/\s/))
-      ++this.index;
-    return this.source[this.index];
-  }
   toNext(r: RegExp): string {
     const rest = this.slice();
     const m = rest.match(r);
@@ -47,12 +36,6 @@ export class Reader {
     const result = this.slice(0, m.index);
     this.advance(m.index as number);
     return result;
-  }
-  findNext(r: RegExp): number {
-    const str = this.slice();
-    const res = str.match(r);
-    // TODO: error here
-    return res?.index as number;
   }
   notFinished(): boolean {
     return this.index < this.source.length - 2;
@@ -87,14 +70,6 @@ export class Reader {
   tagHasMoreAttributes(): boolean {
     const rest = this.slice();
     return !rest.match(/^\s*\/*>/);
-  }
-  isTagHeadEnd(): boolean {
-    const rest = this.slice();
-    return !!rest.match(/^\s*>/);
-  }
-  indexOf(text: string): number {
-    const str = this.slice();
-    return str.indexOf(text, this.index);
   }
   advance(amount: number | string) {
     const realAmount = typeof amount === 'number' ? amount : amount.length;

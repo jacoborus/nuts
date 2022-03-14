@@ -14,7 +14,7 @@ export function parseFile(sourceFile: string, source: string): RootSchema {
   } as RootSchema;
 
   while (reader.notFinished()) {
-    reader.toNextWord();
+    reader.toNext(/\S/);
     if (reader.isCommentTag()) {
       const comment = parseComment(reader);
       file.comments.push(comment);

@@ -6,7 +6,7 @@ import { parseExpression } from './parse-expression';
 export function parseAttribs(reader: Reader): AttSchema[] {
   const attribs: AttSchema[] = [];
   while (reader.tagHasMoreAttributes()) {
-    reader.toNextWord();
+    reader.toNext(/\S/);
     attribs.push(parseAttribute(reader));
   }
   return attribs;
