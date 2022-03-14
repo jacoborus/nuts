@@ -14,24 +14,22 @@ export function parseAttribs(reader: Reader): AttSchema[] {
 
 export function parseAttribute(reader: Reader): AttSchema {
   const start = reader.getIndex();
-  const prename = reader.toNext(/\s|=|>|(\/>)/);
+  const prename = reader.toNext(/\s|=|>|\/>/);
   const separator = reader.char();
   if (typeof separator === 'undefined') throw new Error('Wrong attribute name');
   const { name, dynamic, reactive, isEvent, isDirective } =
     readAttribName(prename);
   const isBoolean = !isDirective && booleanAttributes.includes(name);
   let value = '';
-  let end = 0;
+  let end = reader.getIndex() - 1;
   if (separator === '=') {
     reader.toNext(/"|'/);
     const quote = reader.char();
     reader.next();
     value = reader.toNext(new RegExp(quote));
+    value = value.trim();
     end = reader.getIndex();
     reader.next();
-    value = value.trim();
-  } else {
-    end = reader.getIndex() - 1;
   }
   const expr =
     dynamic || directiveTags.includes(name) ? parseExpression(value) : [];
@@ -96,7 +94,6 @@ function readAttribName(name: string) {
 }
 
 function attNameIsDirective(name: string): boolean {
-  console.log(name);
   return (
     name.startsWith('(') &&
     name.endsWith(')') &&

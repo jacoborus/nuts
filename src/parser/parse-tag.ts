@@ -7,6 +7,7 @@ import {
   TagSchema,
   TemplateSchema,
   TreeSchema,
+  AttSchema,
 } from '../types';
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
@@ -15,14 +16,17 @@ import { parseChildren } from './parse-children';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop'];
 
+interface TagHead {
+  name: string;
+  attributes: AttSchema[];
+  selfClosed: boolean;
+}
+
 export function parseTag(reader: Reader): TagSchema {
   const start = reader.getIndex();
-  reader.next();
-  const name = reader.toNext(/\s|>/);
-  const attributes = reader.char() === '>' ? [] : parseAttribs(reader);
-  if (reader.char() === '>') reader.next();
+  const { name, attributes, selfClosed } = parseTagHead(reader);
   const isVoid = voidElements.includes(name);
-  const children = isVoid ? [] : parseChildren(reader, name);
+  const children = selfClosed ? [] : parseChildren(reader, name);
   reader.advance(name);
   reader.toNext(/>/);
   const end = reader.getIndex();
@@ -40,9 +44,34 @@ export function parseTag(reader: Reader): TagSchema {
   };
 }
 
+export function parseTagHead(reader: Reader): TagHead {
+  reader.next();
+  const name = reader.toNext(/\s|>|\/>/);
+  const attributes = parseAttribs(reader);
+  reader.toNext(/>|\/>/);
+  const selfClosed = reader.char() === '/';
+  reader.advance(selfClosed ? 2 : 1);
+  return { name, attributes, selfClosed };
+}
+
 export function parseLoop(reader: Reader): LoopSchema {
-  // TODO: parseDirective
-  // TODO: parseDirective
+  const start = reader.getIndex();
+  const {
+    name,
+    // attributes,
+    selfClosed,
+  } = parseTagHead(reader);
+  const children = selfClosed ? [] : parseChildren(reader, name);
+  reader.toNext(/>/);
+  const end = reader.getIndex();
+  reader.next();
+  return {
+    type: NodeTypes.LOOP,
+    target: [],
+    children,
+    start,
+    end,
+  };
 }
 
 export function parseTree(reader: Reader): TreeSchema {
@@ -87,16 +116,15 @@ export function parseComment(reader: Reader): CommentSchema {
 
 export function parseScript(reader: Reader): ScriptSchema {
   const start = reader.getIndex();
-  reader.advance('<script ');
-  const attributes = parseAttribs(reader);
-  const bodyEnd = reader.findNext(/<\/script/);
-  const body = reader.slice(0, bodyEnd);
-  reader.advance(bodyEnd + 8);
+  const { attributes } = parseTagHead(reader);
+  const value = reader.toNext(/<\/script/);
+  reader.advance(8);
   reader.toNext(/>/);
   const end = reader.getIndex();
+  reader.next();
   return {
     type: NodeTypes.SCRIPT,
-    value: body,
+    value,
     attributes,
     start,
     end,
