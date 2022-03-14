@@ -84,6 +84,10 @@ export class Reader {
     const str = this.slice(0, 2 + tagname.length);
     return str === '</' + tagname;
   }
+  tagHasMoreAttributes(): boolean {
+    const rest = this.slice();
+    return !rest.match(/^\s*\/*>/);
+  }
   isTagHeadEnd(): boolean {
     const rest = this.slice();
     return !!rest.match(/^\s*>/);

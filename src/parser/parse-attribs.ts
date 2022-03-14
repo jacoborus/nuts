@@ -5,40 +5,31 @@ import { parseExpression } from './parse-expression';
 
 export function parseAttribs(reader: Reader): AttSchema[] {
   const attribs: AttSchema[] = [];
-  reader.toNextWord();
-
-  while (!reader.isTagHeadEnd()) {
-    attribs.push(parseAttribute(reader));
-    if (reader.char() === '>') break;
+  while (reader.tagHasMoreAttributes()) {
     reader.toNextWord();
+    attribs.push(parseAttribute(reader));
   }
-  reader.next();
   return attribs;
 }
 
 export function parseAttribute(reader: Reader): AttSchema {
   const start = reader.getIndex();
-  const rest = reader.slice();
-  const separator = rest.match(/\s|=|>/);
-  if (!separator || !separator.index) throw new Error('Wrong attribute name');
-  const prename = reader.slice(0, separator.index);
+  const prename = reader.toNext(/\s|=|>|(\/>)/);
+  const separator = reader.char();
+  if (typeof separator === 'undefined') throw new Error('Wrong attribute name');
   const { name, dynamic, reactive, isEvent, isDirective } =
     readAttribName(prename);
   const isBoolean = !isDirective && booleanAttributes.includes(name);
-  reader.advance(prename);
   let value = '';
   let end = 0;
-  if (separator[0] === '=') {
+  if (separator === '=') {
     reader.toNext(/"|'/);
     const quote = reader.char();
     reader.next();
-    const rest = reader.slice();
-    const closerPos = rest.indexOf(quote);
-    value = reader.slice(0, closerPos);
-    reader.advance(value);
-    value = value.trim();
+    value = reader.toNext(new RegExp(quote));
     end = reader.getIndex();
     reader.next();
+    value = value.trim();
   } else {
     end = reader.getIndex() - 1;
   }
@@ -85,11 +76,7 @@ function readAttribName(name: string) {
       isEvent: true,
       name: name.slice(1),
     };
-  } else if (
-    name.startsWith('(') &&
-    name.endsWith(')') &&
-    directiveNames.includes(name.slice(1, -1))
-  ) {
+  } else if (attNameIsDirective(name)) {
     return {
       dynamic: false,
       reactive: false,
@@ -106,4 +93,13 @@ function readAttribName(name: string) {
       name,
     };
   }
+}
+
+function attNameIsDirective(name: string): boolean {
+  console.log(name);
+  return (
+    name.startsWith('(') &&
+    name.endsWith(')') &&
+    directiveNames.includes(name.slice(1, -1))
+  );
 }
