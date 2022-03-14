@@ -1,4 +1,4 @@
-import { parseComment, parseScript } from '../../src/parser/parse';
+import { parseComment, parseScript } from '../../src/parser/parse-file';
 import { Reader } from '../../src/parser/reader';
 import { NodeTypes } from '../../src/types';
 

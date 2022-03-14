@@ -1,15 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import { parseComponent } from '../parser/parse-component';
-import { compileComponent } from '../compiler/compile-component';
+import { parseFile } from '../parser/parse-file';
+// import { compileComponent } from '../compiler/compile-component';
 const inputPath = path.resolve(process.argv[2]);
 
 const data = fs.readFileSync(inputPath, { encoding: 'utf8', flag: 'r' });
-const parsed = parseComponent(data);
+const parsed = parseFile(inputPath, data);
+console.log(parsed);
 // const pretty = JSON.stringify(parsed, null, 2);
 // process.stdout.write(pretty);
-const compiled = compileComponent(parsed);
-fs.writeFileSync('render.js', compiled);
+// const compiled = compileComponent(parsed);
+// fs.writeFileSync('render.js', compiled);
 
 const it = {
   users: [
@@ -32,5 +33,4 @@ const it = {
   ],
 };
 
-console.log(compiled);
-
+// console.log(compiled);

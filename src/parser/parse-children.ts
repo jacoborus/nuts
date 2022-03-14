@@ -10,7 +10,7 @@ import {
 import { Reader } from './reader';
 import { parseText } from './parse-text';
 import { parseTag } from './parse-tag';
-import { parseComment } from './parse';
+import { parseComment } from './parse-file';
 import { parseExpression } from './parse-expression';
 import { directiveTags } from '../types';
 
@@ -22,8 +22,7 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
       continue;
     }
     if (reader.isCommentTag()) {
-      const comment = parseComment(reader);
-      schema.push(comment);
+      schema.push(parseComment(reader));
       continue;
     }
     schema.push(parseTag(reader));
