@@ -35,10 +35,10 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
       schema.push(parseLoop(reader));
       continue;
     }
-    // if (reader.isTree()) {
-    //   schema.push(parseTree(reader));
-    //   continue;
-    // }
+    if (reader.isTree()) {
+      schema.push(parseTree(reader));
+      continue;
+    }
     if (reader.isCustomComp()) {
       schema.push(parseSubcomp(reader));
       continue;
@@ -49,6 +49,14 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
   const finalSchemas = convertDirectiveAtts(stepSchemas);
   return finalSchemas;
 }
+
+// TODO: convert tags with both loop and tree as attributes
+// TODO: convert tags with both loop and tree as attributes
+// TODO: convert tags with both loop and tree as attributes
+// TODO: convert tags with both loop and tree as attributes
+// TODO: convert tags with both loop and tree as attributes
+// TODO: convert tags with both loop and tree as attributes
+// TODO: convert tags with both loop and tree as attributes
 
 function convertDirectiveTags(schemas: ElemSchema[]): ElemSchema[] {
   return schemas.map((schema) => {
@@ -116,19 +124,10 @@ function tagToLoop(tag: TagSchema): LoopSchema {
   const loopAtt = tag.attributes.find(
     (att) => att.name === 'loop' && att.isDirective
   ) as AttSchema;
-  const target = loopAtt.value;
-  if (!target) {
-    throw new Error('Loop tag missing target:' + JSON.stringify(tag, null, 2));
-  }
-  const pos = tag.attributes.find(
-    (att) => att.name === 'pos' && att.isDirective
-  )?.value;
-  const index = tag.attributes.find(
-    (att) => att.name === 'index' && att.isDirective
-  )?.value;
+  const { pos, index, target } = extractLoopAtts(tag.attributes);
   return {
     type: NodeTypes.LOOP,
-    target: parseExpression(target),
+    target,
     index,
     pos,
     source: loopAtt,
