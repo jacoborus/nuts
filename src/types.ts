@@ -134,7 +134,7 @@ export interface TemplateSchema extends Item {
   schema: ElemSchema[];
 }
 
-export interface RootSchema {
+export interface ComponentSchema {
   type: NodeTypes.COMPONENT;
   sourceFile: string;
   source: string;

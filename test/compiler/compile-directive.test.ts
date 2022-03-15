@@ -34,6 +34,8 @@ test('Compile directive #tree', () => {
         value: 'hola',
         dynamic: false,
         reactive: false,
+        start: 0,
+        end: 0,
       },
     ],
     no: [
@@ -42,8 +44,12 @@ test('Compile directive #tree', () => {
         value: 'adios',
         dynamic: false,
         reactive: false,
+        start: 0,
+        end: 0,
       },
     ],
+    start: 0,
+    end: 0,
   };
   const result = '${it.enter ? `hola` : `adios`}';
   const compiled = compileTree(schema as TreeSchema);

@@ -1,8 +1,8 @@
-import { NodeTypes, RootSchema } from '../types';
+import { NodeTypes, ComponentSchema } from '../types';
 import { Reader } from './reader';
 import { parseComment, parseScript, parseTemplate } from './parse-tag';
 
-export function parseFile(sourceFile: string, source: string): RootSchema {
+export function parseFile(sourceFile: string, source: string): ComponentSchema {
   const reader = new Reader(sourceFile, source);
   const file = {
     type: NodeTypes.COMPONENT,
@@ -11,7 +11,7 @@ export function parseFile(sourceFile: string, source: string): RootSchema {
     scripts: [],
     comments: [],
     children: [],
-  } as RootSchema;
+  } as ComponentSchema;
 
   while (reader.notFinished()) {
     reader.toNext(/\S/);

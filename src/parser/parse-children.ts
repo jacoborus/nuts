@@ -52,9 +52,6 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
   return finalSchemas;
 }
 
-// TODO: convert tags with both loop and tree as attributes
-// TODO: convert tags with both loop and tree as attributes
-
 function convertDirectiveAtts(schemas: ElemSchema[]): ElemSchema[] {
   return schemas.map((schema) => {
     if (schema.type !== NodeTypes.TAG) return schema;

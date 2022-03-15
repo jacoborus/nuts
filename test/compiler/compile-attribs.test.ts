@@ -8,17 +8,21 @@ test('Compile attribs #static', () => {
       name: 'id',
       value: 'my-id',
       isBoolean: false,
+      isEvent: false,
       dynamic: false,
       reactive: false,
+      isDirective: false,
     },
     {
       type: NodeTypes.ATTRIBUTE,
       name: 'hidden',
       value: 'hyde',
       isBoolean: true,
+      isEvent: false,
       dynamic: false,
       reactive: false,
       expr: [],
+      isDirective: false,
     },
   ];
 
@@ -37,6 +41,8 @@ test('Compile attributes #dynamic', () => {
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'myId' }],
+      isEvent: false,
+      isDirective: false,
     },
     {
       type: NodeTypes.ATTRIBUTE,
@@ -46,6 +52,8 @@ test('Compile attributes #dynamic', () => {
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'hyde' }],
+      isEvent: false,
+      isDirective: false,
     },
     {
       type: NodeTypes.ATTRIBUTE,
@@ -55,6 +63,8 @@ test('Compile attributes #dynamic', () => {
       dynamic: true,
       reactive: false,
       expr: [{ scope: 0, value: 'check' }],
+      isEvent: false,
+      isDirective: false,
     },
   ];
   const result =
