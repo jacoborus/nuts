@@ -17,7 +17,11 @@ import {
   parseLoop,
   parseTree,
 } from './parse-tag';
-import { extractLoopAtts, extractTreeRequirement } from './util';
+import {
+  clearAttDirectives,
+  extractLoopAtts,
+  extractTreeRequirement,
+} from './util';
 
 export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
   const schema = [] as ElemSchema[];
@@ -63,8 +67,11 @@ function convertDirectiveAtts(schemas: ElemSchema[]): ElemSchema[] {
         .filter(({ isDirective }) => isDirective)
         .map((att) => [att.name, att])
     );
-    if (directives.loop) return tagToLoop(schema);
-    if (directives.if || directives.elseif || directives.else) {
+    const isTree = !!(directives.if || directives.elseif || directives.else);
+    const isLoop = !!directives.loop;
+    if (isLoop && isTree) return tagToLoopTree(schema);
+    if (isLoop) return tagToLoop(schema);
+    if (isTree) {
       return tagToTree(schema);
     }
     return schema;
@@ -82,7 +89,24 @@ function tagToLoop(tag: TagSchema): LoopSchema {
     index,
     pos,
     source: loopAtt,
-    children: [clearTagDirectives(tag)],
+    children: [clearAttDirectives(tag)],
+    start: loopAtt.start,
+    end: loopAtt.end,
+  };
+}
+
+function tagToLoopTree(tag: TagSchema): LoopSchema {
+  const loopAtt = tag.attributes.find(
+    (att) => att.name === 'loop' && att.isDirective
+  ) as AttSchema;
+  const { pos, index, target } = extractLoopAtts(tag.attributes);
+  return {
+    type: NodeTypes.LOOP,
+    target,
+    index,
+    pos,
+    source: loopAtt,
+    children: [tagToTree(tag)],
     start: loopAtt.start,
     end: loopAtt.end,
   };
@@ -93,7 +117,7 @@ function tagToTree(tag: TagSchema): TreeSchema {
   const { start, end, name } = tag.attributes.find(
     (att) => att.isDirective && ['if', 'else', 'elseif'].includes(att.name)
   ) as AttSchema;
-  const children = [clearTagDirectives(tag)];
+  const children = [clearAttDirectives(tag)];
   const isYes = ['if', 'elseif'].includes(name);
   const yes = isYes ? children : [];
   const no = isYes ? [] : children;
@@ -107,9 +131,4 @@ function tagToTree(tag: TagSchema): TreeSchema {
     start,
     end,
   };
-}
-
-function clearTagDirectives(tag: TagSchema): TagSchema {
-  const attributes = tag.attributes.filter((att) => !att.isDirective);
-  return Object.assign({}, tag, { attributes });
 }

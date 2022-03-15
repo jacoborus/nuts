@@ -1,10 +1,15 @@
-import { AttSchema, Expression } from '../types';
+import { AttSchema, Expression, TagSchema } from '../types';
 import { parseExpression } from './parse-expression';
 
 interface LoopAtts {
   pos?: string;
   index?: string;
   target: Expression;
+}
+
+export function clearAttDirectives(tag: TagSchema): TagSchema {
+  const attributes = tag.attributes.filter((att) => !att.isDirective);
+  return Object.assign({}, tag, { attributes });
 }
 
 function getAttDirectiveValue(

@@ -1,6 +1,6 @@
 import { parseChildren } from '../../src/parser/parse-children';
 import { Reader } from '../../src/parser/reader';
-import { NodeTypes, ElemSchema } from '../../src/types';
+import { ElemSchema, LoopSchema, NodeTypes } from '../../src/types';
 
 test('Parse children: simple', () => {
   const reader = new Reader(
@@ -242,4 +242,86 @@ test('Parse children: with simple conditional directive', () => {
     },
   ];
   expect(tag).toEqual(result);
+});
+
+test('Parse children: with mix of attribute directives', () => {
+  const reader = new Reader(
+    'x',
+    '<span (loop)="lista" (if)="isUser" (pos)="p" (index)="i" id="myid">hola</span></div>'
+  );
+  const tag = parseChildren(reader, 'div') as ElemSchema[];
+  const result: LoopSchema = {
+    type: NodeTypes.LOOP,
+    target: [{ scope: 0, value: 'lista' }],
+    index: 'i',
+    pos: 'p',
+    source: {
+      type: NodeTypes.ATTRIBUTE,
+      name: 'loop',
+      value: 'lista',
+      isEvent: false,
+      isDirective: true,
+      isBoolean: false,
+      reactive: false,
+      dynamic: false,
+      expr: [{ scope: 0, value: 'lista' }],
+      start: 6,
+      end: 19,
+    },
+    children: [
+      {
+        type: NodeTypes.TREE,
+        kind: 'if',
+        requirement: [
+          {
+            scope: 0,
+            value: 'isUser',
+          },
+        ],
+        yes: [
+          {
+            type: NodeTypes.TAG,
+            name: 'span',
+            isVoid: false,
+            attributes: [
+              {
+                type: NodeTypes.ATTRIBUTE,
+                name: 'id',
+                value: 'myid',
+                isEvent: false,
+                isDirective: false,
+                isBoolean: false,
+                expr: [],
+                reactive: false,
+                dynamic: false,
+                start: 57,
+                end: 65,
+              },
+            ],
+            events: [],
+            isDirective: false,
+            children: [
+              {
+                type: NodeTypes.TEXT,
+                value: 'hola',
+                dynamic: false,
+                reactive: false,
+                start: 67,
+                end: 70,
+              },
+            ],
+            start: 0,
+            end: 77,
+          },
+        ],
+        no: [],
+        reactive: false,
+        start: 21,
+        end: 33,
+      },
+    ],
+    start: 6,
+    end: 19,
+  };
+  expect(tag).toEqual([result]);
 });
