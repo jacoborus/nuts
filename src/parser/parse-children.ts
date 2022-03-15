@@ -16,7 +16,6 @@ import {
   parseLoop,
   parseTree,
 } from './parse-tag';
-import { parseExpression } from './parse-expression';
 import { directiveTags } from '../types';
 import { extractLoopAtts, extractTreeRequirement } from './util';
 
@@ -45,60 +44,12 @@ export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
     }
     schema.push(parseTag(reader));
   }
-  const stepSchemas = convertDirectiveTags(schema);
-  const finalSchemas = convertDirectiveAtts(stepSchemas);
+  const finalSchemas = convertDirectiveAtts(schema);
   return finalSchemas;
 }
 
 // TODO: convert tags with both loop and tree as attributes
 // TODO: convert tags with both loop and tree as attributes
-// TODO: convert tags with both loop and tree as attributes
-// TODO: convert tags with both loop and tree as attributes
-// TODO: convert tags with both loop and tree as attributes
-// TODO: convert tags with both loop and tree as attributes
-// TODO: convert tags with both loop and tree as attributes
-
-function convertDirectiveTags(schemas: ElemSchema[]): ElemSchema[] {
-  return schemas.map((schema) => {
-    if (schema.type !== NodeTypes.TAG) return schema;
-    if (schema.name === 'loop') return getLoopSchema(schema);
-    if (!schema.isDirective) return schema;
-    return getTreeSchema(schema);
-  });
-}
-
-function getLoopSchema(tag: TagSchema): LoopSchema {
-  const { pos, index, target } = extractLoopAtts(tag.attributes);
-  return {
-    type: NodeTypes.LOOP,
-    target,
-    index,
-    pos,
-    children: tag.children,
-    start: tag.start,
-    end: tag.end,
-  };
-}
-
-function getTreeSchema(tag: TagSchema): TreeSchema {
-  const pretarget = tag.attributes
-    .find(
-      ({ name, value }) =>
-        name.startsWith('(') && name.endsWith(')') && value === ''
-    )
-    ?.name.slice(1, -1);
-  const requirement = pretarget ? parseExpression(pretarget) : [];
-  return {
-    type: NodeTypes.TREE,
-    kind: tag.name as TreeKind,
-    reactive: false,
-    requirement,
-    yes: tag.children,
-    no: [],
-    start: tag.start,
-    end: tag.end,
-  };
-}
 
 function convertDirectiveAtts(schemas: ElemSchema[]): ElemSchema[] {
   return schemas.map((schema) => {

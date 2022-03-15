@@ -4,6 +4,7 @@ import { parseExpression } from './parse-expression';
 interface LoopAtts {
   pos?: string;
   index?: string;
+  loop?: Expression;
   target: Expression;
 }
 
@@ -12,11 +13,14 @@ export function extractLoopAtts(atts: AttSchema[]): LoopAtts {
   const index = indexAtt ? indexAtt.value : undefined;
   const posAtt = atts.find((att) => att.isDirective && att.name === 'pos');
   const pos = posAtt ? posAtt.value : undefined;
+  const loop = atts.find(
+    (att) => att.isDirective && att.name === 'loop'
+  )?.value;
   const voidTarget = getVoidAttribute(atts)?.name.slice(1, -1);
   const attTarget = atts.find(
     (att) => att.name === 'target' && att.isDirective
   )?.value;
-  const pretarget = voidTarget || attTarget;
+  const pretarget = voidTarget || attTarget || loop;
   const target = pretarget ? parseExpression(pretarget) : [];
   return { pos, index, target };
 }

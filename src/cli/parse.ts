@@ -6,7 +6,7 @@ const inputPath = path.resolve(process.argv[2]);
 
 const data = fs.readFileSync(inputPath, { encoding: 'utf8', flag: 'r' });
 const parsed = parseFile(inputPath, data);
-console.log(parsed);
+console.log(JSON.stringify(parsed, null, 2));
 // const pretty = JSON.stringify(parsed, null, 2);
 // process.stdout.write(pretty);
 // const compiled = compileComponent(parsed);
