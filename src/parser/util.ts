@@ -4,23 +4,23 @@ import { parseExpression } from './parse-expression';
 interface LoopAtts {
   pos?: string;
   index?: string;
-  loop?: Expression;
   target: Expression;
 }
 
+function getAttDirectiveValue(
+  name: string,
+  atts: AttSchema[]
+): string | undefined {
+  return atts.find((att) => att.isDirective && att.name === name)?.value;
+}
+
 export function extractLoopAtts(atts: AttSchema[]): LoopAtts {
-  const indexAtt = atts.find((att) => att.isDirective && att.name === 'index');
-  const index = indexAtt ? indexAtt.value : undefined;
-  const posAtt = atts.find((att) => att.isDirective && att.name === 'pos');
-  const pos = posAtt ? posAtt.value : undefined;
-  const loop = atts.find(
-    (att) => att.isDirective && att.name === 'loop'
-  )?.value;
   const voidTarget = getVoidAttribute(atts)?.name.slice(1, -1);
-  const attTarget = atts.find(
-    (att) => att.name === 'target' && att.isDirective
-  )?.value;
-  const pretarget = voidTarget || attTarget || loop;
+  const index = getAttDirectiveValue('index', atts);
+  const pos = getAttDirectiveValue('pos', atts);
+  const loop = getAttDirectiveValue('loop', atts);
+  const attTarget = getAttDirectiveValue('target', atts);
+  const pretarget = voidTarget || loop || attTarget;
   const target = pretarget ? parseExpression(pretarget) : [];
   return { pos, index, target };
 }

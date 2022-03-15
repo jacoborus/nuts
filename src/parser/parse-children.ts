@@ -6,6 +6,7 @@ import {
   TreeKind,
   TagSchema,
   AttSchema,
+  directiveTags,
 } from '../types';
 import { Reader } from './reader';
 import { parseText } from './parse-text';
@@ -16,7 +17,6 @@ import {
   parseLoop,
   parseTree,
 } from './parse-tag';
-import { directiveTags } from '../types';
 import { extractLoopAtts, extractTreeRequirement } from './util';
 
 export function parseChildren(reader: Reader, tagname: string): ElemSchema[] {
