@@ -143,3 +143,21 @@ test('parse attributes: directive target', () => {
   ];
   expect(schema).toEqual(result);
 });
+
+test('parse attributes: without quotes', () => {
+  const reader = new Reader('x', `att=dos >  `);
+  const schema = parseAttribs(reader);
+  expect(schema[0]).toEqual({
+    type: NodeTypes.ATTRIBUTE,
+    name: 'att',
+    value: 'dos',
+    dynamic: false,
+    reactive: false,
+    isDirective: false,
+    isBoolean: false,
+    isEvent: false,
+    expr: [],
+    start: 0,
+    end: 6,
+  });
+});

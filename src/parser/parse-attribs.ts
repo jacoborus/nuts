@@ -23,13 +23,15 @@ export function parseAttribute(reader: Reader): AttSchema {
   let value = '';
   let end = reader.getIndex() - 1;
   if (separator === '=') {
-    reader.toNext(/"|'/);
+    reader.next();
     const quote = reader.char();
-    reader.next();
-    value = reader.toNext(new RegExp(quote));
+    const isQuoted = ["'", '"'].includes(quote);
+    const regStr = isQuoted ? new RegExp(quote) : new RegExp(/\s|>|\/>/);
+    isQuoted && reader.next();
+    value = reader.toNext(regStr);
     value = value.trim();
-    end = reader.getIndex();
-    reader.next();
+    end = reader.getIndex() - (isQuoted ? 0 : 1);
+    isQuoted && reader.next();
   }
   const expr =
     dynamic || directiveTags.includes(name) ? parseExpression(value) : [];
