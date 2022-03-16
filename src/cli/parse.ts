@@ -16,20 +16,20 @@ fs.writeFileSync('render.js', compiled);
 // const it = {
 //   users: [
 //     {
-//       name: 'jacobo',
+//       name: 'uno',
 //       registered: true,
 //     },
 //     {
-//       name: 'andrea',
+//       name: 'dos',
+//       registered: false,
+//     },
+//     {
+//       name: 'tres',
 //       registered: true,
 //     },
 //     {
-//       name: 'teresa',
-//       registered: true,
-//     },
-//     {
-//       name: 'alberto',
-//       registered: true,
+//       name: 'cuatro',
+//       registered: false,
 //     },
 //   ],
 // };
