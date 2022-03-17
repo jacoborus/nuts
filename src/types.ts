@@ -1,4 +1,4 @@
-import { File } from '@babel/parser';
+import { SourceFile } from 'typescript';
 
 export const enum NodeTypes {
   COMMENT,
@@ -128,7 +128,7 @@ export interface ScriptSchema extends Item {
   type: NodeTypes.SCRIPT;
   attributes: AttSchema[];
   value: string;
-  ast: File;
+  ast: SourceFile;
 }
 
 export interface TemplateSchema extends Item {

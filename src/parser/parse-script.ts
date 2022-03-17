@@ -1,7 +1,7 @@
 import { NodeTypes, ScriptSchema } from '../types';
 import { Reader } from './reader';
 import { parseTagHead } from './parse-tag';
-import { parse as babelparser } from '@babel/parser';
+import { parseTs } from './parse-typescript';
 
 export function parseScript(reader: Reader): ScriptSchema {
   const start = reader.getIndex();
@@ -11,7 +11,7 @@ export function parseScript(reader: Reader): ScriptSchema {
   reader.toNext(/>/);
   const end = reader.getIndex();
   reader.next();
-  const ast = babelparser(value);
+  const ast = parseTs(reader.sourceFile, value);
   return {
     type: NodeTypes.SCRIPT,
     value,

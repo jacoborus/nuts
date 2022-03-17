@@ -1,9 +1,10 @@
 import { parseScript } from '../../src/parser/parse-script';
 import { NodeTypes } from '../../src/types';
 import { Reader } from '../../src/parser/reader';
-jest.mock('@babel/parser', () => {
+
+jest.mock('../../src/parser/parse-typescript', () => {
   return {
-    parse: () => 'x',
+    parseTs: () => 'x',
   };
 });
 

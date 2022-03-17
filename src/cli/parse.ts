@@ -6,12 +6,12 @@ const inputPath = path.resolve(process.argv[2]);
 
 const data = fs.readFileSync(inputPath, { encoding: 'utf8', flag: 'r' });
 const parsed = parseFile(inputPath, data);
-console.log(JSON.stringify(parsed, null, 2));
+// console.log(JSON.stringify(parsed, null, 2));
 // console.log(parsed);
 // const pretty = JSON.stringify(parsed, null, 2);
 // process.stdout.write(pretty);
 const compiled = compileComponent(parsed);
-fs.writeFileSync('render.js', compiled);
+fs.writeFileSync('render.ts', compiled);
 
 // const it = {
 //   users: [
