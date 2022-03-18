@@ -2,6 +2,7 @@ import {
   CommentSchema,
   LoopSchema,
   NodeTypes,
+  ScriptSchema,
   SubCompSchema,
   TagSchema,
   TemplateSchema,
@@ -14,6 +15,7 @@ import { parseAttribs } from './parse-attribs';
 import { Reader } from './reader';
 import { extractLoopAtts, extractTreeRequirement } from './util';
 import { parseChildren } from './parse-children';
+import { parseTs } from './parse-typescript';
 
 const directiveTags = ['if', 'else', 'elseif', 'loop', 'target'];
 
@@ -117,6 +119,25 @@ export function parseTemplate(reader: Reader): TemplateSchema {
     attributes,
     schema: children,
     start,
+    end,
+  };
+}
+
+export function parseScript(reader: Reader): ScriptSchema {
+  const start = reader.getIndex();
+  const { attributes } = parseTagHead(reader);
+  const value = reader.toNext(/<\/script/);
+  reader.advance(8);
+  reader.toNext(/>/);
+  const end = reader.getIndex();
+  reader.next();
+  const ast = parseTs(reader.sourceFile, value);
+  return {
+    type: NodeTypes.SCRIPT,
+    value,
+    attributes,
+    start,
+    ast,
     end,
   };
 }

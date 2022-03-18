@@ -1,6 +1,7 @@
 import {
   parseComment,
   parseLoop,
+  parseScript,
   parseSubcomp,
   parseTag,
   parseTree,
@@ -13,6 +14,12 @@ import {
   TreeSchema,
 } from '../../src/types';
 import { Reader } from '../../src/parser/reader';
+
+jest.mock('../../src/parser/parse-typescript', () => {
+  return {
+    parseTs: () => 'x',
+  };
+});
 
 test('Parse tag: static', () => {
   const reader = new Reader('x', '<span id="myid" class="clase">hola</span>');
@@ -247,4 +254,36 @@ test('Parse tree else', () => {
     end: 25,
   };
   expect(tag).toEqual(result);
+});
+
+test('parseScript', () => {
+  const reader = new Reader(
+    'x',
+    `<script att="dos">as
+    df</script> `
+  );
+  const schema = parseScript(reader);
+  expect(schema).toEqual({
+    type: NodeTypes.SCRIPT,
+    attributes: [
+      {
+        type: NodeTypes.ATTRIBUTE,
+        name: 'att',
+        value: 'dos',
+        dynamic: false,
+        reactive: false,
+        isBoolean: false,
+        isDirective: false,
+        isEvent: false,
+        expr: [],
+        start: 8,
+        end: 16,
+      },
+    ],
+    ast: 'x',
+    value: `as
+    df`,
+    start: 0,
+    end: 35,
+  });
 });
