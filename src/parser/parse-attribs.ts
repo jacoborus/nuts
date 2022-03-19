@@ -1,4 +1,4 @@
-import { AttSchema, NodeTypes, directiveNames, directiveTags } from '../types';
+import { AttSchema, NodeTypes, directiveNames, Expression } from '../types';
 import { booleanAttributes } from '../common';
 import { Reader } from './reader';
 import { parseExpression } from './parse-expression';
@@ -21,20 +21,13 @@ export function parseAttribute(reader: Reader): AttSchema {
     readAttribName(prename);
   const isBoolean = !isDirective && booleanAttributes.includes(name);
   let value = '';
+  let expr = undefined;
   let end = reader.getIndex() - 1;
   if (separator === '=') {
     reader.next();
-    const quote = reader.char();
-    const isQuoted = ["'", '"'].includes(quote);
-    const regStr = isQuoted ? new RegExp(quote) : new RegExp(/\s|>|\/>/);
-    isQuoted && reader.next();
-    value = reader.toNext(regStr);
-    value = value.trim();
-    end = reader.getIndex() - (isQuoted ? 0 : 1);
-    isQuoted && reader.next();
+    [value, expr] = parseAttValue(reader, dynamic || isDirective);
+    end = reader.getIndex() - 1;
   }
-  const expr =
-    dynamic || directiveTags.includes(name) ? parseExpression(value) : [];
 
   return {
     type: NodeTypes.ATTRIBUTE,
@@ -93,6 +86,26 @@ function readAttribName(name: string) {
       name,
     };
   }
+}
+
+export function parseAttValue(
+  reader: Reader,
+  dynamic: boolean
+): [string, Expression?] {
+  const quote = reader.char();
+  const isQuoted = ['"', "'"].includes(quote);
+  if (!dynamic) {
+    isQuoted && reader.next();
+    const value = isQuoted
+      ? reader.toNext(new RegExp(quote))
+      : reader.toNext(/\s|>/);
+    isQuoted && reader.next();
+    return [value];
+  }
+  const rest = reader.slice();
+  const expr = parseExpression(reader);
+  const value = rest.slice(1, expr.end - expr.start);
+  return [value, expr];
 }
 
 function attNameIsDirective(name: string): boolean {

@@ -1,4 +1,4 @@
-import { Expression, ExprMethod, Slab } from '../types';
+import { Expression, Slab } from '../types';
 import { Reader } from './reader';
 
 // Expressions are delimited by double curly braces `{}`
