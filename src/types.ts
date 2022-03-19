@@ -38,10 +38,21 @@ interface Item {
   end: number;
 }
 
-export type Expression = ExpressionChunk[];
-export interface ExpressionChunk {
+export interface Expression extends Item {
+  // 0 = context
+  // 1 = current scope
+  // 2 = parent scope
+  // 3 = parent of parent scope
+  // ...
   scope: number;
+  slabs: (Slab | Expression | ExprMethod)[];
+}
+export interface Slab extends Item {
   value: string;
+}
+export interface ExprMethod extends Item {
+  method: Expression[];
+  params: Expression[];
 }
 
 export type ElemSchema =
