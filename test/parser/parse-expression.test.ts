@@ -90,18 +90,37 @@ test('parse subexpressions', () => {
   });
 });
 
-test.skip('parse subexpressions from parent scope', () => {
-  const raw = 'uno.[../dos].tres';
-  const parsed = parseExpression(raw);
+test('parse subexpressions from parent scope', () => {
+  const raw = '{ uno.[../dos].tres }';
+  const reader = new Reader('', raw);
+  const parsed = parseExpression(reader);
   expect(parsed).toEqual({
     scope: 1,
-    chunks: [
-      'uno',
+    start: 0,
+    end: 20,
+    slabs: [
+      {
+        value: 'uno',
+        start: 2,
+        end: 4,
+      },
       {
         scope: 2,
-        chunks: ['dos'],
+        slabs: [
+          {
+            value: 'dos',
+            start: 10,
+            end: 12,
+          },
+        ],
+        start: 6,
+        end: 13,
       },
-      'tres',
+      {
+        value: 'tres',
+        start: 15,
+        end: 18,
+      },
     ],
   });
 });

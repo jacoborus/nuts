@@ -63,10 +63,15 @@ export function getParentScope(reader: Reader, amount = 2): number {
 export function parseSlabs(
   reader: Reader,
   closer: string,
-  slabs = [] as Slab[]
-): Slab[] {
+  slabs = [] as (Slab | Expression)[]
+): (Slab | Expression)[] {
   reader.toNext(/\S/);
   const start = reader.getIndex();
+  if (reader.char() === '[') {
+    const expr = slabs.concat(parseExpression(reader));
+    reader.next();
+    return parseSlabs(reader, closer, expr);
+  }
   let value = reader.toNext(new RegExp('\\' + closer + '|\\.'));
   let end = reader.getIndex() - 1;
   const isLastChar = reader.char() === closer;
