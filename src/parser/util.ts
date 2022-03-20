@@ -17,13 +17,13 @@ function getAttDirectiveValue(
   name: string,
   atts: AttSchema[]
 ): AttSchema | undefined {
-  return atts.find((att) => att.isDirective && att.name === name);
+  return atts.find((att) => att.isDirective && att.name.value === name);
 }
 
 export function extractLoopAtts(atts: AttSchema[], reader: Reader): LoopAtts {
   const voidTarget = getVoidAttribute(atts);
-  const index = getAttDirectiveValue('index', atts)?.value;
-  const pos = getAttDirectiveValue('pos', atts)?.value;
+  const index = getAttDirectiveValue('index', atts)?.value?.value;
+  const pos = getAttDirectiveValue('pos', atts)?.value?.value;
   if (voidTarget) {
     return {
       pos,
@@ -34,8 +34,10 @@ export function extractLoopAtts(atts: AttSchema[], reader: Reader): LoopAtts {
   const loop = getAttDirectiveValue('loop', atts);
   const attTarget = getAttDirectiveValue('target', atts);
   const pretarget = loop || attTarget;
-  if (!pretarget || !pretarget.expr) throw new Error('loop missing target');
-  const target = pretarget.expr as Expression;
+  if (!pretarget || !pretarget.value || !pretarget.value.expr) {
+    throw new Error('loop missing target');
+  }
+  const target = pretarget.value.expr as Expression;
   return { pos, index, target };
 }
 
@@ -48,14 +50,11 @@ export function extractTreeRequirement(
     return parseExpression(new Reader('', reader.source, voidTarget.start));
   }
   const target = atts.find(
-    (att) => ['if', 'elseif'].includes(att.name) && att.isDirective
+    (att) => ['if', 'elseif'].includes(att.name.value) && att.isDirective
   );
   return target?.expr;
 }
 
 function getVoidAttribute(atts: AttSchema[]): AttSchema | undefined {
-  return atts.find(
-    ({ name, value }) =>
-      name.startsWith('(') && name.endsWith(')') && value === ''
-  );
+  return atts.find(({ isDirective, value }) => isDirective && !value);
 }

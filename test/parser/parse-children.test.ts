@@ -82,12 +82,18 @@ test('Parse children: with simple loop tag', () => {
   const result: ElemSchema[] = [
     {
       type: NodeTypes.LOOP,
-      target: [
-        {
-          scope: 0,
-          value: 'lista',
-        },
-      ],
+      target: {
+        scope: 1,
+        slabs: [
+          {
+            value: 'lista',
+            start: 7,
+            end: 11,
+          },
+        ],
+        start: 6,
+        end: 12,
+      },
       index: 'i',
       pos: 'p',
       children: [
@@ -115,12 +121,18 @@ test('Parse children: with simple conditional tag', () => {
       type: NodeTypes.TREE,
       kind: 'if',
       reactive: false,
-      requirement: [
-        {
-          scope: 0,
-          value: 'isUser',
-        },
-      ],
+      requirement: {
+        scope: 1,
+        start: 4,
+        end: 11,
+        slabs: [
+          {
+            value: 'isUser',
+            start: 5,
+            end: 10,
+          },
+        ],
+      },
       yes: [
         {
           type: NodeTypes.TEXT,
@@ -144,23 +156,9 @@ test('Parse children: with simple loop directive', () => {
   const tag = parseChildren(reader, 'div') as ElemSchema[];
   const result: ElemSchema[] = [
     {
-      type: NodeTypes.LOOP,
-      target: [
-        {
-          scope: 0,
-          value: 'list',
-        },
-      ],
-      index: undefined,
-      pos: undefined,
       children: [
         {
-          type: NodeTypes.TAG,
-          name: 'span',
-          isVoid: false,
           attributes: [],
-          events: [],
-          isDirective: false,
           children: [
             {
               type: NodeTypes.TEXT,
@@ -171,30 +169,64 @@ test('Parse children: with simple loop directive', () => {
               end: 23,
             },
           ],
-          start: 0,
           end: 30,
+          events: [],
+          isDirective: false,
+          isVoid: false,
+          name: 'span',
+          start: 0,
+          type: NodeTypes.TAG,
         },
       ],
-      start: 6,
       end: 18,
+      index: undefined,
+      pos: undefined,
+      target: {
+        scope: 1,
+        start: 13,
+        end: 18,
+        slabs: [
+          {
+            value: 'list',
+            start: 14,
+            end: 17,
+          },
+        ],
+      },
+      start: 6,
       source: {
         type: NodeTypes.ATTRIBUTE,
-        name: 'loop',
-        value: 'list',
+        name: {
+          value: 'loop',
+          start: 6,
+          end: 11,
+        },
+        value: {
+          value: 'list',
+          start: 13,
+          end: 18,
+          expr: {
+            scope: 1,
+            start: 13,
+            end: 18,
+            slabs: [
+              {
+                value: 'list',
+                start: 14,
+                end: 17,
+              },
+            ],
+          },
+        },
         isBoolean: false,
         isEvent: false,
         dynamic: false,
         reactive: false,
-        expr: [
-          {
-            scope: 0,
-            value: 'list',
-          },
-        ],
         isDirective: true,
         start: 6,
         end: 18,
       },
+      type: NodeTypes.LOOP,
     },
   ];
   expect(tag).toEqual(result);
