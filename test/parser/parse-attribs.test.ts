@@ -14,8 +14,8 @@ test('parse attributes: simple', () => {
     },
     value: {
       value: 'dos',
-      start: 5,
-      end: 7,
+      start: 4,
+      end: 8,
     },
     dynamic: false,
     reactive: false,

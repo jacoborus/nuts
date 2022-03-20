@@ -21,7 +21,7 @@ jest.mock('../../src/parser/parse-typescript', () => {
   };
 });
 
-test('Parse tag: static', () => {
+test.only('Parse tag: static', () => {
   const reader = new Reader('x', '<span id="myid" class="clase">hola</span>');
   const tag = parseTag(reader) as TagSchema;
   const result: TagSchema = {
@@ -32,26 +32,24 @@ test('Parse tag: static', () => {
     attributes: [
       {
         type: NodeTypes.ATTRIBUTE,
-        name: 'id',
-        value: 'myid',
+        name: { value: 'id', start: 6, end: 7 },
+        value: { value: 'myid', start: 9, end: 14 },
         isBoolean: false,
         isEvent: false,
         isDirective: false,
         dynamic: false,
         reactive: false,
-        expr: undefined,
         start: 6,
         end: 14,
       },
       {
         type: NodeTypes.ATTRIBUTE,
-        name: 'class',
-        value: 'clase',
+        name: { value: 'class', start: 16, end: 20 },
+        value: { value: 'clase', start: 22, end: 28 },
         isBoolean: false,
         isDirective: false,
         dynamic: false,
         isEvent: false,
-        expr: undefined,
         reactive: false,
         start: 16,
         end: 28,

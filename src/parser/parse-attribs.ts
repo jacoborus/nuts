@@ -91,12 +91,12 @@ export function parseAttValue(reader: Reader, simple: boolean): AttValue {
   const quote = reader.char();
   const isQuoted = ['"', "'"].includes(quote);
   if (!simple) {
-    isQuoted && reader.next();
     const start = reader.getIndex();
+    isQuoted && reader.next();
     const value = isQuoted
       ? reader.toNext(new RegExp(quote))
       : reader.toNext(/\s|>/);
-    const end = reader.getIndex() - 1;
+    const end = reader.getIndex() - (isQuoted ? 0 : 1);
     isQuoted && reader.next();
     return { value, start, end };
   }
