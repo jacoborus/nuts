@@ -9,6 +9,7 @@ import {
   TreeKind,
   TreeSchema,
   AttSchema,
+  Expression,
 } from '../types';
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
@@ -59,7 +60,7 @@ export function parseTagHead(reader: Reader): TagHead {
 
 export function parseLoop(reader: Reader): LoopSchema {
   const { attributes, children, start, end } = parseTag(reader);
-  const { pos, index, target } = extractLoopAtts(attributes);
+  const { pos, index, target } = extractLoopAtts(attributes, reader);
   return {
     type: NodeTypes.LOOP,
     target,
@@ -76,7 +77,9 @@ export function parseTree(reader: Reader): TreeSchema {
   const isYes = ['if', 'elseif'].includes(name);
   const yes = isYes ? children : [];
   const no = !isYes ? children : [];
-  const requirement = isYes ? extractTreeRequirement(attributes) : [];
+  const requirement = isYes
+    ? (extractTreeRequirement(attributes, reader) as Expression)
+    : undefined;
   return {
     type: NodeTypes.TREE,
     kind: name as TreeKind,

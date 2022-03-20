@@ -21,6 +21,7 @@ const closers = {
   '[': ']',
   '"': '"',
   "'": "'",
+  '(': ')',
 };
 
 export function parseExpression(reader: Reader): Expression {
@@ -31,7 +32,7 @@ export function parseExpression(reader: Reader): Expression {
   reader.toNext(/\S/);
   const scope = getExprScope(reader);
   const slabs = parseSlabs(reader, closer);
-  reader.toNext(new RegExp(closer));
+  reader.toNext(new RegExp('\\' + closer));
   const end = reader.getIndex();
   reader.next();
   return {
@@ -72,7 +73,8 @@ export function parseSlabs(
     reader.next();
     return parseSlabs(reader, closer, expr);
   }
-  let value = reader.toNext(new RegExp('\\' + closer + '|\\.'));
+  const re = '\\.|\\' + closer;
+  let value = reader.toNext(new RegExp(re));
   let end = reader.getIndex() - 1;
   const isLastChar = reader.char() === closer;
   value = value.trim();

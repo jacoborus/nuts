@@ -110,7 +110,7 @@ function tagToLoopTree(tag: TagSchema): LoopSchema {
 }
 
 function tagToTree(tag: TagSchema): TreeSchema {
-  const requirement = extractTreeRequirement(tag.attributes);
+  const requirement = extractTreeRequirement(tag.attributes, reader);
   const { start, end, name } = tag.attributes.find(
     (att) => att.isDirective && ['if', 'else', 'elseif'].includes(att.name)
   ) as AttSchema;

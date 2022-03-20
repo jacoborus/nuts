@@ -87,6 +87,10 @@ export interface TagSchema extends Item {
   isDirective?: boolean;
 }
 
+export interface AttValue extends Item {
+  value: string;
+}
+
 export interface AttSchema extends Item {
   type: NodeTypes.ATTRIBUTE;
   name: string;

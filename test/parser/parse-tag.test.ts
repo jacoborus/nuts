@@ -39,7 +39,7 @@ test('Parse tag: static', () => {
         isDirective: false,
         dynamic: false,
         reactive: false,
-        expr: [],
+        expr: undefined,
         start: 6,
         end: 14,
       },
@@ -51,7 +51,7 @@ test('Parse tag: static', () => {
         isDirective: false,
         dynamic: false,
         isEvent: false,
-        expr: [],
+        expr: undefined,
         reactive: false,
         start: 16,
         end: 28,
@@ -104,7 +104,7 @@ test('Parse subcomponent', () => {
         isDirective: false,
         dynamic: false,
         reactive: false,
-        expr: [],
+        expr: undefined,
         start: 13,
         end: 21,
       },
@@ -116,7 +116,7 @@ test('Parse subcomponent', () => {
         isDirective: false,
         dynamic: false,
         isEvent: false,
-        expr: [],
+        expr: undefined,
         reactive: false,
         start: 23,
         end: 35,
@@ -147,12 +147,18 @@ test('Parse loop', () => {
   const tag = parseLoop(reader) as LoopSchema;
   const result: LoopSchema = {
     type: NodeTypes.LOOP,
-    target: [
-      {
-        scope: 0,
-        value: 'lista',
-      },
-    ],
+    target: {
+      scope: 1,
+      start: 6,
+      end: 12,
+      slabs: [
+        {
+          value: 'lista',
+          start: 7,
+          end: 11,
+        },
+      ],
+    },
     index: 'i',
     pos: 'p',
     children: [
@@ -178,12 +184,18 @@ test('Parse tree if', () => {
     type: NodeTypes.TREE,
     kind: 'if',
     reactive: false,
-    requirement: [
-      {
-        scope: 0,
-        value: 'isUser',
-      },
-    ],
+    requirement: {
+      scope: 1,
+      start: 4,
+      end: 11,
+      slabs: [
+        {
+          value: 'isUser',
+          start: 5,
+          end: 10,
+        },
+      ],
+    },
     yes: [
       {
         type: NodeTypes.TEXT,
@@ -208,12 +220,18 @@ test('Parse tree elseif', () => {
     type: NodeTypes.TREE,
     kind: 'elseif',
     reactive: false,
-    requirement: [
-      {
-        scope: 0,
-        value: 'isUser',
-      },
-    ],
+    requirement: {
+      scope: 1,
+      start: 8,
+      end: 15,
+      slabs: [
+        {
+          value: 'isUser',
+          start: 9,
+          end: 14,
+        },
+      ],
+    },
     yes: [
       {
         type: NodeTypes.TEXT,
@@ -238,7 +256,7 @@ test('Parse tree else', () => {
     type: NodeTypes.TREE,
     kind: 'else',
     reactive: false,
-    requirement: [],
+    requirement: undefined,
     yes: [],
     no: [
       {
@@ -275,7 +293,7 @@ test('parseScript', () => {
         isBoolean: false,
         isDirective: false,
         isEvent: false,
-        expr: [],
+        expr: undefined,
         start: 8,
         end: 16,
       },
