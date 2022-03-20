@@ -32,6 +32,7 @@ export function parseExpression(reader: Reader): Expression {
   reader.toNext(/\S/);
   const scope = getExprScope(reader);
   const slabs = parseSlabs(reader, closer);
+
   reader.toNext(new RegExp('\\' + closer));
   const end = reader.getIndex();
   reader.next();
@@ -73,15 +74,13 @@ export function parseSlabs(
     reader.next();
     return parseSlabs(reader, closer, expr);
   }
-  const re = '\\.|\\' + closer;
-  let value = reader.toNext(new RegExp(re));
-  let end = reader.getIndex() - 1;
-  const isLastChar = reader.char() === closer;
-  value = value.trim();
-  end = start + value.length - 1;
-  !isLastChar && reader.next();
+  const re = '\\s|\\.|\\' + closer;
+  const value = reader.toNext(new RegExp(re));
+  const end = reader.getIndex() - 1;
+  const isDot = reader.char() === '.';
+  isDot && reader.next();
   const newSlabs = slabs.concat({ value, start, end });
-  return isLastChar ? newSlabs : parseSlabs(reader, closer, newSlabs);
+  return isDot ? parseSlabs(reader, closer, newSlabs) : newSlabs;
 }
 
 // export function parseMethod(reader: Reader): ExprMethod {}
