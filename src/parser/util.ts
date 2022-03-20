@@ -52,7 +52,7 @@ export function extractTreeRequirement(
   const target = atts.find(
     (att) => ['if', 'elseif'].includes(att.name.value) && att.isDirective
   );
-  return target?.expr;
+  return target?.value?.expr;
 }
 
 function getVoidAttribute(atts: AttSchema[]): AttSchema | undefined {

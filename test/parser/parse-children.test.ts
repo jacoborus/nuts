@@ -232,19 +232,25 @@ test('Parse children: with simple loop directive', () => {
   expect(tag).toEqual(result);
 });
 
-test('Parse children: with simple conditional directive', () => {
+test.only('Parse children: with simple conditional directive', () => {
   const reader = new Reader('x', '<span (if)="saludo">hola</span></div>');
   const tag = parseChildren(reader, 'div') as ElemSchema[];
   const result: ElemSchema[] = [
     {
       type: NodeTypes.TREE,
       kind: 'if',
-      requirement: [
-        {
-          scope: 0,
-          value: 'saludo',
-        },
-      ],
+      requirement: {
+        scope: 1,
+        start: 11,
+        end: 18,
+        slabs: [
+          {
+            value: 'saludo',
+            start: 12,
+            end: 17,
+          },
+        ],
+      },
       yes: [
         {
           type: NodeTypes.TAG,
