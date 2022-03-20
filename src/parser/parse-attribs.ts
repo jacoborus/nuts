@@ -1,4 +1,4 @@
-import { AttSchema, NodeTypes, directiveNames, Expression } from '../types';
+import { AttName, AttValue, AttSchema, NodeTypes } from '../types';
 import { booleanAttributes } from '../common';
 import { Reader } from './reader';
 import { parseExpression } from './parse-expression';
@@ -14,20 +14,25 @@ export function parseAttribs(reader: Reader): AttSchema[] {
 
 export function parseAttribute(reader: Reader): AttSchema {
   const start = reader.getIndex();
-  const prename = reader.toNext(/\s|=|>|\/>/);
-  const separator = reader.char();
-  if (typeof separator === 'undefined') throw new Error('Wrong attribute name');
-  const { name, dynamic, reactive, isEvent, isDirective } =
-    readAttribName(prename);
-  const isBoolean = !isDirective && booleanAttributes.includes(name);
-  let value = '';
-  let expr = undefined;
-  let end = reader.getIndex() - 1;
-  if (separator === '=') {
-    reader.next();
-    [value, expr] = parseAttValue(reader, dynamic || isDirective);
-    end = reader.getIndex() - 1;
+  const { name, dynamic, isDirective, reactive, isEvent } =
+    readAttribName(reader);
+  const isBoolean = !isDirective && booleanAttributes.includes(name.value);
+  if (reader.char() !== '=') {
+    return {
+      type: NodeTypes.ATTRIBUTE,
+      name,
+      isBoolean,
+      isEvent,
+      dynamic,
+      reactive,
+      isDirective,
+      start,
+      end: reader.getIndex() - 1,
+    };
   }
+  reader.next();
+  const value = parseAttValue(reader, dynamic || isDirective);
+  const end = reader.getIndex() - 1;
 
   return {
     type: NodeTypes.ATTRIBUTE,
@@ -38,80 +43,67 @@ export function parseAttribute(reader: Reader): AttSchema {
     dynamic,
     reactive,
     isDirective,
-    expr,
     start,
     end,
   };
 }
 
-function readAttribName(name: string) {
-  if (name.startsWith('::')) {
-    return {
-      dynamic: true,
-      reactive: true,
-      isEvent: false,
-      isDirective: false,
-      name: name.slice(2),
-    };
-  } else if (name.startsWith(':')) {
-    return {
-      dynamic: true,
-      reactive: false,
-      isDirective: false,
-      isEvent: false,
-      name: name.slice(1),
-    };
-  } else if (name.startsWith('@')) {
-    return {
-      dynamic: false,
-      reactive: false,
-      isDirective: false,
-      isEvent: true,
-      name: name.slice(1),
-    };
-  } else if (attNameIsDirective(name)) {
-    return {
-      dynamic: false,
-      reactive: false,
-      isEvent: false,
-      isDirective: true,
-      name: name.slice(1, -1),
-    };
-  } else {
-    return {
-      dynamic: false,
-      isDirective: false,
-      reactive: false,
-      isEvent: false,
-      name,
-    };
-  }
+function readAttribName(reader: Reader) {
+  const rest = reader.slice();
+  const { dynamic, reactive, isEvent } = rest.startsWith('::')
+    ? {
+        dynamic: true,
+        reactive: true,
+        isEvent: false,
+      }
+    : rest.startsWith(':')
+    ? {
+        dynamic: true,
+        reactive: false,
+        isEvent: false,
+      }
+    : rest.startsWith('@')
+    ? {
+        dynamic: false,
+        reactive: false,
+        isEvent: true,
+      }
+    : {
+        dynamic: false,
+        reactive: false,
+        isEvent: false,
+      };
+  if (dynamic || isEvent) reader.advance(1);
+  if (reactive) reader.advance(1);
+  const start = reader.getIndex();
+  const prename = reader.toNext(/\s|=|>|(\/>)/);
+  const end = start + prename.length - 1;
+  const isDirective = prename.startsWith('(') && prename.endsWith(')');
+  const name: AttName = {
+    value: isDirective ? prename.slice(1, -1) : prename,
+    start,
+    end,
+  };
+  return { name, dynamic, isDirective, reactive, isEvent };
 }
 
-export function parseAttValue(
-  reader: Reader,
-  dynamic: boolean
-): [string, Expression?] {
+export function parseAttValue(reader: Reader, simple: boolean): AttValue {
   const quote = reader.char();
   const isQuoted = ['"', "'"].includes(quote);
-  if (!dynamic) {
+  if (!simple) {
     isQuoted && reader.next();
+    const start = reader.getIndex();
     const value = isQuoted
       ? reader.toNext(new RegExp(quote))
       : reader.toNext(/\s|>/);
+    const end = reader.getIndex() - 1;
     isQuoted && reader.next();
-    return [value];
+    return { value, start, end };
   }
   const rest = reader.slice();
+  const start = reader.getIndex();
   const expr = parseExpression(reader);
-  const value = rest.slice(1, expr.end - expr.start);
-  return [value, expr];
-}
-
-function attNameIsDirective(name: string): boolean {
-  return (
-    name.startsWith('(') &&
-    name.endsWith(')') &&
-    directiveNames.includes(name.slice(1, -1))
-  );
+  const end = expr.end;
+  const value = rest.slice(1, expr.end - expr.start).trim();
+  return { value, expr, start, end };
 }

@@ -69,7 +69,7 @@ export class Reader {
   }
   tagHasMoreAttributes(): boolean {
     const rest = this.slice();
-    return !rest.match(/^\s*\/*>/);
+    return !rest.match(/^\s*\/?>/);
   }
   advance(amount: number | string) {
     const realAmount = typeof amount === 'number' ? amount : amount.length;

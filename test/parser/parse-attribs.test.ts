@@ -7,14 +7,21 @@ test('parse attributes: simple', () => {
   const schema = parseAttribs(reader);
   expect(schema[0]).toEqual({
     type: NodeTypes.ATTRIBUTE,
-    name: 'att',
-    value: 'dos',
+    name: {
+      value: 'att',
+      start: 0,
+      end: 2,
+    },
+    value: {
+      value: 'dos',
+      start: 5,
+      end: 7,
+    },
     dynamic: false,
     reactive: false,
     isDirective: false,
     isBoolean: false,
     isEvent: false,
-    expr: undefined,
     start: 0,
     end: 8,
   });
@@ -25,25 +32,33 @@ test('parse attributes: dynamic', () => {
   const schema = parseAttribs(reader);
   expect(schema[0]).toEqual({
     type: NodeTypes.ATTRIBUTE,
-    name: 'att',
-    value: 'dos',
+    name: {
+      value: 'att',
+      start: 1,
+      end: 3,
+    },
+    value: {
+      end: 9,
+      expr: {
+        scope: 1,
+        start: 5,
+        end: 9,
+        slabs: [
+          {
+            value: 'dos',
+            start: 6,
+            end: 8,
+          },
+        ],
+      },
+      start: 5,
+      value: 'dos',
+    },
     dynamic: true,
     reactive: false,
     isDirective: false,
     isBoolean: false,
     isEvent: false,
-    expr: {
-      scope: 1,
-      start: 5,
-      end: 9,
-      slabs: [
-        {
-          value: 'dos',
-          start: 6,
-          end: 8,
-        },
-      ],
-    },
     start: 0,
     end: 9,
   });
@@ -54,8 +69,16 @@ test.skip('parse attributes: reactive', () => {
   const schema = parseAttribs(reader);
   expect(schema[0]).toEqual({
     type: NodeTypes.ATTRIBUTE,
-    name: 'att',
-    value: 'dos',
+    name: {
+      value: 'att',
+      start: 2,
+      end: 4,
+    },
+    value: {
+      value: 'dos',
+      start: 6,
+      end: 9,
+    },
     isDirective: false,
     dynamic: true,
     reactive: true,
@@ -73,29 +96,37 @@ test.skip('parse attributes: reactive', () => {
 });
 
 test('parse attributes: directive', () => {
-  const reader = new Reader('x', `(if)="dos">  `);
+  const reader = new Reader('x', '(if)="dos">  ');
   const schema = parseAttribs(reader);
   expect(schema[0]).toEqual({
     type: NodeTypes.ATTRIBUTE,
-    name: 'if',
-    value: 'dos',
+    name: {
+      value: 'if',
+      start: 0,
+      end: 3,
+    },
+    value: {
+      value: 'dos',
+      expr: {
+        scope: 1,
+        start: 5,
+        end: 9,
+        slabs: [
+          {
+            value: 'dos',
+            start: 6,
+            end: 8,
+          },
+        ],
+      },
+      start: 5,
+      end: 9,
+    },
     dynamic: false,
     reactive: false,
     isBoolean: false,
     isDirective: true,
     isEvent: false,
-    expr: {
-      scope: 1,
-      start: 5,
-      end: 9,
-      slabs: [
-        {
-          value: 'dos',
-          start: 6,
-          end: 8,
-        },
-      ],
-    },
     start: 0,
     end: 9,
   });
@@ -107,14 +138,16 @@ test('parse attributes: simple directive target', () => {
   const result = [
     {
       type: NodeTypes.ATTRIBUTE,
-      name: '(lista)',
-      value: '',
+      name: {
+        value: 'lista',
+        start: 0,
+        end: 6,
+      },
       dynamic: false,
       reactive: false,
       isBoolean: false,
-      isDirective: false,
+      isDirective: true,
       isEvent: false,
-      expr: undefined,
       start: 0,
       end: 6,
     },
@@ -128,38 +161,48 @@ test('parse attributes: directive target', () => {
   const result = [
     {
       type: NodeTypes.ATTRIBUTE,
-      name: '(lista)',
-      value: '',
-      dynamic: false,
-      reactive: false,
-      isBoolean: false,
-      isDirective: false,
-      isEvent: false,
-      expr: undefined,
-      start: 0,
-      end: 6,
-    },
-    {
-      type: NodeTypes.ATTRIBUTE,
-      name: 'pos',
-      value: 'p',
+      name: {
+        value: 'lista',
+        start: 0,
+        end: 6,
+      },
       dynamic: false,
       reactive: false,
       isBoolean: false,
       isDirective: true,
       isEvent: false,
-      expr: {
-        scope: 1,
-        start: 14,
-        end: 16,
-        slabs: [
-          {
-            value: 'p',
-            start: 15,
-            end: 15,
-          },
-        ],
+      start: 0,
+      end: 6,
+    },
+    {
+      type: NodeTypes.ATTRIBUTE,
+      name: {
+        value: 'pos',
+        start: 8,
+        end: 12,
       },
+      value: {
+        end: 16,
+        expr: {
+          scope: 1,
+          start: 14,
+          end: 16,
+          slabs: [
+            {
+              value: 'p',
+              start: 15,
+              end: 15,
+            },
+          ],
+        },
+        start: 14,
+        value: 'p',
+      },
+      dynamic: false,
+      reactive: false,
+      isBoolean: false,
+      isDirective: true,
+      isEvent: false,
       start: 8,
       end: 16,
     },
@@ -172,14 +215,21 @@ test('parse attributes: without quotes', () => {
   const schema = parseAttribs(reader);
   expect(schema[0]).toEqual({
     type: NodeTypes.ATTRIBUTE,
-    name: 'att',
-    value: 'dos',
+    name: {
+      value: 'att',
+      start: 0,
+      end: 2,
+    },
+    value: {
+      value: 'dos',
+      start: 4,
+      end: 6,
+    },
     dynamic: false,
     reactive: false,
     isDirective: false,
     isBoolean: false,
     isEvent: false,
-    expr: undefined,
     start: 0,
     end: 6,
   });

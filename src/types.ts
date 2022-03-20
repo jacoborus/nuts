@@ -87,14 +87,20 @@ export interface TagSchema extends Item {
   isDirective?: boolean;
 }
 
+export interface AttName extends Item {
+  value: string;
+  expr?: Expression;
+}
+
 export interface AttValue extends Item {
   value: string;
+  expr?: Expression;
 }
 
 export interface AttSchema extends Item {
   type: NodeTypes.ATTRIBUTE;
-  name: string;
-  value: string;
+  name: AttName;
+  value?: AttValue;
   isBoolean: boolean;
   isEvent: boolean;
   dynamic: boolean;
