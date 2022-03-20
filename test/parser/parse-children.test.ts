@@ -232,7 +232,7 @@ test('Parse children: with simple loop directive', () => {
   expect(tag).toEqual(result);
 });
 
-test.only('Parse children: with simple conditional directive', () => {
+test('Parse children: with simple conditional directive', () => {
   const reader = new Reader('x', '<span (if)="saludo">hola</span></div>');
   const tag = parseChildren(reader, 'div') as ElemSchema[];
   const result: ElemSchema[] = [
@@ -290,19 +290,37 @@ test('Parse children: with mix of attribute directives', () => {
   const tag = parseChildren(reader, 'div') as ElemSchema[];
   const result: LoopSchema = {
     type: NodeTypes.LOOP,
-    target: [{ scope: 0, value: 'lista' }],
+    target: {
+      scope: 1,
+      start: 13,
+      end: 19,
+      slabs: [{ value: 'lista', start: 14, end: 18 }],
+    },
     index: 'i',
     pos: 'p',
     source: {
       type: NodeTypes.ATTRIBUTE,
-      name: 'loop',
-      value: 'lista',
+      name: {
+        value: 'loop',
+        start: 6,
+        end: 11,
+      },
+      value: {
+        value: 'lista',
+        start: 13,
+        end: 19,
+        expr: {
+          scope: 1,
+          start: 13,
+          end: 19,
+          slabs: [{ value: 'lista', start: 14, end: 18 }],
+        },
+      },
       isEvent: false,
       isDirective: true,
       isBoolean: false,
       reactive: false,
       dynamic: false,
-      expr: [{ scope: 0, value: 'lista' }],
       start: 6,
       end: 19,
     },
@@ -310,12 +328,18 @@ test('Parse children: with mix of attribute directives', () => {
       {
         type: NodeTypes.TREE,
         kind: 'if',
-        requirement: [
-          {
-            scope: 0,
-            value: 'isUser',
-          },
-        ],
+        requirement: {
+          scope: 1,
+          start: 26,
+          end: 33,
+          slabs: [
+            {
+              value: 'isUser',
+              start: 27,
+              end: 32,
+            },
+          ],
+        },
         yes: [
           {
             type: NodeTypes.TAG,
@@ -324,12 +348,19 @@ test('Parse children: with mix of attribute directives', () => {
             attributes: [
               {
                 type: NodeTypes.ATTRIBUTE,
-                name: 'id',
-                value: 'myid',
+                name: {
+                  value: 'id',
+                  start: 57,
+                  end: 58,
+                },
+                value: {
+                  value: 'myid',
+                  start: 60,
+                  end: 65,
+                },
                 isEvent: false,
                 isDirective: false,
                 isBoolean: false,
-                expr: [],
                 reactive: false,
                 dynamic: false,
                 start: 57,
