@@ -1,7 +1,7 @@
 import { NodeTypes, ComponentSchema } from '../types';
 import { Reader } from './reader';
 import { parseComment, parseTemplate } from './parse-tag';
-import { parseScript } from './parse-script';
+import { parseScript } from './parse-tag';
 
 export function parseFile(sourceFile: string, source: string): ComponentSchema {
   const reader = new Reader(sourceFile, source);
