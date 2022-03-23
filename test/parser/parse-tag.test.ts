@@ -1,4 +1,5 @@
 import {
+  parseCode,
   parseComment,
   parseLoop,
   parseScript,
@@ -21,7 +22,7 @@ jest.mock('../../src/parser/parse-typescript', () => {
   };
 });
 
-test.only('Parse tag: static', () => {
+test('Parse tag: static', () => {
   const reader = new Reader('x', '<span id="myid" class="clase">hola</span>');
   const tag = parseTag(reader) as TagSchema;
   const result: TagSchema = {
@@ -95,8 +96,8 @@ test('Parse subcomponent', () => {
     attributes: [
       {
         type: NodeTypes.ATTRIBUTE,
-        name: 'id',
-        value: 'myid',
+        name: { value: 'id', start: 13, end: 14 },
+        value: { value: 'myid', start: 16, end: 21 },
         isBoolean: false,
         isEvent: false,
         isDirective: false,
@@ -108,8 +109,8 @@ test('Parse subcomponent', () => {
       },
       {
         type: NodeTypes.ATTRIBUTE,
-        name: 'class',
-        value: 'clase',
+        name: { value: 'class', start: 23, end: 27 },
+        value: { value: 'clase', start: 29, end: 35 },
         isBoolean: false,
         isDirective: false,
         dynamic: false,
@@ -284,14 +285,43 @@ test('parseScript', () => {
     attributes: [
       {
         type: NodeTypes.ATTRIBUTE,
-        name: 'att',
-        value: 'dos',
+        name: { value: 'att', start: 8, end: 10 },
+        value: { value: 'dos', start: 12, end: 16 },
         dynamic: false,
         reactive: false,
         isBoolean: false,
         isDirective: false,
         isEvent: false,
-        expr: undefined,
+        start: 8,
+        end: 16,
+      },
+    ],
+    value: `as
+    df`,
+    start: 0,
+    end: 35,
+  });
+});
+
+test('parseCode', () => {
+  const reader = new Reader(
+    'x',
+    `<script att="dos">as
+    df</script> `
+  );
+  const schema = parseCode(reader);
+  expect(schema).toEqual({
+    type: NodeTypes.SCRIPT,
+    attributes: [
+      {
+        type: NodeTypes.ATTRIBUTE,
+        name: { value: 'att', start: 8, end: 10 },
+        value: { value: 'dos', start: 12, end: 16 },
+        dynamic: false,
+        reactive: false,
+        isBoolean: false,
+        isDirective: false,
+        isEvent: false,
         start: 8,
         end: 16,
       },

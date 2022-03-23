@@ -149,6 +149,12 @@ export interface ScriptSchema extends Item {
   type: NodeTypes.SCRIPT;
   attributes: AttSchema[];
   value: string;
+}
+
+export interface CodeSchema extends Item {
+  type: NodeTypes.SCRIPT;
+  attributes: AttSchema[];
+  value: string;
   ast: SourceFile;
 }
 

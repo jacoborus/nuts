@@ -1,5 +1,8 @@
 import {
+  AttSchema,
+  CodeSchema,
   CommentSchema,
+  Expression,
   LoopSchema,
   NodeTypes,
   ScriptSchema,
@@ -8,8 +11,6 @@ import {
   TemplateSchema,
   TreeKind,
   TreeSchema,
-  AttSchema,
-  Expression,
 } from '../types';
 import { voidElements } from '../common';
 import { parseAttribs } from './parse-attribs';
@@ -134,13 +135,17 @@ export function parseScript(reader: Reader): ScriptSchema {
   reader.toNext(/>/);
   const end = reader.getIndex();
   reader.next();
-  const ast = parseTs(reader.sourceFile, value);
   return {
     type: NodeTypes.SCRIPT,
     value,
     attributes,
     start,
-    ast,
     end,
   };
+}
+
+export function parseCode(reader: Reader): CodeSchema {
+  const scriptSchema = parseScript(reader);
+  const ast = parseTs(reader.sourceFile, scriptSchema.value);
+  return Object.assign({}, scriptSchema, { ast });
 }
