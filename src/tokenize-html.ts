@@ -78,9 +78,9 @@ export function tokenizeAttribute(reader: Reader): void {
   if (reader.isWhiteSpace()) return;
   const isQuoted = reader.isQuote();
   const quote = reader.char();
+  const kind =
+    reader.charCode() === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
   if (isQuoted) {
-    const kind =
-      reader.charCode() === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
     reader.addToken({
       start: reader.index,
       end: reader.index,
@@ -88,27 +88,27 @@ export function tokenizeAttribute(reader: Reader): void {
       type: kind,
     });
     reader.next();
-    if (hasExpr) {
-      tokenizeExpression(reader.source, quote, reader.index);
-    } else {
-      const valueStart = reader.index;
-      const value = reader.toQuote(quote);
-      reader.addToken({
-        start: valueStart,
-        end: reader.index - 1,
-        value,
-        type: TokenKind.AttrValue,
-      });
-    }
-    if (reader.isQuote()) {
-      reader.addToken({
-        start: reader.index,
-        end: reader.index,
-        value: quote,
-        type: kind,
-      });
-      reader.next();
-    }
+  }
+  if (hasExpr) {
+    tokenizeExpression(reader.source, quote, reader.index);
+  } else {
+    const valueStart = reader.index;
+    const value = isQuoted ? reader.toQuote(quote) : reader.toWhiteOrClose();
+    reader.addToken({
+      start: valueStart,
+      end: reader.index - 1,
+      value,
+      type: TokenKind.AttrValue,
+    });
+  }
+  if (reader.isQuote()) {
+    reader.addToken({
+      start: reader.index,
+      end: reader.index,
+      value: quote,
+      type: kind,
+    });
+    reader.next();
   }
 }
 
