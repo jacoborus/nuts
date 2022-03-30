@@ -1,5 +1,18 @@
 import { IToken, Chars } from './types';
 
+const nonLiterals = [
+  Chars.Sq,
+  Chars.Dq,
+  Chars.Do,
+  Chars.Co,
+  Chars.At,
+  Chars.D$,
+  Chars.Op,
+  Chars.Cp,
+  Chars.Ob,
+  Chars.Cb,
+];
+
 const whiteSpaces = [
   Chars._S,
   Chars._N,
@@ -9,16 +22,21 @@ const whiteSpaces = [
   Chars._F,
 ];
 
-interface HtmlReaderOpts {
+interface ReaderOpts {
   start?: number;
+  closer?: string;
 }
-export class HtmlReader {
+export class Reader {
   readonly tokens: IToken[] = [];
-  readonly source: string;
+  source: string;
   index: number;
-  constructor(source: string, opts?: HtmlReaderOpts) {
+  closer?: string;
+  constructor(source: string, opts?: ReaderOpts) {
     this.source = source;
     this.index = opts?.start || 0;
+    if (opts?.closer) {
+      this.closer = opts.closer;
+    }
     this.tokens = [];
   }
   next(): void {
@@ -36,11 +54,51 @@ export class HtmlReader {
   notFinished(): boolean {
     return this.index < this.source.length;
   }
+  isCloser(): boolean {
+    return this.closer ? this.char() === this.closer : this.isWhiteSpace();
+  }
+  exprNotFinished(): boolean {
+    return this.index < this.source.length && !this.isCloser();
+  }
   isWhiteSpace(): boolean {
     return whiteSpaces.includes(this.charCode());
   }
   isQuote(): boolean {
     return ["'", '"'].includes(this.char());
+  }
+  getQuotedValue(): string {
+    const quote = this.char();
+    if (!['"', "'"].includes(quote)) throw new Error('Wrong quoted index');
+    this.next();
+    const value = [];
+    while (this.index < this.source.length && this.char() !== quote) {
+      value.push(this.char());
+      this.next();
+    }
+    return value.join('');
+  }
+  toNextNonWhiteInExpr(): string {
+    const value = [];
+    while (this.exprNotFinished() && this.isWhiteSpace()) {
+      value.push(this.char());
+      this.next();
+    }
+    return value.join('');
+  }
+  toNextNonLiteral(): string {
+    const value = [];
+    while (
+      this.exprNotFinished() &&
+      !this.isWhiteSpace() &&
+      !this.isNonLiteral()
+    ) {
+      value.push(this.char());
+      this.next();
+    }
+    return value.join('');
+  }
+  isNonLiteral(): boolean {
+    return nonLiterals.includes(this.charCode());
   }
   getAttName(): string {
     const value = [];
@@ -55,30 +113,7 @@ export class HtmlReader {
     }
     return value.join('');
   }
-  getAttValue(): string {
-    const value = [];
-    while (
-      this.notFinished() &&
-      !this.isWhiteSpace() &&
-      this.char() !== '>' &&
-      this.char() !== '='
-    ) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
-  getQuotedValue(): string {
-    const quote = this.char();
-    if (!['"', "'"].includes(quote)) throw new Error('Wrong quoted index');
-    this.next();
-    const value = [];
-    while (this.index < this.source.length && this.char() !== quote) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
+  // ==
   toQuote(quote: string): string {
     const value = [];
     while (this.notFinished() && this.char() !== quote) {
@@ -87,6 +122,7 @@ export class HtmlReader {
     }
     return value.join('');
   }
+  // ==
   toCloseTagEnd(): string {
     const value = [];
     while (this.notFinished() && this.char() !== '>') {
