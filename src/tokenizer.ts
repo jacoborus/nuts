@@ -12,8 +12,6 @@ export enum TokenKind {
   WhiteSpace,
   Dot, // .
   Comma, // ,
-  OpenCurly, // {
-  CloseCurly, // }
   OpenBracket, // [
   CloseBracket, // ]
   OpenParens, // (
@@ -56,6 +54,15 @@ const nonLiterals = [
   Chars.Cb,
 ];
 
+const whiteSpaces = [
+  Chars._S,
+  Chars._N,
+  Chars._T,
+  Chars._T,
+  Chars._R,
+  Chars._F,
+];
+
 interface ReaderOpts {
   start?: number;
   closer?: string;
@@ -73,7 +80,7 @@ class Reader {
     }
     this.tokens = [];
   }
-  next() {
+  next(): void {
     this.index++;
   }
   char(): string {
@@ -82,21 +89,14 @@ class Reader {
   charCode(): number {
     return this.source.charCodeAt(this.index);
   }
-  isCloser() {
+  isCloser(): boolean {
     return this.closer ? this.char() === this.closer : this.isWhiteSpace();
   }
   notFinished(): boolean {
     return this.index < this.source.length && !this.isCloser();
   }
   isWhiteSpace(): boolean {
-    return (
-      this.charCode() === Chars._S ||
-      this.charCode() === Chars._N ||
-      this.charCode() === Chars._T ||
-      this.charCode() === Chars._T ||
-      this.charCode() === Chars._R ||
-      this.charCode() === Chars._F
-    );
+    return whiteSpaces.includes(this.charCode());
   }
   getQuotedValue(): string {
     const quote = this.char();
@@ -125,10 +125,10 @@ class Reader {
     }
     return value.join('');
   }
-  isNonLiteral() {
+  isNonLiteral(): boolean {
     return nonLiterals.includes(this.charCode());
   }
-  addToken(token: IToken) {
+  addToken(token: IToken): void {
     this.tokens.push(token);
   }
 }
@@ -166,7 +166,7 @@ export function tokenizeWhiteSpace(reader: Reader): void {
   });
 }
 
-export function tokenizeQuoted(reader: Reader) {
+export function tokenizeQuoted(reader: Reader): void {
   const quoteCode = reader.charCode();
   const kind = quoteCode === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
   reader.addToken({
@@ -209,12 +209,6 @@ export function tokenizeNonLiteral(reader: Reader): void {
       break;
     case Chars.Co:
       kind = TokenKind.Comma;
-      break;
-    case Chars.Ox:
-      kind = TokenKind.OpenCurly;
-      break;
-    case Chars.Cx:
-      kind = TokenKind.CloseCurly;
       break;
     case Chars.Ob:
       kind = TokenKind.OpenBracket;

@@ -1,4 +1,4 @@
-import { tokenize, TokenKind } from '../src/tokens';
+import { tokenize, TokenKind } from '../src/tokenizer';
 
 test('tokenize: simple expression', () => {
   const tokens = tokenize('   uno.dos}', '}');
