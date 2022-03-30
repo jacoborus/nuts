@@ -1,7 +1,8 @@
-import { tokenize, TokenKind } from '../src/tokenizer';
+import { tokenizeExpression } from '../src/tokenizer';
+import { TokenKind } from '../src/types';
 
 test('tokenize: simple expression', () => {
-  const tokens = tokenize('   uno.dos}', '}');
+  const tokens = tokenizeExpression('   uno.dos}', '}');
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.WhiteSpace, value: '   ' },
     { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
@@ -11,7 +12,7 @@ test('tokenize: simple expression', () => {
 });
 
 test('tokenize: simple expression no closer', () => {
-  const tokens = tokenize('uno.dos asdf');
+  const tokens = tokenizeExpression('uno.dos asdf');
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -20,7 +21,7 @@ test('tokenize: simple expression no closer', () => {
 });
 
 test('tokenize: func prefix', () => {
-  const tokens = tokenize('@uno.dos');
+  const tokens = tokenizeExpression('@uno.dos');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -30,7 +31,7 @@ test('tokenize: func prefix', () => {
 });
 
 test('tokenize: ctx prefix', () => {
-  const tokens = tokenize('$uno.dos');
+  const tokens = tokenizeExpression('$uno.dos');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.CtxPrefix, value: '$' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -40,7 +41,7 @@ test('tokenize: ctx prefix', () => {
 });
 
 test('tokenize: call function', () => {
-  const tokens = tokenize('@uno(dos.a,  dos.b) }', '}');
+  const tokens = tokenizeExpression('@uno(dos.a,  dos.b) }', '}');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -59,7 +60,7 @@ test('tokenize: call function', () => {
 });
 
 test('tokenize: subexpression', () => {
-  const tokens = tokenize('uno.2.[ dos.tres] }', '}');
+  const tokens = tokenizeExpression('uno.2.[ dos.tres] }', '}');
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -76,7 +77,7 @@ test('tokenize: subexpression', () => {
 });
 
 test('tokenize: Single quoted', () => {
-  const tokens = tokenize("uno.2.'first name'}", '}');
+  const tokens = tokenizeExpression("uno.2.'first name'}", '}');
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
