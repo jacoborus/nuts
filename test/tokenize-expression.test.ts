@@ -1,4 +1,4 @@
-import { tokenizeExpression } from '../src/tokenizer';
+import { tokenizeExpression } from '../src/tokenize-expression';
 import { TokenKind } from '../src/types';
 
 test('tokenize: simple expression', () => {

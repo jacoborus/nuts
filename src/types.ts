@@ -8,10 +8,23 @@ export interface IToken {
 }
 
 export enum TokenKind {
+  WhiteSpace,
+  // html
+  Literal,
+  OpenTag, // leading '<'
+  TagName, // trailing '<' or '</'
+  OpenTagEnd, // trim tailing '>', only could be '/' or ''
+  CloseTag, // leading '</'
+  CloseTagEnd, // tailing '>'
+  AttrPrefix, // '@', ':' or '::'
+  AttrName,
+  AttrEq,
+  AttrQuote,
+  AttrValue,
+  // Expression
   Identifier,
   CtxPrefix, // $
   FuncPrefix, // @
-  WhiteSpace,
   Dot, // .
   Comma, // ,
   OpenBracket, // [

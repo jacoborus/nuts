@@ -1,8 +1,12 @@
-import { Reader } from './reader';
+import { ExprReader as Reader } from './expression-reader';
 import { IToken, TokenKind, Chars } from './types';
 
-export function tokenizeExpression(input: string, closer?: string): IToken[] {
-  const reader = new Reader(input, { closer });
+export function tokenizeExpression(
+  input: string,
+  closer?: string,
+  start = 0
+): IToken[] {
+  const reader = new Reader(input, { start, closer });
   while (reader.notFinished()) {
     if (reader.isWhiteSpace()) {
       tokenizeWhiteSpace(reader);

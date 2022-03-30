@@ -22,16 +22,16 @@ const whiteSpaces = [
   Chars._F,
 ];
 
-interface ReaderOpts {
+interface ExprReaderOpts {
   start?: number;
   closer?: string;
 }
-export class Reader {
+export class ExprReader {
   readonly tokens: IToken[] = [];
   source: string;
   index: number;
   closer?: string;
-  constructor(source: string, opts?: ReaderOpts) {
+  constructor(source: string, opts?: ExprReaderOpts) {
     this.source = source;
     this.index = opts?.start || 0;
     if (opts?.closer) {
