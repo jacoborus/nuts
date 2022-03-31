@@ -49,7 +49,7 @@ test('tokenize html: tag with unquoted attribs', () => {
 });
 
 test('tokenize html tag with prefixed attrib name', () => {
-  const tokens = tokenizeHtml('<span :id="myid"/>');
+  const tokens = tokenizeHtml('<span :id="@user.id"/>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
@@ -58,9 +58,12 @@ test('tokenize html tag with prefixed attrib name', () => {
     { start: 7, end: 8, type: TokenKind.AttrName, value: 'id' },
     { start: 9, end: 9, type: TokenKind.AttrEq, value: '=' },
     { start: 10, end: 10, type: TokenKind.DQuote, value: '"' },
-    { start: 11, end: 14, type: TokenKind.Identifier, value: 'myid' },
-    { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
-    { start: 16, end: 17, type: TokenKind.VoidTagEnd, value: '/>' },
+    { start: 11, end: 11, type: TokenKind.FuncPrefix, value: '@' },
+    { start: 12, end: 15, type: TokenKind.Identifier, value: 'user' },
+    { start: 16, end: 16, type: TokenKind.Dot, value: '.' },
+    { start: 17, end: 18, type: TokenKind.Identifier, value: 'id' },
+    { start: 19, end: 19, type: TokenKind.DQuote, value: '"' },
+    { start: 20, end: 21, type: TokenKind.VoidTagEnd, value: '/>' },
   ]);
 });
 

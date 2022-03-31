@@ -1,13 +1,14 @@
 # Expressions
 
 Nuts uses expressions to pass data to the templates.
-Expressions can be interpolated in text or in tag attributes.
+Expressions can be found in 3 places:
 
-Use curly braces to interpolate an expression in a text node:
-
-```html
-<span>Hello { name }</span>
-```
+- As interpolation in text nodes. Wrapped between curly braces `{}`
+  - Ex: `<p>Hello { place.name }</p>`
+- As value of a dynamic attribute of a tag or component. Their attribute name will be prepended by `@`, `$`, `:`, or `::`
+  - Ex: `<my-component :id="user.id" />`
+- As attribute name of a directive tag. Prepended by `@`
+  - Ex: `<loop @users.active="user">...</loop>`
 
 ## Format
 
@@ -16,13 +17,12 @@ Values from the scope have no prefix:
 ```
 user.name.first
 users.1.name
-{ users.[route.params.id].name }
 ```
 
 Accept subexpressions wrapped by brackets
 
 ```
-users.[route.params.id].name
+users.[client.id].name
 ```
 
 Values returned from the setup function need the `@` prefix, they can be invoked
