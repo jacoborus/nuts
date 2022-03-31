@@ -1,4 +1,4 @@
-import { IToken, Chars } from './types';
+import { IToken, Chars, TokenKind } from './types';
 
 const nonLiterals = [
   Chars.Sq,
@@ -128,5 +128,14 @@ export class Reader {
   }
   addToken(token: IToken): void {
     this.tokens.push(token);
+  }
+  addSingleToken(value: string, kind: TokenKind): void {
+    const start = this.index;
+    this.tokens.push({
+      start,
+      end: start,
+      value,
+      type: kind,
+    });
   }
 }

@@ -23,12 +23,7 @@ export function tokenizeHtml(input: string): IToken[] {
 }
 
 export function tokenizeOpenTag(reader: Reader): void {
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: '<',
-    type: TokenKind.OpenTag,
-  });
+  reader.addSingleToken('<', TokenKind.OpenTag);
   reader.next();
   const start = reader.index;
   const value = reader.toWhiteOrClose();
@@ -69,12 +64,7 @@ export function tokenizeAttributes(reader: Reader): void {
 }
 
 export function tokenizeDirective(reader: Reader): void {
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: '(',
-    type: TokenKind.OpenParens,
-  });
+  reader.addToken('(', TokenKind.OpenParens);
   reader.next();
   const dirStart = reader.index;
   const dirName = reader.toNext(')');
@@ -85,20 +75,10 @@ export function tokenizeDirective(reader: Reader): void {
     type: TokenKind.AttrName,
   });
   if (reader.char() !== ')') return;
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: ')',
-    type: TokenKind.CloseParens,
-  });
+  reader.addSingleToken(')', TokenKind.CloseParens);
   reader.next();
   if (reader.char() !== '=') return;
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: '=',
-    type: TokenKind.AttrEq,
-  });
+  reader.addSingleToken('=', TokenKind.AttrEq);
   reader.next();
   tokenizeAttValue(reader, true);
 }
@@ -110,35 +90,26 @@ function tokenizeAttValue(reader: Reader, dynamic: boolean): void {
   const kind =
     reader.charCode() === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
   if (isQuoted) {
-    reader.addToken({
-      start: reader.index,
-      end: reader.index,
-      value: quote as string,
-      type: kind,
-    });
+    reader.addSingleToken(quote as string, kind);
     reader.next();
   }
   if (dynamic) tokenizeDynamicAttValue(reader, quote);
   else tokenizeRegularAttValue(reader, quote);
   if (reader.isQuote()) {
-    reader.addToken({
-      start: reader.index,
-      end: reader.index,
-      value: quote as string,
-      type: kind,
-    });
+    reader.addSingleToken(quote as string, kind);
     reader.next();
   }
 }
 
 function tokenizeRegularAttValue(reader: Reader, quote?: string): void {
-  const exprReader = new Reader(reader.source, {
-    closer: quote,
-    start: reader.index,
+  const valueStart = reader.index;
+  const value = quote ? reader.toNext(quote) : reader.toWhiteOrClose();
+  reader.addToken({
+    start: valueStart,
+    end: reader.index - 1,
+    value,
+    type: TokenKind.AttrValue,
   });
-  tokenizeExpression(exprReader);
-  reader.index = exprReader.index;
-  exprReader.tokens.forEach((token) => reader.addToken(token));
 }
 
 function tokenizeDynamicAttValue(reader: Reader, quote?: string): void {
@@ -163,66 +134,17 @@ export function tokenizeAttribute(reader: Reader): void {
     type: TokenKind.AttrName,
   });
   if (reader.char() !== '=') return;
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: '=',
-    type: TokenKind.AttrEq,
-  });
+  reader.addSingleToken('=', TokenKind.AttrEq);
   reader.next();
   if (reader.isWhiteSpace()) return;
-  const isQuoted = reader.isQuote();
-  const quote = reader.char();
-  const kind =
-    reader.charCode() === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
-  if (isQuoted) {
-    reader.addToken({
-      start: reader.index,
-      end: reader.index,
-      value: quote,
-      type: kind,
-    });
-    reader.next();
-  }
-  if (hasExpr) {
-    const exprReader = new Reader(reader.source, {
-      closer: quote,
-      start: reader.index,
-    });
-    tokenizeExpression(exprReader);
-    reader.index = exprReader.index;
-    exprReader.tokens.forEach((token) => reader.addToken(token));
-  } else {
-    const valueStart = reader.index;
-    const value = isQuoted ? reader.toNext(quote) : reader.toWhiteOrClose();
-    reader.addToken({
-      start: valueStart,
-      end: reader.index - 1,
-      value,
-      type: TokenKind.AttrValue,
-    });
-  }
-  if (reader.isQuote()) {
-    reader.addToken({
-      start: reader.index,
-      end: reader.index,
-      value: quote,
-      type: kind,
-    });
-    reader.next();
-  }
+  tokenizeAttValue(reader, hasExpr);
 }
 
 const attPrefixes = [':', '@'];
 export function tokenizeAttPrefix(reader: Reader): boolean {
   const char = reader.char();
   if (!attPrefixes.includes(char)) return false;
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: char,
-    type: TokenKind.AttrPrefix,
-  });
+  reader.addSingleToken(char, TokenKind.AttrPrefix);
   reader.next();
   return true;
 }
@@ -245,12 +167,7 @@ export function tokenizeCloseTag(reader: Reader): void {
     value,
     type: TokenKind.TagName,
   });
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: '>',
-    type: TokenKind.CloseTagEnd,
-  });
+  reader.addSingleToken('>', TokenKind.CloseTagEnd);
   reader.next();
 }
 
@@ -301,12 +218,7 @@ export function tokenizeQuoted(reader: Reader): void {
   const quoteCode = reader.charCode();
   const kind = quoteCode === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
   const quote = reader.char();
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: quote,
-    type: kind,
-  });
+  reader.addSingleToken(quote, kind);
   reader.next();
   const start = reader.index;
   const value = reader.toNext(quote);
@@ -316,12 +228,7 @@ export function tokenizeQuoted(reader: Reader): void {
     value,
     type: TokenKind.Identifier,
   });
-  reader.addToken({
-    start: reader.index,
-    end: reader.index,
-    value: reader.char(),
-    type: kind,
-  });
+  reader.addSingleToken(reader.char(), kind);
   reader.next();
 }
 
