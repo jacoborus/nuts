@@ -11,9 +11,10 @@ export enum TokenKind {
   WhiteSpace,
   // html
   Literal,
-  OpenTag, // leading '<'
-  TagName, // trailing '<' or '</'
-  OpenTagEnd, // trim tailing '>', only could be '/' or ''
+  OpenTag, // '<'
+  TagName, // '<' or '</'
+  OpenTagEnd, // '>',
+  VoidTagEnd, // '/>'
   CloseTag, // leading '</'
   CloseTagEnd, // tailing '>'
   AttrPrefix, // '@', ':' or '::'

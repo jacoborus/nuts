@@ -1,7 +1,8 @@
 import { tokenizeHtml, tokenizeExpression } from '../src/tokenizer';
+import { Reader } from '../src/reader';
 import { TokenKind } from '../src/types';
 
-test('tokenize: simple void element', () => {
+test('tokenize html: simple void element', () => {
   const tokens = tokenizeHtml('  <br>');
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
@@ -11,7 +12,7 @@ test('tokenize: simple void element', () => {
   ]);
 });
 
-test('tokenize: tag with attribs', () => {
+test('tokenize html: tag with attribs', () => {
   const tokens = tokenizeHtml('<span id="myid">hola</span>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
@@ -30,7 +31,7 @@ test('tokenize: tag with attribs', () => {
   ]);
 });
 
-test('tokenize: tag with unquoted attribs', () => {
+test('tokenize html: tag with unquoted attribs', () => {
   const tokens = tokenizeHtml('<span id=myid>hola</span>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
@@ -47,8 +48,25 @@ test('tokenize: tag with unquoted attribs', () => {
   ]);
 });
 
-test('tokenize: simple expression', () => {
-  const tokens = tokenizeExpression('   uno.dos}', '}');
+test('tokenize html tag with prefixed attrib name', () => {
+  const tokens = tokenizeHtml('<span :id="myid"/>');
+  expect(tokens).toEqual([
+    { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
+    { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
+    { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 6, end: 6, type: TokenKind.AttrPrefix, value: ':' },
+    { start: 7, end: 8, type: TokenKind.AttrName, value: 'id' },
+    { start: 9, end: 9, type: TokenKind.AttrEq, value: '=' },
+    { start: 10, end: 10, type: TokenKind.DQuote, value: '"' },
+    { start: 11, end: 14, type: TokenKind.Identifier, value: 'myid' },
+    { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
+    { start: 16, end: 17, type: TokenKind.VoidTagEnd, value: '/>' },
+  ]);
+});
+
+test('tokenize expression: simple expression', () => {
+  const reader = new Reader('   uno.dos}', { closer: '}' });
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.WhiteSpace, value: '   ' },
     { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
@@ -57,8 +75,9 @@ test('tokenize: simple expression', () => {
   ]);
 });
 
-test('tokenize: simple expression no closer', () => {
-  const tokens = tokenizeExpression('uno.dos asdf');
+test('tokenize expression: simple expression no closer', () => {
+  const reader = new Reader('uno.dos asdf');
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -66,8 +85,9 @@ test('tokenize: simple expression no closer', () => {
   ]);
 });
 
-test('tokenize: func prefix', () => {
-  const tokens = tokenizeExpression('@uno.dos');
+test('tokenize expression: func prefix', () => {
+  const reader = new Reader('@uno.dos');
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -76,8 +96,9 @@ test('tokenize: func prefix', () => {
   ]);
 });
 
-test('tokenize: ctx prefix', () => {
-  const tokens = tokenizeExpression('$uno.dos');
+test('tokenize expression: ctx prefix', () => {
+  const reader = new Reader('$uno.dos');
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.CtxPrefix, value: '$' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -86,8 +107,9 @@ test('tokenize: ctx prefix', () => {
   ]);
 });
 
-test('tokenize: call function', () => {
-  const tokens = tokenizeExpression('@uno(dos.a,  dos.b) }', '}');
+test('tokenize expression: call function', () => {
+  const reader = new Reader('@uno(dos.a,  dos.b) }', { closer: '}' });
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -105,8 +127,9 @@ test('tokenize: call function', () => {
   ]);
 });
 
-test('tokenize: subexpression', () => {
-  const tokens = tokenizeExpression('uno.2.[ dos.tres] }', '}');
+test('tokenize expression: subexpression', () => {
+  const reader = new Reader('uno.2.[ dos.tres] }', { closer: '}' });
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -122,8 +145,9 @@ test('tokenize: subexpression', () => {
   ]);
 });
 
-test('tokenize: Single quoted', () => {
-  const tokens = tokenizeExpression("uno.2.'first name'}", '}');
+test('tokenize expression: Single quoted', () => {
+  const reader = new Reader("uno.2.'first name'}", { closer: '}' });
+  const tokens = tokenizeExpression(reader);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },

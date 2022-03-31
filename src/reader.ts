@@ -113,7 +113,6 @@ export class Reader {
     }
     return value.join('');
   }
-  // ==
   toQuote(quote: string): string {
     const value = [];
     while (this.notFinished() && this.char() !== quote) {
@@ -122,7 +121,6 @@ export class Reader {
     }
     return value.join('');
   }
-  // ==
   toCloseTagEnd(): string {
     const value = [];
     while (this.notFinished() && this.char() !== '>') {

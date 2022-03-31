@@ -39,20 +39,29 @@ export function tokenizeOpenTag(reader: Reader): void {
 }
 
 export function tokenizeAttributes(reader: Reader): void {
-  while (reader.char() !== '>') {
+  while (
+    reader.char() !== '>' &&
+    !(reader.char() === '/' && reader.nextChar() === '>')
+  ) {
     if (reader.isWhiteSpace()) {
       tokenizeWhiteSpace(reader);
       continue;
     }
     tokenizeAttribute(reader);
   }
+  const isVoid = reader.char() === '/';
+  const value = isVoid ? '/>' : '>';
+  const end = reader.index + (isVoid ? 1 : 0);
+  const kind = isVoid ? TokenKind.VoidTagEnd : TokenKind.OpenTagEnd;
+
   reader.addToken({
     start: reader.index,
-    end: reader.index,
-    value: '>',
-    type: TokenKind.OpenTagEnd,
+    end,
+    value,
+    type: kind,
   });
   reader.next();
+  isVoid && reader.next();
 }
 
 export function tokenizeAttribute(reader: Reader): void {
@@ -89,7 +98,13 @@ export function tokenizeAttribute(reader: Reader): void {
     reader.next();
   }
   if (hasExpr) {
-    tokenizeExpression(reader.source, quote, reader.index);
+    const exprReader = new Reader(reader.source, {
+      closer: quote,
+      start: reader.index,
+    });
+    tokenizeExpression(exprReader);
+    reader.index = exprReader.index;
+    exprReader.tokens.forEach((token) => reader.addToken(token));
   } else {
     const valueStart = reader.index;
     const value = isQuoted ? reader.toQuote(quote) : reader.toWhiteOrClose();
@@ -152,12 +167,7 @@ export function tokenizeCloseTag(reader: Reader): void {
   reader.next();
 }
 
-export function tokenizeExpression(
-  input: string,
-  closer?: string,
-  start = 0
-): IToken[] {
-  const reader = new Reader(input, { start, closer });
+export function tokenizeExpression(reader: Reader): IToken[] {
   while (reader.exprNotFinished()) {
     if (reader.isWhiteSpace()) {
       tokenizeWhiteSpaceInExpr(reader);
