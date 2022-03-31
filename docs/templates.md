@@ -35,9 +35,9 @@ Conditionally render parts of the view.
 
 ### Loops
 
-Iterate through lists using `(loop)` attribute.
-Format of the value: `loopTarget as name, index, position`.
-The last two are optionals: `loopTarget as name, , pos`.
+Iterate through lists using `(loop)` attribute. Format of the value:
+`loopTarget as name, index, position`. The last two are optionals:
+`loopTarget as name, , pos`.
 
 ```html
 <li (loop)="books as book, ,pos">{ pos }: { book.title }</li>

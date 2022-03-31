@@ -3,16 +3,18 @@
 Nuts uses dot notation expressions to pass data to the templates. Expressions
 can be found in several places:
 
-- As interpolation in text nodes. Wrapped between curly braces `{}`
-  - Ex: `<p>Hello { place.name }</p>`
-- As value of a dynamic attribute or event. Their attribute name will be
-  prepended by `@`, `:`, or `::`
-  - `<my-component :id="user.id" />`
-  - `<button @click="insertData">...`
-- As value of some directives. Their attribute name will be
-  prepended by `@`, `:`, or `::`
-  - `<div (if)="hasBooks">...</div>`
+As interpolation in text nodes. Wrapped between curly braces `{}`
 
+`<p>Hello { place.name }</p>`
+
+As value of a dynamic attribute or event. Their attribute name will be prepended
+by `@`, `:`, or `::`
+
+`<my-component :id="user.id" />` `<button @click="insertData">...`
+
+As value of some directives. Their attribute name will be wrapped by parens `()`
+
+`<div (if)="hasBooks">...</div>`
 
 ## Format
 
