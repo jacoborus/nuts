@@ -11,7 +11,7 @@ export function tokenizeHtml(input: string): IToken[] {
       continue;
     }
     const start = reader.index;
-    const value = reader.toNextTag();
+    const value = reader.toNext('<');
     reader.addToken({
       start,
       end: reader.index - 1,
@@ -194,7 +194,7 @@ export function tokenizeAttribute(reader: Reader): void {
     exprReader.tokens.forEach((token) => reader.addToken(token));
   } else {
     const valueStart = reader.index;
-    const value = isQuoted ? reader.toQuote(quote) : reader.toWhiteOrClose();
+    const value = isQuoted ? reader.toNext(quote) : reader.toWhiteOrClose();
     reader.addToken({
       start: valueStart,
       end: reader.index - 1,
@@ -237,7 +237,7 @@ export function tokenizeCloseTag(reader: Reader): void {
   reader.next();
   reader.next();
   const start = reader.index;
-  const value = reader.toCloseTagEnd();
+  const value = reader.toNext('>');
   const end = reader.index - 1;
   reader.addToken({
     start,
@@ -300,14 +300,16 @@ export function tokenizeWhiteSpaceInExpr(reader: Reader): void {
 export function tokenizeQuoted(reader: Reader): void {
   const quoteCode = reader.charCode();
   const kind = quoteCode === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
+  const quote = reader.char();
   reader.addToken({
     start: reader.index,
     end: reader.index,
-    value: reader.char(),
+    value: quote,
     type: kind,
   });
-  const start = reader.index + 1;
-  const value = reader.getQuotedValue();
+  reader.next();
+  const start = reader.index;
+  const value = reader.toNext(quote);
   reader.addToken({
     start,
     end: reader.index - 1,

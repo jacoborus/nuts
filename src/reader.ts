@@ -66,17 +66,6 @@ export class Reader {
   isQuote(): boolean {
     return ["'", '"'].includes(this.char());
   }
-  getQuotedValue(): string {
-    const quote = this.char();
-    if (!['"', "'"].includes(quote)) throw new Error('Wrong quoted index');
-    this.next();
-    const value = [];
-    while (this.index < this.source.length && this.char() !== quote) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
   toNextNonWhiteInExpr(): string {
     const value = [];
     while (this.exprNotFinished() && this.isWhiteSpace()) {
@@ -113,22 +102,6 @@ export class Reader {
     }
     return value.join('');
   }
-  toQuote(quote: string): string {
-    const value = [];
-    while (this.notFinished() && this.char() !== quote) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
-  toCloseTagEnd(): string {
-    const value = [];
-    while (this.notFinished() && this.char() !== '>') {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
   toNext(char: string): string {
     const value = [];
     while (this.notFinished() && this.char() !== char) {
@@ -140,14 +113,6 @@ export class Reader {
   toNextNonWhite(): string {
     const value = [];
     while (this.notFinished() && this.isWhiteSpace()) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
-  toNextTag(): string {
-    const value = [];
-    while (this.notFinished() && this.char() !== '<') {
       value.push(this.char());
       this.next();
     }
