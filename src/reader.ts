@@ -129,6 +129,14 @@ export class Reader {
     }
     return value.join('');
   }
+  toNext(char: string): string {
+    const value = [];
+    while (this.notFinished() && this.char() !== char) {
+      value.push(this.char());
+      this.next();
+    }
+    return value.join('');
+  }
   toNextNonWhite(): string {
     const value = [];
     while (this.notFinished() && this.isWhiteSpace()) {

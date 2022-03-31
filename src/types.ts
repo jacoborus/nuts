@@ -22,6 +22,7 @@ export enum TokenKind {
   AttrEq,
   AttrQuote,
   AttrValue,
+  Directive,
   // Expression
   Identifier,
   CtxPrefix, // $

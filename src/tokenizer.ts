@@ -47,6 +47,10 @@ export function tokenizeAttributes(reader: Reader): void {
       tokenizeWhiteSpace(reader);
       continue;
     }
+    if (reader.char() === '(') {
+      tokenizeDirective(reader);
+      continue;
+    }
     tokenizeAttribute(reader);
   }
   const isVoid = reader.char() === '/';
@@ -62,6 +66,89 @@ export function tokenizeAttributes(reader: Reader): void {
   });
   reader.next();
   isVoid && reader.next();
+}
+
+export function tokenizeDirective(reader: Reader): void {
+  reader.addToken({
+    start: reader.index,
+    end: reader.index,
+    value: '(',
+    type: TokenKind.OpenParens,
+  });
+  reader.next();
+  const dirStart = reader.index;
+  const dirName = reader.toNext(')');
+  reader.addToken({
+    start: dirStart,
+    end: reader.index - 1,
+    value: dirName,
+    type: TokenKind.AttrName,
+  });
+  if (reader.char() !== ')') return;
+  reader.addToken({
+    start: reader.index,
+    end: reader.index,
+    value: ')',
+    type: TokenKind.CloseParens,
+  });
+  reader.next();
+  if (reader.char() !== '=') return;
+  reader.addToken({
+    start: reader.index,
+    end: reader.index,
+    value: '=',
+    type: TokenKind.AttrEq,
+  });
+  reader.next();
+  tokenizeAttValue(reader, true);
+}
+
+function tokenizeAttValue(reader: Reader, dynamic: boolean): void {
+  if (!reader.notFinished()) return;
+  const isQuoted = reader.isQuote();
+  const quote = isQuoted ? reader.char() : undefined;
+  const kind =
+    reader.charCode() === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
+  if (isQuoted) {
+    reader.addToken({
+      start: reader.index,
+      end: reader.index,
+      value: quote as string,
+      type: kind,
+    });
+    reader.next();
+  }
+  if (dynamic) tokenizeDynamicAttValue(reader, quote);
+  else tokenizeRegularAttValue(reader, quote);
+  if (reader.isQuote()) {
+    reader.addToken({
+      start: reader.index,
+      end: reader.index,
+      value: quote as string,
+      type: kind,
+    });
+    reader.next();
+  }
+}
+
+function tokenizeRegularAttValue(reader: Reader, quote?: string): void {
+  const exprReader = new Reader(reader.source, {
+    closer: quote,
+    start: reader.index,
+  });
+  tokenizeExpression(exprReader);
+  reader.index = exprReader.index;
+  exprReader.tokens.forEach((token) => reader.addToken(token));
+}
+
+function tokenizeDynamicAttValue(reader: Reader, quote?: string): void {
+  const exprReader = new Reader(reader.source, {
+    closer: quote,
+    start: reader.index,
+  });
+  tokenizeExpression(exprReader);
+  reader.index = exprReader.index;
+  exprReader.tokens.forEach((token) => reader.addToken(token));
 }
 
 export function tokenizeAttribute(reader: Reader): void {
