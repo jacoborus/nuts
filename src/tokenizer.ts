@@ -64,7 +64,7 @@ export function tokenizeAttributes(reader: Reader): void {
 }
 
 export function tokenizeDirective(reader: Reader): void {
-  reader.addToken('(', TokenKind.OpenParens);
+  reader.addSingleToken('(', TokenKind.OpenParens);
   reader.next();
   const dirStart = reader.index;
   const dirName = reader.toNext(')');
