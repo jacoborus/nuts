@@ -86,22 +86,29 @@ test('tokenize html tag with (if) directive', () => {
   ]);
 });
 
-test.skip('tokenize html tag with (loop) directive', () => {
+test('tokenize html tag with (loop) directive', () => {
   const tokens = tokenizeHtml('<span (loop)="data.users as user, i"/>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
-    { start: 6, end: 6, type: TokenKind.AttrPrefix, value: '(' },
-    { start: 7, end: 8, type: TokenKind.AttrName, value: 'loop' },
-    { start: 6, end: 6, type: TokenKind.AttrPrefix, value: ')' },
-    { start: 9, end: 9, type: TokenKind.AttrEq, value: '=' },
-    { start: 10, end: 10, type: TokenKind.DQuote, value: '"' },
-    { start: 11, end: 11, type: TokenKind.FuncPrefix, value: 'data' },
-    { start: 16, end: 16, type: TokenKind.Dot, value: '.' },
-    { start: 12, end: 15, type: TokenKind.Identifier, value: 'users' },
-    { start: 19, end: 19, type: TokenKind.DQuote, value: '"' },
-    { start: 20, end: 21, type: TokenKind.VoidTagEnd, value: '/>' },
+    { start: 6, end: 6, type: TokenKind.OpenParens, value: '(' },
+    { start: 7, end: 10, type: TokenKind.AttrName, value: 'loop' },
+    { start: 11, end: 11, type: TokenKind.CloseParens, value: ')' },
+    { start: 12, end: 12, type: TokenKind.AttrEq, value: '=' },
+    { start: 13, end: 13, type: TokenKind.DQuote, value: '"' },
+    { start: 14, end: 17, type: TokenKind.Identifier, value: 'data' },
+    { start: 18, end: 18, type: TokenKind.Dot, value: '.' },
+    { start: 19, end: 23, type: TokenKind.Identifier, value: 'users' },
+    { start: 24, end: 24, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 25, end: 26, type: TokenKind.Identifier, value: 'as' },
+    { start: 27, end: 27, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 28, end: 31, type: TokenKind.Identifier, value: 'user' },
+    { start: 32, end: 32, type: TokenKind.Comma, value: ',' },
+    { start: 33, end: 33, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 34, end: 34, type: TokenKind.Identifier, value: 'i' },
+    { start: 35, end: 35, type: TokenKind.DQuote, value: '"' },
+    { start: 36, end: 37, type: TokenKind.VoidTagEnd, value: '/>' },
   ]);
 });
 
