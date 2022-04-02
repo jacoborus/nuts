@@ -19,6 +19,8 @@ export const enum Section {
   DQuoted,
   SQuoted,
   AttribExpression,
+  BeginExpression,
+  Identifier,
 }
 
 export interface IToken {

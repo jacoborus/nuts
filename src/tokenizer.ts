@@ -179,22 +179,32 @@ function tokenizeAttribValue(reader: Reader): void {
   if (reader.hasExpression) {
     if (charCode === Chars.Dq) {
       reader.emitToken(TokenKind.DQuote);
-      reader.section = Section.DQuoted;
-      return;
+      reader.section = Section.AfterOpenTag;
+      tokenizeExpression(reader, Chars.Dq);
+      if (reader.notFinished()) {
+        reader.emitToken(TokenKind.DQuote);
+      }
     } else if (charCode === Chars.Sq) {
       reader.emitToken(TokenKind.SQuote);
-      reader.section = Section.SQuoted;
-      return;
+      reader.section = Section.AfterOpenTag;
+      tokenizeExpression(reader, Chars.Sq);
+      if (reader.notFinished()) {
+        reader.emitToken(TokenKind.SQuote);
+      }
+    } else {
+      reader.section = Section.AfterOpenTag;
+      tokenizeExpression(reader);
+    }
+    if (reader.notFinished()) {
+      reader.section = Section.AfterOpenTag;
     }
   } else {
     if (charCode === Chars.Dq) {
       reader.emitToken(TokenKind.DQuote);
       reader.section = Section.DQuoted;
-      return;
     } else if (charCode === Chars.Sq) {
       reader.emitToken(TokenKind.SQuote);
       reader.section = Section.SQuoted;
-      return;
     } else {
       while (
         reader.notFinished() &&
@@ -229,16 +239,6 @@ function tokenizeSquoted(reader: Reader): void {
   }
 }
 
-function tokenizeDynamicAttValue(reader: Reader, quote?: string): void {
-  const exprReader = new Reader(reader.source, {
-    closer: quote,
-    start: reader.index,
-  });
-  tokenizeExpression(exprReader);
-  reader.index = exprReader.index;
-  exprReader.tokens.forEach((token) => reader.addToken(token));
-}
-
 function tokenizeCloseTag(reader: Reader): void {
   if (reader.isWhiteSpace()) {
     reader.emitToken(TokenKind.WhiteSpace);
@@ -254,47 +254,47 @@ function tokenizeCloseTag(reader: Reader): void {
   }
 }
 
-export function tokenizeExpression(reader: Reader): IToken[] {
-  while (reader.exprNotFinished()) {
-    if (reader.isWhiteSpace()) {
-      tokenizeWhiteSpaceInExpr(reader);
-      continue;
-    }
-    const char = reader.char();
-    if (char === '"' || char === "'") {
-      tokenizeQuoted(reader);
-      continue;
-    }
-    if (reader.isNonLiteral()) {
-      tokenizeNonLiteral(reader);
-      continue;
-    }
-    tokenizeLiteralExpression(reader);
-  }
-  return reader.tokens;
+function isCloser(reader: Reader, closer?: number): boolean {
+  return closer ? reader.charCode() === closer : reader.isWhiteSpace();
 }
 
-export function tokenizeWhiteSpace(reader: Reader): void {
-  const start = reader.index;
-  const value = reader.toNextNonWhite();
-  const end = reader.index - 1;
-  reader.addToken({
-    start,
-    end,
-    value,
-    type: TokenKind.WhiteSpace,
-  });
+export function tokenizeExpression(reader: Reader, closer?: number): void {
+  const presection = reader.section;
+  while (reader.notFinished() && !isCloser(reader, closer)) {
+    switch (reader.section) {
+      case Section.BeginExpression:
+        tokenizeBeginExpression(reader);
+        break;
+      case Section.Identifier:
+        tokenizeIdenfitier(reader);
+        break;
+      default:
+        reader.section = Section.BeginExpression;
+    }
+  }
+  reader.section = presection;
 }
-export function tokenizeWhiteSpaceInExpr(reader: Reader): void {
-  const start = reader.index;
-  const value = reader.toNextNonWhiteInExpr();
-  const end = reader.index - 1;
-  reader.addToken({
-    start,
-    end,
-    value,
-    type: TokenKind.WhiteSpace,
-  });
+
+function tokenizeBeginExpression(reader: Reader): void {
+  if (reader.isWhiteSpace()) {
+    reader.emitToken(TokenKind.WhiteSpace);
+    return;
+  }
+  reader.emitToken(TokenKind.Identifier);
+  reader.section = Section.Identifier;
+}
+
+function tokenizeIdenfitier(reader: Reader): void {
+  if (reader.isWhiteSpace()) {
+    reader.emitToken(TokenKind.WhiteSpace);
+    reader.section = Section.BeginExpression;
+    return;
+  }
+  if (reader.charCode() === Chars.Do) {
+    reader.emitToken(TokenKind.Dot);
+    return;
+  }
+  reader.emitToken(TokenKind.Identifier);
 }
 
 export function tokenizeQuoted(reader: Reader): void {

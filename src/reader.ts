@@ -69,11 +69,11 @@ export class Reader {
   notFinished(): boolean {
     return this.index <= this.source.length;
   }
-  isCloser(): boolean {
-    return this.closer ? this.char() === this.closer : this.isWhiteSpace();
+  isCloser(charCode: number): boolean {
+    return this.closer ? this.charCode() === charCode : this.isWhiteSpace();
   }
   exprNotFinished(): boolean {
-    return this.index < this.source.length && !this.isCloser();
+    return this.index < this.source.length && !this.isCloser(0);
   }
   isWhiteSpace(pos?: number): boolean {
     const charCode = this.charCode(pos);
