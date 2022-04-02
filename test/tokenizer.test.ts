@@ -71,7 +71,7 @@ test('tokenize html: tag with unquoted attribs', () => {
   ]);
 });
 
-test.skip('tokenize html tag with prefixed attrib name', () => {
+test('tokenize html tag with prefixed attrib name', () => {
   const tokens = tokenizeHtml('<span :id="@user.id"/>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
@@ -203,9 +203,10 @@ test('tokenize expression: call function', () => {
   ]);
 });
 
-test.skip('tokenize expression: subexpression', () => {
-  const reader = new Reader('uno.2.[ dos.tres] }', { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+test('tokenize expression: subexpression', () => {
+  const reader = new Reader('uno.2.[ dos.tres] }');
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -221,9 +222,10 @@ test.skip('tokenize expression: subexpression', () => {
   ]);
 });
 
-test.skip('tokenize expression: Single quoted', () => {
-  const reader = new Reader("uno.2.'first name'}", { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+test('tokenize expression: quoted', () => {
+  const reader = new Reader("uno.2.'first name'}");
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },

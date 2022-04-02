@@ -22,6 +22,7 @@ export const enum Section {
   BeginExpression,
   Identifier,
   ExprMethod,
+  ExprQuoted,
 }
 
 export interface IToken {

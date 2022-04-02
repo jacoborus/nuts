@@ -268,6 +268,9 @@ export function tokenizeExpression(reader: Reader, closer?: number): void {
       case Section.Identifier:
         tokenizeIdenfitier(reader);
         break;
+      case Section.ExprQuoted:
+        tokenizeQuoted(reader);
+        break;
       default:
         reader.section = Section.BeginExpression;
     }
@@ -288,6 +291,10 @@ function tokenizeBeginExpression(reader: Reader): void {
   if (reader.charCode() === Chars.D$) {
     reader.emitToken(TokenKind.CtxPrefix);
     reader.section = Section.Identifier;
+    return;
+  }
+  if (reader.isQuote()) {
+    reader.section = Section.ExprQuoted;
     return;
   }
   reader.emitToken(TokenKind.Identifier);
@@ -314,9 +321,23 @@ function tokenizeIdenfitier(reader: Reader): void {
     reader.section = Section.BeginExpression;
     return;
   }
+  if (reader.charCode() === Chars.Ob) {
+    reader.emitToken(TokenKind.OpenBracket);
+    reader.section = Section.BeginExpression;
+    return;
+  }
+  if (reader.charCode() === Chars.Cb) {
+    reader.emitToken(TokenKind.CloseBracket);
+    reader.section = Section.BeginExpression;
+    return;
+  }
   if (reader.charCode() === Chars.Co) {
     reader.emitToken(TokenKind.Comma);
     reader.section = Section.BeginExpression;
+    return;
+  }
+  if (reader.isQuote()) {
+    reader.section = Section.ExprQuoted;
     return;
   }
   reader.emitToken(TokenKind.Identifier);
@@ -325,19 +346,13 @@ function tokenizeIdenfitier(reader: Reader): void {
 export function tokenizeQuoted(reader: Reader): void {
   const quoteCode = reader.charCode();
   const kind = quoteCode === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
-  const quote = reader.char();
-  reader.addSingleToken(quote, kind);
-  reader.next();
-  const start = reader.index;
-  const value = reader.toNext(quote);
-  reader.addToken({
-    start,
-    end: reader.index - 1,
-    value,
-    type: TokenKind.Identifier,
-  });
-  reader.addSingleToken(reader.char(), kind);
-  reader.next();
+  reader.emitToken(kind);
+  while (reader.notFinished() && reader.charCode() !== quoteCode) {
+    reader.emitToken(TokenKind.Identifier);
+  }
+  if (reader.notFinished()) {
+    reader.emitToken(kind);
+  }
 }
 
 export function tokenizeNonLiteral(reader: Reader): void {
