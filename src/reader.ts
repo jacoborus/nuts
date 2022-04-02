@@ -1,18 +1,5 @@
 import { IToken, Chars, TokenKind, Section } from './types';
 
-const nonLiterals = [
-  Chars.Sq,
-  Chars.Dq,
-  Chars.Do,
-  Chars.Co,
-  Chars.At,
-  Chars.D$,
-  Chars.Op,
-  Chars.Cp,
-  Chars.Ob,
-  Chars.Cb,
-];
-
 const whiteSpaces = [
   Chars._S,
   Chars._N,
@@ -24,7 +11,6 @@ const whiteSpaces = [
 
 interface ReaderOpts {
   start?: number;
-  closer?: string;
 }
 export class Reader {
   readonly tokens: IToken[] = [];
@@ -38,9 +24,6 @@ export class Reader {
   constructor(source: string, opts?: ReaderOpts) {
     this.source = source;
     this.index = opts?.start || 0;
-    if (opts?.closer) {
-      this.closer = opts.closer;
-    }
     this.tokens = [];
     this.section = Section.Literal;
     this.hasExpression = false;
