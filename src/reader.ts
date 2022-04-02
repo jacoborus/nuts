@@ -69,11 +69,8 @@ export class Reader {
   notFinished(): boolean {
     return this.index <= this.source.length;
   }
-  isCloser(charCode: number): boolean {
-    return this.closer ? this.charCode() === charCode : this.isWhiteSpace();
-  }
-  exprNotFinished(): boolean {
-    return this.index < this.source.length && !this.isCloser(0);
+  isCloser(charCode?: number): boolean {
+    return charCode ? this.charCode() === charCode : this.isWhiteSpace();
   }
   isWhiteSpace(pos?: number): boolean {
     const charCode = this.charCode(pos);
@@ -81,19 +78,6 @@ export class Reader {
   }
   isQuote(): boolean {
     return ["'", '"'].includes(this.char());
-  }
-  isTagName(keyword: string): boolean {
-    const length = keyword.length;
-    const word = this.slice(1, length);
-    if (word.toLowerCase() !== keyword) return false;
-    const nextPos = this.index + length;
-    return this.isWhiteSpace(nextPos) || this.isClosingTag(nextPos);
-  }
-  isClosingTag(pos: number): boolean {
-    const charCode = this.charCode(pos);
-    if (charCode === Chars.Lt) return true;
-    if (charCode !== Chars.Sl) return false;
-    return this.charCode(pos + 1) === Chars.Lt;
   }
   isOpenComment(): boolean {
     return this.slice(0, 4) == '<!--';
@@ -104,53 +88,9 @@ export class Reader {
   isScriptEnd(): boolean {
     return this.slice(0, 9) == '</script>';
   }
-  toNextNonWhiteInExpr(): string {
-    const value = [];
-    while (this.exprNotFinished() && this.isWhiteSpace()) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
-  toNextNonLiteral(): string {
-    const value = [];
-    while (
-      this.exprNotFinished() &&
-      !this.isWhiteSpace() &&
-      !this.isNonLiteral()
-    ) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
-  isNonLiteral(): boolean {
-    return nonLiterals.includes(this.charCode());
-  }
-  getAttName(): string {
-    const value = [];
-    while (
-      this.notFinished() &&
-      !this.isWhiteSpace() &&
-      this.char() !== '>' &&
-      this.char() !== '='
-    ) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
   toNext(char: string): string {
     const value = [];
     while (this.notFinished() && this.char() !== char) {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
-  toNextNonWhite(): string {
-    const value = [];
-    while (this.notFinished() && this.isWhiteSpace()) {
       value.push(this.char());
       this.next();
     }
@@ -165,25 +105,8 @@ export class Reader {
     if (this.charCode() !== Chars.Sl) return false;
     return this.nextCharCode() === Chars.Gt;
   }
-  toWhiteOrClose(): string {
-    const value = [];
-    while (this.notFinished() && !this.isWhiteSpace() && this.char() !== '>') {
-      value.push(this.char());
-      this.next();
-    }
-    return value.join('');
-  }
   addToken(token: IToken): void {
     this.tokens.push(token);
-  }
-  addSingleToken(value: string, kind: TokenKind): void {
-    const start = this.index;
-    this.tokens.push({
-      start,
-      end: start,
-      value,
-      type: kind,
-    });
   }
   emitToken(kind: TokenKind, times = 1): void {
     if (!this.lastToken) {
@@ -197,7 +120,7 @@ export class Reader {
       this.lastToken.value += this.char();
       this.lastToken.end += 1;
     } else {
-      this.addToken(this.lastToken);
+      this.tokens.push(this.lastToken);
       this.lastToken = {
         start: this.index,
         end: this.index,

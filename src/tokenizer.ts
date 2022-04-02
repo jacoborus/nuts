@@ -254,13 +254,9 @@ function tokenizeCloseTag(reader: Reader): void {
   }
 }
 
-function isCloser(reader: Reader, closer?: number): boolean {
-  return closer ? reader.charCode() === closer : reader.isWhiteSpace();
-}
-
 export function tokenizeExpression(reader: Reader, closer?: number): void {
   const presection = reader.section;
-  while (reader.notFinished() && !isCloser(reader, closer)) {
+  while (reader.notFinished() && !reader.isCloser(closer)) {
     switch (reader.section) {
       case Section.BeginExpression:
         tokenizeBeginExpression(reader);
@@ -353,60 +349,4 @@ export function tokenizeQuoted(reader: Reader): void {
   if (reader.notFinished()) {
     reader.emitToken(kind);
   }
-}
-
-export function tokenizeNonLiteral(reader: Reader): void {
-  const start = reader.index;
-  const end = start;
-  const value = reader.char();
-  let kind: TokenKind;
-  switch (reader.charCode()) {
-    case Chars.At:
-      kind = TokenKind.FuncPrefix;
-      break;
-    case Chars.D$:
-      kind = TokenKind.CtxPrefix;
-      break;
-    case Chars.Do:
-      kind = TokenKind.Dot;
-      break;
-    case Chars.Co:
-      kind = TokenKind.Comma;
-      break;
-    case Chars.Ob:
-      kind = TokenKind.OpenBracket;
-      break;
-    case Chars.Cb:
-      kind = TokenKind.CloseBracket;
-      break;
-    case Chars.Op:
-      kind = TokenKind.OpenParens;
-      break;
-    case Chars.Cp:
-      kind = TokenKind.CloseParens;
-      break;
-    case Chars.Sq:
-      kind = TokenKind.SQuote;
-      break;
-    case Chars.Dq:
-      kind = TokenKind.DQuote;
-      break;
-    default:
-      kind = TokenKind.DQuote;
-      break;
-  }
-  reader.addToken({ start, end, value, type: kind });
-  reader.next();
-}
-
-export function tokenizeLiteralExpression(reader: Reader): void {
-  const start = reader.index;
-  const value = reader.toNextNonLiteral();
-  const end = reader.index - 1;
-  reader.addToken({
-    start,
-    end,
-    value,
-    type: TokenKind.Identifier,
-  });
 }
