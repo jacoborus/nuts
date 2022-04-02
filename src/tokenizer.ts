@@ -272,7 +272,7 @@ export function tokenizeExpression(reader: Reader, closer?: number): void {
         reader.section = Section.BeginExpression;
     }
   }
-  reader.section = presection;
+  if (reader.notFinished()) reader.section = presection;
 }
 
 function tokenizeBeginExpression(reader: Reader): void {
@@ -295,13 +295,28 @@ function tokenizeBeginExpression(reader: Reader): void {
 }
 
 function tokenizeIdenfitier(reader: Reader): void {
+  if (reader.charCode() === Chars.Do) {
+    reader.emitToken(TokenKind.Dot);
+    return;
+  }
   if (reader.isWhiteSpace()) {
     reader.emitToken(TokenKind.WhiteSpace);
     reader.section = Section.BeginExpression;
     return;
   }
-  if (reader.charCode() === Chars.Do) {
-    reader.emitToken(TokenKind.Dot);
+  if (reader.charCode() === Chars.Op) {
+    reader.emitToken(TokenKind.OpenParens);
+    reader.section = Section.BeginExpression;
+    return;
+  }
+  if (reader.charCode() === Chars.Cp) {
+    reader.emitToken(TokenKind.CloseParens);
+    reader.section = Section.BeginExpression;
+    return;
+  }
+  if (reader.charCode() === Chars.Co) {
+    reader.emitToken(TokenKind.Comma);
+    reader.section = Section.BeginExpression;
     return;
   }
   reader.emitToken(TokenKind.Identifier);

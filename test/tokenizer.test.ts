@@ -170,9 +170,10 @@ test('tokenize expression: func prefix', () => {
   ]);
 });
 
-test.skip('tokenize expression: ctx prefix', () => {
-  const reader = new Reader('$uno.dos');
-  const tokens = tokenizeExpression(reader);
+test('tokenize expression: ctx prefix', () => {
+  const reader = new Reader('$uno.dos ');
+  tokenizeExpression(reader);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.CtxPrefix, value: '$' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -181,9 +182,10 @@ test.skip('tokenize expression: ctx prefix', () => {
   ]);
 });
 
-test.skip('tokenize expression: call function', () => {
-  const reader = new Reader('@uno(dos.a,  dos.b) }', { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+test('tokenize expression: call function', () => {
+  const reader = new Reader('@uno(dos.a,  dos.b) }');
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
