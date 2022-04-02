@@ -1,5 +1,31 @@
 import { SourceFile } from 'typescript';
 
+export const enum Section {
+  Literal,
+  OpenTag,
+  Script,
+  Style,
+  Doctype,
+  TagName,
+  Attribs,
+  BeginAttribute,
+  ClosingTag,
+  Expression,
+  Comment,
+  AfterOpenTag,
+  AttribName,
+  DirectiveName,
+  AfterAttribName,
+  AttribValue,
+  DQuoted,
+  SQuoted,
+  AttribExpression,
+  BeginExpression,
+  Identifier,
+  ExprMethod,
+  ExprQuoted,
+}
+
 export interface IToken {
   type: TokenKind;
   value: string;
@@ -8,6 +34,7 @@ export interface IToken {
 }
 
 export enum TokenKind {
+  Beginning,
   WhiteSpace,
   // html
   Literal,
@@ -17,12 +44,16 @@ export enum TokenKind {
   VoidTagEnd, // '/>'
   CloseTag, // leading '</'
   CloseTagEnd, // tailing '>'
+  Comment,
+  Script,
   AttrPrefix, // '@', ':' or '::'
   AttrName,
   AttrEq,
   AttrQuote,
   AttrValue,
   Directive,
+  OpenComment,
+  CloseComment,
   // Expression
   Identifier,
   CtxPrefix, // $
@@ -35,6 +66,7 @@ export enum TokenKind {
   CloseParens, // )
   SQuote, // '
   DQuote, // "
+  Unexpected,
 }
 
 export const enum Chars {
@@ -45,8 +77,19 @@ export const enum Chars {
   _F = 12, // \f
   Sq = 39, // '
   Dq = 34, // "
+  Lt = 60, // <
+  Ep = 33, // !
+  Cl = 45, // -
+  La = 97, // a
+  Lz = 122, // z
+  Ua = 65, // A
+  Uz = 90, // Z
+  Gt = 62, // >
   Do = 46, // .
   Co = 44, // ,
+  C_ = 58, // :
+  Sc = 59, // ;
+  Eq = 61, // =
   At = 64, // @
   D$ = 36, // $
   Op = 40, // ( open parens

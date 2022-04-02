@@ -1,6 +1,6 @@
 import { tokenizeHtml, tokenizeExpression } from '../src/tokenizer';
 import { Reader } from '../src/reader';
-import { TokenKind } from '../src/types';
+import { Chars, IToken, TokenKind } from '../src/types';
 
 test('tokenize html: simple void element', () => {
   const tokens = tokenizeHtml('  <br>');
@@ -9,6 +9,29 @@ test('tokenize html: simple void element', () => {
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
     { start: 3, end: 4, type: TokenKind.TagName, value: 'br' },
     { start: 5, end: 5, type: TokenKind.OpenTagEnd, value: '>' },
+  ]);
+});
+
+test('tokenize html: comment', () => {
+  const tokens = tokenizeHtml('  <!-- hola --> ');
+  expect(tokens).toEqual([
+    { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
+    { start: 2, end: 5, type: TokenKind.OpenComment, value: '<!--' },
+    { start: 6, end: 11, type: TokenKind.Comment, value: ' hola ' },
+    { start: 12, end: 14, type: TokenKind.CloseComment, value: '-->' },
+  ]);
+});
+
+test('tokenize html: tag with no attribs', () => {
+  const tokens = tokenizeHtml('<span>hola</span>');
+  expect(tokens).toEqual([
+    { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
+    { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
+    { start: 5, end: 5, type: TokenKind.OpenTagEnd, value: '>' },
+    { start: 6, end: 9, type: TokenKind.Literal, value: 'hola' },
+    { start: 10, end: 11, type: TokenKind.CloseTag, value: '</' },
+    { start: 12, end: 15, type: TokenKind.TagName, value: 'span' },
+    { start: 16, end: 16, type: TokenKind.CloseTagEnd, value: '>' },
   ]);
 });
 
@@ -28,6 +51,60 @@ test('tokenize html: tag with attribs', () => {
     { start: 20, end: 21, type: TokenKind.CloseTag, value: '</' },
     { start: 22, end: 25, type: TokenKind.TagName, value: 'span' },
     { start: 26, end: 26, type: TokenKind.CloseTagEnd, value: '>' },
+  ]);
+});
+
+test('tokenize html: script', () => {
+  const tokens = tokenizeHtml(`  <script lang="ts">;
+    console.log('hola');</script> `);
+  expect(tokens).toEqual([
+    { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
+    { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
+    { start: 3, end: 8, type: TokenKind.TagName, value: 'script' },
+    { start: 9, end: 9, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 10, end: 13, type: TokenKind.AttrName, value: 'lang' },
+    { start: 14, end: 14, type: TokenKind.AttrEq, value: '=' },
+    { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
+    { start: 16, end: 17, type: TokenKind.AttrValue, value: 'ts' },
+    { start: 18, end: 18, type: TokenKind.DQuote, value: '"' },
+    { start: 19, end: 19, type: TokenKind.OpenTagEnd, value: '>' },
+    {
+      start: 20,
+      end: 45,
+      type: TokenKind.Literal,
+      value: `;
+    console.log('hola');`,
+    },
+    { start: 46, end: 47, type: TokenKind.CloseTag, value: '</' },
+    { start: 48, end: 53, type: TokenKind.TagName, value: 'script' },
+    { start: 54, end: 54, type: TokenKind.CloseTagEnd, value: '>' },
+  ]);
+});
+
+test('tokenize html: style', () => {
+  const tokens = tokenizeHtml(`  <style lang="scss">
+    body{color:#fff;}</style> `);
+  expect(tokens).toEqual([
+    { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
+    { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
+    { start: 3, end: 7, type: TokenKind.TagName, value: 'style' },
+    { start: 8, end: 8, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 9, end: 12, type: TokenKind.AttrName, value: 'lang' },
+    { start: 13, end: 13, type: TokenKind.AttrEq, value: '=' },
+    { start: 14, end: 14, type: TokenKind.DQuote, value: '"' },
+    { start: 15, end: 18, type: TokenKind.AttrValue, value: 'scss' },
+    { start: 19, end: 19, type: TokenKind.DQuote, value: '"' },
+    { start: 20, end: 20, type: TokenKind.OpenTagEnd, value: '>' },
+    {
+      start: 21,
+      end: 42,
+      type: TokenKind.Literal,
+      value: `
+    body{color:#fff;}`,
+    },
+    { start: 43, end: 44, type: TokenKind.CloseTag, value: '</' },
+    { start: 45, end: 49, type: TokenKind.TagName, value: 'style' },
+    { start: 50, end: 50, type: TokenKind.CloseTagEnd, value: '>' },
   ]);
 });
 
@@ -74,7 +151,7 @@ test('tokenize html tag with (if) directive', () => {
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
     { start: 6, end: 6, type: TokenKind.OpenParens, value: '(' },
-    { start: 7, end: 8, type: TokenKind.AttrName, value: 'if' },
+    { start: 7, end: 8, type: TokenKind.Directive, value: 'if' },
     { start: 9, end: 9, type: TokenKind.CloseParens, value: ')' },
     { start: 10, end: 10, type: TokenKind.AttrEq, value: '=' },
     { start: 11, end: 11, type: TokenKind.DQuote, value: '"' },
@@ -93,7 +170,7 @@ test('tokenize html tag with (loop) directive', () => {
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
     { start: 6, end: 6, type: TokenKind.OpenParens, value: '(' },
-    { start: 7, end: 10, type: TokenKind.AttrName, value: 'loop' },
+    { start: 7, end: 10, type: TokenKind.Directive, value: 'loop' },
     { start: 11, end: 11, type: TokenKind.CloseParens, value: ')' },
     { start: 12, end: 12, type: TokenKind.AttrEq, value: '=' },
     { start: 13, end: 13, type: TokenKind.DQuote, value: '"' },
@@ -113,8 +190,9 @@ test('tokenize html tag with (loop) directive', () => {
 });
 
 test('tokenize expression: simple expression', () => {
-  const reader = new Reader('   uno.dos}', { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+  const reader = new Reader('   uno.dos}');
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.WhiteSpace, value: '   ' },
     { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
@@ -125,7 +203,8 @@ test('tokenize expression: simple expression', () => {
 
 test('tokenize expression: simple expression no closer', () => {
   const reader = new Reader('uno.dos asdf');
-  const tokens = tokenizeExpression(reader);
+  tokenizeExpression(reader);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -134,8 +213,9 @@ test('tokenize expression: simple expression no closer', () => {
 });
 
 test('tokenize expression: func prefix', () => {
-  const reader = new Reader('@uno.dos');
-  const tokens = tokenizeExpression(reader);
+  const reader = new Reader('@uno.dos ');
+  tokenizeExpression(reader);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -145,8 +225,9 @@ test('tokenize expression: func prefix', () => {
 });
 
 test('tokenize expression: ctx prefix', () => {
-  const reader = new Reader('$uno.dos');
-  const tokens = tokenizeExpression(reader);
+  const reader = new Reader('$uno.dos ');
+  tokenizeExpression(reader);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.CtxPrefix, value: '$' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -156,8 +237,9 @@ test('tokenize expression: ctx prefix', () => {
 });
 
 test('tokenize expression: call function', () => {
-  const reader = new Reader('@uno(dos.a,  dos.b) }', { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+  const reader = new Reader('@uno(dos.a,  dos.b) }');
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
@@ -176,8 +258,9 @@ test('tokenize expression: call function', () => {
 });
 
 test('tokenize expression: subexpression', () => {
-  const reader = new Reader('uno.2.[ dos.tres] }', { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+  const reader = new Reader('uno.2.[ dos.tres] }');
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -193,9 +276,10 @@ test('tokenize expression: subexpression', () => {
   ]);
 });
 
-test('tokenize expression: Single quoted', () => {
-  const reader = new Reader("uno.2.'first name'}", { closer: '}' });
-  const tokens = tokenizeExpression(reader);
+test('tokenize expression: quoted', () => {
+  const reader = new Reader("uno.2.'first name'}");
+  tokenizeExpression(reader, Chars.Cx);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
