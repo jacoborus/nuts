@@ -1,115 +1,231 @@
 import { Reader } from './reader';
-import { IToken, TokenKind, Chars } from './types';
+import { IToken, TokenKind, Chars, Section } from './types';
 
 export function tokenizeHtml(input: string): IToken[] {
   const reader = new Reader(input);
   while (reader.notFinished()) {
-    const char = reader.char();
-    if (char === '<') {
-      if (reader.nextChar() === '/') tokenizeCloseTag(reader);
-      else tokenizeOpenTag(reader);
-      continue;
+    switch (reader.section) {
+      case Section.Literal:
+        if (reader.scriptOn) {
+          tokenizeScriptTail(reader);
+          break;
+        }
+        tokenizeLiteral(reader);
+        break;
+      case Section.OpenTag:
+        tokenizeTagName(reader);
+        break;
+      case Section.AfterOpenTag:
+        tokenizeAfterOpenTag(reader);
+        break;
+      case Section.BeginAttribute:
+        tokenizeBeginAttribute(reader);
+        break;
+      case Section.AttribName:
+        tokenizeAttribName(reader);
+        break;
+      case Section.AfterAttribName:
+        tokenizeAfterAttribName(reader);
+        break;
+      case Section.AttribValue:
+        tokenizeAttribValue(reader);
+        break;
+      case Section.DQuoted:
+        tokenizeDquoted(reader);
+        break;
+      case Section.SQuoted:
+        tokenizeSquoted(reader);
+        break;
+      case Section.Comment:
+        tokenizeComment(reader);
+        break;
+      case Section.Script:
+        tokenizeScriptHead(reader);
+        break;
     }
-    const start = reader.index;
-    const value = reader.toNext('<');
-    reader.addToken({
-      start,
-      end: reader.index - 1,
-      value,
-      type: TokenKind.Literal,
-    });
   }
   return reader.tokens;
 }
 
-export function tokenizeOpenTag(reader: Reader): void {
-  reader.addSingleToken('<', TokenKind.OpenTag);
-  reader.next();
-  const start = reader.index;
-  const value = reader.toWhiteOrClose();
-  const end = reader.index - 1;
-  const kind = TokenKind.TagName;
-  reader.addToken({ start, end, value, type: kind });
-  tokenizeAttributes(reader);
-}
-
-export function tokenizeAttributes(reader: Reader): void {
-  while (
-    reader.char() !== '>' &&
-    !(reader.char() === '/' && reader.nextChar() === '>')
+function tokenizeLiteral(reader: Reader): void {
+  if (reader.charCode() !== Chars.Lt) {
+    reader.emitToken(TokenKind.Literal);
+    return;
+  }
+  const nextChar = reader.nextCharCode();
+  if (
+    (nextChar >= Chars.La && nextChar <= Chars.Lz) ||
+    (nextChar >= Chars.Ua && nextChar <= Chars.Uz)
   ) {
-    if (reader.isWhiteSpace()) {
-      tokenizeWhiteSpace(reader);
-      continue;
+    // <d
+    reader.emitToken(TokenKind.OpenTag);
+    reader.section = Section.OpenTag;
+  } else if (nextChar === Chars.Sl) {
+    // </
+    reader.emitToken(TokenKind.CloseTag, 2);
+    tokenizeCloseTag(reader);
+  } else if (nextChar === Chars.Lt) {
+    // <<
+    reader.emitToken(TokenKind.Literal);
+  } else if (reader.isOpenComment()) {
+    // <!--
+    reader.emitToken(TokenKind.OpenComment, 4);
+    reader.section = Section.Comment;
+  } else {
+    // <>
+    // any other chars covert to normal state
+    reader.emitToken(TokenKind.Literal);
+  }
+}
+
+function tokenizeComment(reader: Reader): void {
+  while (reader.notFinished() && !reader.isCommentEnd()) {
+    reader.emitToken(TokenKind.Comment);
+  }
+  if (reader.isCommentEnd()) {
+    reader.emitToken(TokenKind.CloseComment, 3);
+    reader.section = Section.Literal;
+  }
+}
+
+function tokenizeScriptHead(reader: Reader): void {
+  reader.emitToken(TokenKind.OpenTag);
+  reader.emitToken(TokenKind.TagName, 6);
+  reader.scriptOn = true;
+  reader.section = Section.AfterOpenTag;
+}
+
+function tokenizeScriptTail(reader: Reader): void {
+  while (reader.notFinished() && !reader.isScriptEnd()) {
+    reader.emitToken(TokenKind.Script);
+  }
+  if (reader.isScriptEnd()) {
+    reader.emitToken(TokenKind.CloseTag, 2);
+    reader.emitToken(TokenKind.TagName, 6);
+    reader.emitToken(TokenKind.CloseTag);
+    reader.section = Section.Literal;
+    reader.scriptOn = false;
+  }
+}
+
+function tokenizeTagName(reader: Reader): void {
+  while (
+    reader.notFinished() &&
+    !reader.isWhiteSpace() &&
+    !reader.isOpenTagEnd()
+  ) {
+    reader.emitToken(TokenKind.TagName);
+  }
+  reader.section = Section.AfterOpenTag;
+}
+
+export function tokenizeAfterOpenTag(reader: Reader): void {
+  if (reader.isWhiteSpace()) {
+    reader.emitToken(TokenKind.WhiteSpace);
+    return;
+  }
+  if (reader.charCode() === Chars.Gt) {
+    reader.emitToken(TokenKind.OpenTagEnd);
+    reader.section = Section.Literal;
+    return;
+  }
+  if (reader.isVoidTagEnd()) {
+    reader.emitToken(TokenKind.VoidTagEnd, 2);
+    reader.section = Section.Literal;
+    return;
+  }
+  reader.section = Section.BeginAttribute;
+}
+
+function tokenizeBeginAttribute(reader: Reader): void {
+  const charCode = reader.charCode();
+  reader.hasExpression = false;
+  if (charCode === Chars.C_) {
+    reader.hasExpression = true;
+    reader.emitToken(TokenKind.AttrPrefix);
+    if (charCode === Chars.C_) reader.emitToken(TokenKind.AttrPrefix);
+  }
+  reader.section = Section.AttribName;
+}
+
+function tokenizeAttribName(reader: Reader): void {
+  while (
+    reader.charCode() !== Chars.Eq &&
+    reader.notFinished() &&
+    !reader.isWhiteSpace() &&
+    reader.isOpenTagEnd()
+  ) {
+    reader.emitToken(TokenKind.AttrName);
+  }
+  reader.section = Section.AfterAttribName;
+}
+
+function tokenizeAfterAttribName(reader: Reader): void {
+  if (reader.charCode() !== Chars.Eq) {
+    reader.section = Section.AfterOpenTag;
+    return;
+  }
+  reader.emitToken(TokenKind.AttrEq);
+  reader.section = Section.AttribValue;
+}
+
+function tokenizeAttribValue(reader: Reader): void {
+  if (reader.isWhiteSpace()) {
+    reader.section = Section.AfterOpenTag;
+    return;
+  }
+  const charCode = reader.charCode();
+  if (reader.hasExpression) {
+    if (charCode === Chars.Dq) {
+      reader.emitToken(TokenKind.DQuote);
+      reader.section = Section.DQuoted;
+      return;
+    } else if (charCode === Chars.Sq) {
+      reader.emitToken(TokenKind.SQuote);
+      reader.section = Section.SQuoted;
+      return;
     }
-    if (reader.char() === '(') {
-      tokenizeDirective(reader);
-      continue;
+  } else {
+    if (charCode === Chars.Dq) {
+      reader.emitToken(TokenKind.DQuote);
+      reader.section = Section.DQuoted;
+      return;
+    } else if (charCode === Chars.Sq) {
+      reader.emitToken(TokenKind.SQuote);
+      reader.section = Section.SQuoted;
+      return;
+    } else {
+      while (
+        reader.notFinished() &&
+        !reader.isWhiteSpace() &&
+        !reader.isOpenTagEnd()
+      ) {
+        reader.emitToken(TokenKind.AttrValue);
+      }
+      if (reader.notFinished()) {
+        reader.section = Section.AfterOpenTag;
+      }
     }
-    tokenizeAttribute(reader);
-  }
-  const isVoid = reader.char() === '/';
-  const value = isVoid ? '/>' : '>';
-  const end = reader.index + (isVoid ? 1 : 0);
-  const kind = isVoid ? TokenKind.VoidTagEnd : TokenKind.OpenTagEnd;
-
-  reader.addToken({
-    start: reader.index,
-    end,
-    value,
-    type: kind,
-  });
-  reader.next();
-  isVoid && reader.next();
-}
-
-export function tokenizeDirective(reader: Reader): void {
-  reader.addSingleToken('(', TokenKind.OpenParens);
-  reader.next();
-  const dirStart = reader.index;
-  const dirName = reader.toNext(')');
-  reader.addToken({
-    start: dirStart,
-    end: reader.index - 1,
-    value: dirName,
-    type: TokenKind.AttrName,
-  });
-  if (reader.char() !== ')') return;
-  reader.addSingleToken(')', TokenKind.CloseParens);
-  reader.next();
-  if (reader.char() !== '=') return;
-  reader.addSingleToken('=', TokenKind.AttrEq);
-  reader.next();
-  tokenizeAttValue(reader, true);
-}
-
-function tokenizeAttValue(reader: Reader, dynamic: boolean): void {
-  if (!reader.notFinished()) return;
-  const isQuoted = reader.isQuote();
-  const quote = isQuoted ? reader.char() : undefined;
-  const kind =
-    reader.charCode() === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
-  if (isQuoted) {
-    reader.addSingleToken(quote as string, kind);
-    reader.next();
-  }
-  if (dynamic) tokenizeDynamicAttValue(reader, quote);
-  else tokenizeRegularAttValue(reader, quote);
-  if (reader.isQuote()) {
-    reader.addSingleToken(quote as string, kind);
-    reader.next();
   }
 }
 
-function tokenizeRegularAttValue(reader: Reader, quote?: string): void {
-  const valueStart = reader.index;
-  const value = quote ? reader.toNext(quote) : reader.toWhiteOrClose();
-  reader.addToken({
-    start: valueStart,
-    end: reader.index - 1,
-    value,
-    type: TokenKind.AttrValue,
-  });
+function tokenizeDquoted(reader: Reader): void {
+  while (reader.notFinished() && reader.charCode() !== Chars.Dq) {
+    reader.emitToken(TokenKind.AttrValue);
+  }
+  if (reader.charCode() === Chars.Dq) {
+    reader.emitToken(TokenKind.DQuote);
+    reader.section = Section.AfterOpenTag;
+  }
+}
+function tokenizeSquoted(reader: Reader): void {
+  while (reader.notFinished() && reader.charCode() !== Chars.Sq) {
+    reader.emitToken(TokenKind.AttrValue);
+  }
+  if (reader.charCode() === Chars.Sq) {
+    reader.emitToken(TokenKind.SQuote);
+    reader.section = Section.AfterOpenTag;
+  }
 }
 
 function tokenizeDynamicAttValue(reader: Reader, quote?: string): void {
@@ -122,53 +238,19 @@ function tokenizeDynamicAttValue(reader: Reader, quote?: string): void {
   exprReader.tokens.forEach((token) => reader.addToken(token));
 }
 
-export function tokenizeAttribute(reader: Reader): void {
-  const hasExpr = tokenizeAttPrefix(reader);
-  const nameStart = reader.index;
-  const attName = reader.getAttName();
-  const nameEnd = reader.index - 1;
-  reader.addToken({
-    start: nameStart,
-    end: nameEnd,
-    value: attName,
-    type: TokenKind.AttrName,
-  });
-  if (reader.char() !== '=') return;
-  reader.addSingleToken('=', TokenKind.AttrEq);
-  reader.next();
-  if (reader.isWhiteSpace()) return;
-  tokenizeAttValue(reader, hasExpr);
-}
-
-const attPrefixes = [':', '@'];
-export function tokenizeAttPrefix(reader: Reader): boolean {
-  const char = reader.char();
-  if (!attPrefixes.includes(char)) return false;
-  reader.addSingleToken(char, TokenKind.AttrPrefix);
-  reader.next();
-  return true;
-}
-
-export function tokenizeCloseTag(reader: Reader): void {
-  reader.addToken({
-    start: reader.index,
-    end: reader.index + 1,
-    value: '</',
-    type: TokenKind.CloseTag,
-  });
-  reader.next();
-  reader.next();
-  const start = reader.index;
-  const value = reader.toNext('>');
-  const end = reader.index - 1;
-  reader.addToken({
-    start,
-    end,
-    value,
-    type: TokenKind.TagName,
-  });
-  reader.addSingleToken('>', TokenKind.CloseTagEnd);
-  reader.next();
+function tokenizeCloseTag(reader: Reader): void {
+  if (reader.isWhiteSpace()) {
+    reader.emitToken(TokenKind.WhiteSpace);
+    reader.section = Section.Literal;
+    return;
+  }
+  while (reader.notFinished() && reader.charCode() !== Chars.Gt) {
+    reader.emitToken(TokenKind.TagName);
+  }
+  if (reader.notFinished()) {
+    reader.emitToken(TokenKind.CloseTagEnd);
+    reader.section = Section.Literal;
+  }
 }
 
 export function tokenizeExpression(reader: Reader): IToken[] {
@@ -186,7 +268,7 @@ export function tokenizeExpression(reader: Reader): IToken[] {
       tokenizeNonLiteral(reader);
       continue;
     }
-    tokenizeLiteral(reader);
+    tokenizeLiteralExpression(reader);
   }
   return reader.tokens;
 }
@@ -276,7 +358,7 @@ export function tokenizeNonLiteral(reader: Reader): void {
   reader.next();
 }
 
-export function tokenizeLiteral(reader: Reader): void {
+export function tokenizeLiteralExpression(reader: Reader): void {
   const start = reader.index;
   const value = reader.toNextNonLiteral();
   const end = reader.index - 1;

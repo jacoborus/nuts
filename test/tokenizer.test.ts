@@ -2,7 +2,7 @@ import { tokenizeHtml, tokenizeExpression } from '../src/tokenizer';
 import { Reader } from '../src/reader';
 import { TokenKind } from '../src/types';
 
-test('tokenize html: simple void element', () => {
+test.only('tokenize html: simple void element', () => {
   const tokens = tokenizeHtml('  <br>');
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
