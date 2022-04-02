@@ -54,6 +54,60 @@ test('tokenize html: tag with attribs', () => {
   ]);
 });
 
+test('tokenize html: script', () => {
+  const tokens = tokenizeHtml(`  <script lang="ts">;
+    console.log('hola');</script> `);
+  expect(tokens).toEqual([
+    { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
+    { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
+    { start: 3, end: 8, type: TokenKind.TagName, value: 'script' },
+    { start: 9, end: 9, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 10, end: 13, type: TokenKind.AttrName, value: 'lang' },
+    { start: 14, end: 14, type: TokenKind.AttrEq, value: '=' },
+    { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
+    { start: 16, end: 17, type: TokenKind.AttrValue, value: 'ts' },
+    { start: 18, end: 18, type: TokenKind.DQuote, value: '"' },
+    { start: 19, end: 19, type: TokenKind.OpenTagEnd, value: '>' },
+    {
+      start: 20,
+      end: 45,
+      type: TokenKind.Literal,
+      value: `;
+    console.log('hola');`,
+    },
+    { start: 46, end: 47, type: TokenKind.CloseTag, value: '</' },
+    { start: 48, end: 53, type: TokenKind.TagName, value: 'script' },
+    { start: 54, end: 54, type: TokenKind.CloseTagEnd, value: '>' },
+  ]);
+});
+
+test('tokenize html: style', () => {
+  const tokens = tokenizeHtml(`  <style lang="scss">
+    body{color:#fff;}</style> `);
+  expect(tokens).toEqual([
+    { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
+    { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
+    { start: 3, end: 7, type: TokenKind.TagName, value: 'style' },
+    { start: 8, end: 8, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 9, end: 12, type: TokenKind.AttrName, value: 'lang' },
+    { start: 13, end: 13, type: TokenKind.AttrEq, value: '=' },
+    { start: 14, end: 14, type: TokenKind.DQuote, value: '"' },
+    { start: 15, end: 18, type: TokenKind.AttrValue, value: 'scss' },
+    { start: 19, end: 19, type: TokenKind.DQuote, value: '"' },
+    { start: 20, end: 20, type: TokenKind.OpenTagEnd, value: '>' },
+    {
+      start: 21,
+      end: 42,
+      type: TokenKind.Literal,
+      value: `
+    body{color:#fff;}`,
+    },
+    { start: 43, end: 44, type: TokenKind.CloseTag, value: '</' },
+    { start: 45, end: 49, type: TokenKind.TagName, value: 'style' },
+    { start: 50, end: 50, type: TokenKind.CloseTagEnd, value: '>' },
+  ]);
+});
+
 test('tokenize html: tag with unquoted attribs', () => {
   const tokens = tokenizeHtml('<span id=myid>hola</span>');
   expect(tokens).toEqual([
