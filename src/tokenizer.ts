@@ -280,6 +280,16 @@ function tokenizeBeginExpression(reader: Reader): void {
     reader.emitToken(TokenKind.WhiteSpace);
     return;
   }
+  if (reader.charCode() === Chars.At) {
+    reader.emitToken(TokenKind.FuncPrefix);
+    reader.section = Section.Identifier;
+    return;
+  }
+  if (reader.charCode() === Chars.D$) {
+    reader.emitToken(TokenKind.CtxPrefix);
+    reader.section = Section.Identifier;
+    return;
+  }
   reader.emitToken(TokenKind.Identifier);
   reader.section = Section.Identifier;
 }

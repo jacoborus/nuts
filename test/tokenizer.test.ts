@@ -158,9 +158,10 @@ test('tokenize expression: simple expression no closer', () => {
   ]);
 });
 
-test.skip('tokenize expression: func prefix', () => {
-  const reader = new Reader('@uno.dos');
-  const tokens = tokenizeExpression(reader);
+test('tokenize expression: func prefix', () => {
+  const reader = new Reader('@uno.dos ');
+  tokenizeExpression(reader);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
     { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
