@@ -3,7 +3,8 @@ import { Reader } from '../src/reader';
 import { Chars, IToken, TokenKind } from '../src/types';
 
 test('tokenize html: simple void element', () => {
-  const tokens = tokenizeHtml('  <br>');
+  const reader = new Reader('  <br>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
@@ -13,7 +14,8 @@ test('tokenize html: simple void element', () => {
 });
 
 test('tokenize html: comment', () => {
-  const tokens = tokenizeHtml('  <!-- hola --> ');
+  const reader = new Reader('  <!-- hola --> ');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 5, type: TokenKind.OpenComment, value: '<!--' },
@@ -23,7 +25,8 @@ test('tokenize html: comment', () => {
 });
 
 test('tokenize html: tag with no attribs', () => {
-  const tokens = tokenizeHtml('<span>hola</span>');
+  const reader = new Reader('<span>hola</span>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
@@ -36,7 +39,8 @@ test('tokenize html: tag with no attribs', () => {
 });
 
 test('tokenize html: tag with attribs', () => {
-  const tokens = tokenizeHtml('<span id="myid">hola</span>');
+  const reader = new Reader('<span id="myid">hola</span>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
@@ -55,8 +59,9 @@ test('tokenize html: tag with attribs', () => {
 });
 
 test('tokenize html: script', () => {
-  const tokens = tokenizeHtml(`  <script lang="ts">;
+  const reader = new Reader(`  <script lang="ts">;
     console.log('hola');</script> `);
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
@@ -82,8 +87,9 @@ test('tokenize html: script', () => {
 });
 
 test('tokenize html: style', () => {
-  const tokens = tokenizeHtml(`  <style lang="scss">
+  const reader = new Reader(`  <style lang="scss">
     body{color:#fff;}</style> `);
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
@@ -109,7 +115,8 @@ test('tokenize html: style', () => {
 });
 
 test('tokenize html: tag with unquoted attribs', () => {
-  const tokens = tokenizeHtml('<span id=myid>hola</span>');
+  const reader = new Reader('<span id=myid>hola</span>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
@@ -126,7 +133,8 @@ test('tokenize html: tag with unquoted attribs', () => {
 });
 
 test('tokenize html tag with prefixed attrib name', () => {
-  const tokens = tokenizeHtml('<span :id="@user.id"/>');
+  const reader = new Reader('<span :id="@user.id"/>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
@@ -145,7 +153,8 @@ test('tokenize html tag with prefixed attrib name', () => {
 });
 
 test('tokenize html tag with (if) directive', () => {
-  const tokens = tokenizeHtml('<span (if)="data.users"/>');
+  const reader = new Reader('<span (if)="data.users"/>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
@@ -164,7 +173,8 @@ test('tokenize html tag with (if) directive', () => {
 });
 
 test('tokenize html tag with (loop) directive', () => {
-  const tokens = tokenizeHtml('<span (loop)="data.users as user, i"/>');
+  const reader = new Reader('<span (loop)="data.users as user, i"/>');
+  const tokens = tokenizeHtml(reader);
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },

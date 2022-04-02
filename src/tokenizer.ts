@@ -1,8 +1,7 @@
 import { Reader } from './reader';
 import { IToken, TokenKind, Chars, Section } from './types';
 
-export function tokenizeHtml(input: string): IToken[] {
-  const reader = new Reader(input);
+export function tokenizeHtml(reader: Reader): IToken[] {
   while (reader.notFinished()) {
     switch (reader.section) {
       case Section.Literal:
