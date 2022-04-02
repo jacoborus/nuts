@@ -139,11 +139,12 @@ export function tokenizeAfterOpenTag(reader: Reader): void {
 
 function tokenizeBeginAttribute(reader: Reader): void {
   const charCode = reader.charCode();
+  const nextCharCode = reader.nextCharCode();
   reader.hasExpression = false;
   if (charCode === Chars.C_) {
     reader.hasExpression = true;
     reader.emitToken(TokenKind.AttrPrefix);
-    if (charCode === Chars.C_) reader.emitToken(TokenKind.AttrPrefix);
+    if (nextCharCode === Chars.C_) reader.emitToken(TokenKind.AttrPrefix);
   }
   reader.section = Section.AttribName;
 }
@@ -153,7 +154,7 @@ function tokenizeAttribName(reader: Reader): void {
     reader.charCode() !== Chars.Eq &&
     reader.notFinished() &&
     !reader.isWhiteSpace() &&
-    reader.isOpenTagEnd()
+    !reader.isOpenTagEnd()
   ) {
     reader.emitToken(TokenKind.AttrName);
   }

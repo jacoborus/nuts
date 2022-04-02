@@ -2,13 +2,36 @@ import { tokenizeHtml, tokenizeExpression } from '../src/tokenizer';
 import { Reader } from '../src/reader';
 import { TokenKind } from '../src/types';
 
-test.only('tokenize html: simple void element', () => {
+test('tokenize html: simple void element', () => {
   const tokens = tokenizeHtml('  <br>');
   expect(tokens).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
     { start: 3, end: 4, type: TokenKind.TagName, value: 'br' },
     { start: 5, end: 5, type: TokenKind.OpenTagEnd, value: '>' },
+  ]);
+});
+
+test('tokenize html: comment', () => {
+  const tokens = tokenizeHtml('  <!-- hola --> ');
+  expect(tokens).toEqual([
+    { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
+    { start: 2, end: 5, type: TokenKind.OpenComment, value: '<!--' },
+    { start: 6, end: 11, type: TokenKind.Comment, value: ' hola ' },
+    { start: 12, end: 14, type: TokenKind.CloseComment, value: '-->' },
+  ]);
+});
+
+test('tokenize html: tag with no attribs', () => {
+  const tokens = tokenizeHtml('<span>hola</span>');
+  expect(tokens).toEqual([
+    { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
+    { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
+    { start: 5, end: 5, type: TokenKind.OpenTagEnd, value: '>' },
+    { start: 6, end: 9, type: TokenKind.Literal, value: 'hola' },
+    { start: 10, end: 11, type: TokenKind.CloseTag, value: '</' },
+    { start: 12, end: 15, type: TokenKind.TagName, value: 'span' },
+    { start: 16, end: 16, type: TokenKind.CloseTagEnd, value: '>' },
   ]);
 });
 
