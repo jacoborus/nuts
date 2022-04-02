@@ -1,7 +1,7 @@
 import { Reader } from './reader';
-import { IToken, TokenKind, Chars, Section } from './types';
+import { TokenKind, Chars, Section } from './types';
 
-export function tokenizeHtml(reader: Reader): IToken[] {
+export function tokenizeHtml(reader: Reader): void {
   while (reader.notFinished()) {
     switch (reader.section) {
       case Section.Literal:
@@ -46,7 +46,6 @@ export function tokenizeHtml(reader: Reader): IToken[] {
         break;
     }
   }
-  return reader.tokens;
 }
 
 function tokenizeLiteral(reader: Reader): void {
