@@ -24,6 +24,9 @@ export function tokenizeHtml(input: string): IToken[] {
       case Section.AttribName:
         tokenizeAttribName(reader);
         break;
+      case Section.DirectiveName:
+        tokenizeDirectiveName(reader);
+        break;
       case Section.AfterAttribName:
         tokenizeAfterAttribName(reader);
         break;
@@ -134,6 +137,12 @@ export function tokenizeAfterOpenTag(reader: Reader): void {
     reader.section = Section.Literal;
     return;
   }
+  if (reader.charCode() === Chars.Op) {
+    reader.hasExpression = true;
+    reader.emitToken(TokenKind.OpenParens);
+    reader.section = Section.DirectiveName;
+    return;
+  }
   reader.section = Section.BeginAttribute;
 }
 
@@ -158,7 +167,17 @@ function tokenizeAttribName(reader: Reader): void {
   ) {
     reader.emitToken(TokenKind.AttrName);
   }
-  reader.section = Section.AfterAttribName;
+  if (reader.notFinished()) reader.section = Section.AfterAttribName;
+}
+
+function tokenizeDirectiveName(reader: Reader): void {
+  while (reader.charCode() !== Chars.Cp && reader.notFinished()) {
+    reader.emitToken(TokenKind.Directive);
+  }
+  if (reader.notFinished()) {
+    reader.emitToken(TokenKind.CloseParens);
+    reader.section = Section.AfterAttribName;
+  }
 }
 
 function tokenizeAfterAttribName(reader: Reader): void {

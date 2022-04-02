@@ -144,14 +144,14 @@ test('tokenize html tag with prefixed attrib name', () => {
   ]);
 });
 
-test.skip('tokenize html tag with (if) directive', () => {
+test('tokenize html tag with (if) directive', () => {
   const tokens = tokenizeHtml('<span (if)="data.users"/>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
     { start: 6, end: 6, type: TokenKind.OpenParens, value: '(' },
-    { start: 7, end: 8, type: TokenKind.AttrName, value: 'if' },
+    { start: 7, end: 8, type: TokenKind.Directive, value: 'if' },
     { start: 9, end: 9, type: TokenKind.CloseParens, value: ')' },
     { start: 10, end: 10, type: TokenKind.AttrEq, value: '=' },
     { start: 11, end: 11, type: TokenKind.DQuote, value: '"' },
@@ -163,14 +163,14 @@ test.skip('tokenize html tag with (if) directive', () => {
   ]);
 });
 
-test.skip('tokenize html tag with (loop) directive', () => {
+test('tokenize html tag with (loop) directive', () => {
   const tokens = tokenizeHtml('<span (loop)="data.users as user, i"/>');
   expect(tokens).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
     { start: 6, end: 6, type: TokenKind.OpenParens, value: '(' },
-    { start: 7, end: 10, type: TokenKind.AttrName, value: 'loop' },
+    { start: 7, end: 10, type: TokenKind.Directive, value: 'loop' },
     { start: 11, end: 11, type: TokenKind.CloseParens, value: ')' },
     { start: 12, end: 12, type: TokenKind.AttrEq, value: '=' },
     { start: 13, end: 13, type: TokenKind.DQuote, value: '"' },

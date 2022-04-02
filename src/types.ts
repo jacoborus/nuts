@@ -14,6 +14,7 @@ export const enum Section {
   Comment,
   AfterOpenTag,
   AttribName,
+  DirectiveName,
   AfterAttribName,
   AttribValue,
   DQuoted,
