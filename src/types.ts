@@ -26,11 +26,14 @@ export const enum Section {
   ExprQuoted,
 }
 
-export interface IToken {
-  type: TokenKind;
-  value: string;
+interface IBase {
   start: number;
   end: number;
+}
+
+export interface IToken extends IBase {
+  type: TokenKind;
+  value: string;
 }
 
 export enum TokenKind {
@@ -69,50 +72,18 @@ export enum TokenKind {
   Unexpected,
 }
 
-export const enum Chars {
-  _S = 32, // ' '
-  _N = 10, // \n
-  _T = 9, // \t
-  _R = 13, // \r
-  _F = 12, // \f
-  Sq = 39, // '
-  Dq = 34, // "
-  Lt = 60, // <
-  Ep = 33, // !
-  Cl = 45, // -
-  La = 97, // a
-  Lz = 122, // z
-  Ua = 65, // A
-  Uz = 90, // Z
-  Gt = 62, // >
-  Do = 46, // .
-  Co = 44, // ,
-  C_ = 58, // :
-  Sc = 59, // ;
-  Eq = 61, // =
-  At = 64, // @
-  D$ = 36, // $
-  Op = 40, // ( open parens
-  Cp = 41, // ) close it
-  Ob = 91, // [ open bracket
-  Cb = 93, // ] close it
-  Ox = 123, // { open curly brace
-  Cx = 125, // } close it
-  Sl = 47, // /
-}
-
-export const enum NodeTypes {
-  COMMENT,
-  TEXT,
-  TAG,
-  ATTRIBUTE,
-  EVENT,
-  LOOP,
-  TREE,
-  SUBCOMPONENT,
-  COMPONENT,
-  SCRIPT,
-  TEMPLATE,
+export const enum NodeType {
+  Comment,
+  Text,
+  TextDyn,
+  Tag,
+  Attr,
+  AttrDyn, // Dynamic attribute
+  Event,
+  Loop,
+  Tree,
+  Script,
+  Template,
 }
 
 export const directiveTags = ['if', 'else', 'elseif', 'loop'];
@@ -125,6 +96,64 @@ export const directiveNames = [
   'index',
   'pos',
 ];
+
+export interface IText extends IBase {
+  type: NodeType.Text;
+  value: string;
+}
+
+export interface ITextDyn extends IBase {
+  type: NodeType.TextDyn;
+  expr: Expression;
+  reactive: boolean;
+}
+
+export interface IAttr extends IBase {
+  type: NodeType.Attr;
+  name: IToken;
+  value?: IToken;
+  isBoolean: boolean;
+}
+
+export interface IAttrDyn extends IBase {
+  type: NodeType.AttrDyn;
+  name: IToken;
+  expr: Expression;
+  isBoolean: boolean;
+  isReactive: boolean;
+}
+
+export interface IEvent extends IBase {
+  type: NodeType.Event;
+  name: string;
+  expr: Expression;
+}
+
+export interface ITag extends IBase {
+  type: NodeType.Tag;
+  name: string; // lower case tag name, div
+  rawName: string; // original case tag name, Div
+  attributes: (IAttr | IAttrDyn)[];
+  events: IEvent[];
+  ref?: string;
+  isVoid: boolean;
+  isSubComp: boolean;
+  body:
+    | ElemSchema[] // with close tag
+    | undefined // isVoid
+    | null; // EOF before open tag end
+  // original close tag, </DIV >
+  close:
+    | IText // with close tag
+    | undefined // isVoid
+    | null; // EOF before end or without close tag
+}
+
+export interface IComment extends IBase {
+  type: NodeType.Comment;
+  value: string;
+}
+
 export type DirectiveName =
   | 'if'
   | 'else'
@@ -134,12 +163,48 @@ export type DirectiveName =
   | 'index'
   | 'pos';
 
-interface Item {
-  start: number;
-  end: number;
+export interface LoopSchema extends IBase {
+  type: NodeType.Loop;
+  loop: Expression;
+  target: IToken;
+  index?: IToken;
+  pos?: IToken; // index + 1
+  body: ElemSchema[];
 }
 
-export interface Expression extends Item {
+export type TreeKind = 'if' | 'elseif' | 'else';
+export interface TreeSchema extends IBase {
+  type: NodeType.Tree;
+  kind: TreeKind;
+  condition: Expression;
+  yes: ElemSchema[];
+  no: ElemSchema[];
+  reactive: boolean;
+}
+
+export interface ITemplate extends ITag {
+  name: 'template';
+}
+
+export interface IScript extends Omit<ITag, 'type' | 'body'> {
+  type: NodeType.Script;
+  body: IText;
+}
+
+export interface CodeSchema extends Omit<ITag, 'type'> {
+  type: NodeType.Script;
+  ast: SourceFile;
+}
+
+export interface ComponentSchema {
+  sourceFile: string;
+  source: string;
+  template: ITemplate;
+  script: IScript;
+  children: ElemSchema[];
+}
+
+export interface Expression extends IBase {
   // 0 = context
   // 1 = current scope
   // 2 = parent scope
@@ -148,129 +213,19 @@ export interface Expression extends Item {
   scope: number;
   slabs: (Slab | Expression | ExprMethod)[];
 }
-export interface Slab extends Item {
+
+export interface Slab extends IBase {
   value: string;
 }
-export interface ExprMethod extends Item {
+export interface ExprMethod extends IBase {
   method: Expression[];
   params: Expression[];
 }
 
 export type ElemSchema =
-  | SubCompSchema
+  | IText
+  | ITextDyn
+  | ITag
+  | IComment
   | LoopSchema
-  | TreeSchema
-  | CommentSchema
-  | TextSchema
-  | TagSchema;
-
-export interface CommentSchema extends Item {
-  type: NodeTypes.COMMENT;
-  value: string;
-}
-
-export interface TextSchema extends Item {
-  type: NodeTypes.TEXT;
-  value: string;
-  dynamic: boolean;
-  reactive: boolean;
-  expr?: Expression;
-}
-
-export interface TagSchema extends Item {
-  type: NodeTypes.TAG;
-  name: string;
-  isVoid: boolean;
-  ref?: string;
-  attributes: AttSchema[];
-  events: EventSchema[];
-  children: ElemSchema[];
-  isDirective?: boolean;
-}
-
-export interface AttName extends Item {
-  value: string;
-  expr?: Expression;
-}
-
-export interface AttValue extends Item {
-  value: string;
-  expr?: Expression;
-}
-
-export interface AttSchema extends Item {
-  type: NodeTypes.ATTRIBUTE;
-  name: AttName;
-  value?: AttValue;
-  isBoolean: boolean;
-  isEvent: boolean;
-  dynamic: boolean;
-  reactive: boolean;
-  expr?: Expression;
-  isDirective?: boolean;
-}
-
-export interface EventSchema extends Item {
-  type: NodeTypes.EVENT;
-  name: string;
-  value: string;
-}
-
-export type Attributes = AttSchema | EventSchema;
-
-export interface LoopSchema extends Item {
-  type: NodeTypes.LOOP;
-  target: Expression;
-  index?: string;
-  pos?: string; // index + 1
-  source?: AttSchema;
-  children: ElemSchema[];
-}
-
-export type TreeKind = 'if' | 'elseif' | 'else';
-export interface TreeSchema extends Item {
-  type: NodeTypes.TREE;
-  kind: TreeKind;
-  requirement: Expression;
-  yes: ElemSchema[];
-  no: ElemSchema[];
-  reactive: boolean;
-}
-
-export interface SubCompSchema extends Item {
-  type: NodeTypes.SUBCOMPONENT;
-  name: string;
-  ref?: string;
-  events: EventSchema[];
-  attributes: AttSchema[];
-  children: ElemSchema[];
-}
-
-export interface ScriptSchema extends Item {
-  type: NodeTypes.SCRIPT;
-  attributes: AttSchema[];
-  value: string;
-}
-
-export interface CodeSchema extends Item {
-  type: NodeTypes.SCRIPT;
-  attributes: AttSchema[];
-  value: string;
-  ast: SourceFile;
-}
-
-export interface TemplateSchema extends Item {
-  type: NodeTypes.TEMPLATE;
-  attributes: AttSchema[];
-  schema: ElemSchema[];
-}
-
-export interface ComponentSchema {
-  type: NodeTypes.COMPONENT;
-  sourceFile: string;
-  source: string;
-  template?: TemplateSchema;
-  scripts: ScriptSchema[];
-  comments: CommentSchema[];
-  children: ElemSchema[];
-}
+  | TreeSchema;

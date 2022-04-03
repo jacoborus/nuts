@@ -1,3 +1,35 @@
+export const enum Chars {
+  _S = 32, // ' '
+  _N = 10, // \n
+  _T = 9, // \t
+  _R = 13, // \r
+  _F = 12, // \f
+  Sq = 39, // '
+  Dq = 34, // "
+  Lt = 60, // <
+  Ep = 33, // !
+  Cl = 45, // -
+  La = 97, // a
+  Lz = 122, // z
+  Ua = 65, // A
+  Uz = 90, // Z
+  Gt = 62, // >
+  Do = 46, // .
+  Co = 44, // ,
+  C_ = 58, // :
+  Sc = 59, // ;
+  Eq = 61, // =
+  At = 64, // @
+  D$ = 36, // $
+  Op = 40, // ( open parens
+  Cp = 41, // ) close it
+  Ob = 91, // [ open bracket
+  Cb = 93, // ] close it
+  Ox = 123, // { open curly brace
+  Cx = 125, // } close it
+  Sl = 47, // /
+}
+
 export const booleanAttributes = [
   'async',
   'autofocus',

@@ -1,4 +1,5 @@
-import { IToken, Chars, TokenKind, Section } from './types';
+import { IToken, TokenKind, Section } from './types';
+import { Chars } from './common';
 
 const whiteSpaces = [
   Chars._S,

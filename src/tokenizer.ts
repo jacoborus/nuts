@@ -1,5 +1,6 @@
 import { Reader } from './reader';
-import { TokenKind, Chars, Section } from './types';
+import { TokenKind, Section } from './types';
+import { Chars } from './common';
 
 export function tokenizeHtml(reader: Reader): void {
   while (reader.notFinished()) {

@@ -1,6 +1,7 @@
 import { tokenizeHtml, tokenizeExpression } from '../src/tokenizer';
 import { Reader } from '../src/reader';
-import { Chars, IToken, TokenKind } from '../src/types';
+import { IToken, TokenKind } from '../src/types';
+import { Chars } from '../src/common';
 
 test('tokenize html: simple void element', () => {
   const reader = new Reader('  <br>');
