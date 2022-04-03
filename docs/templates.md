@@ -43,7 +43,7 @@ Iterate through lists using `(loop)` attribute. Format of the value:
 <li (loop)="books as book, ,pos">{ pos }: { book.title }</li>
 ```
 
-## Core tags
+## Core tags (TODO)
 
 ### slot
 
