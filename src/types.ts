@@ -132,7 +132,7 @@ export interface IEvent extends IBase {
 export interface ITag extends IBase {
   type: NodeType.Tag;
   name: string; // lower case tag name, div
-  rawName: string; // original case tag name, Div
+  rawName: IToken; // original case tag name, Div
   attributes: (IAttr | IAttrDyn)[];
   events: IEvent[];
   ref?: string;
@@ -204,13 +204,13 @@ export interface ComponentSchema {
   children: ElemSchema[];
 }
 
+export const enum ExprScope {
+  Scope,
+  Func,
+  Ctx,
+}
 export interface Expression extends IBase {
-  // 0 = context
-  // 1 = current scope
-  // 2 = parent scope
-  // 3 = parent of parent scope
-  // ...
-  scope: number;
+  scope: ExprScope;
   slabs: (Slab | Expression | ExprMethod)[];
 }
 
@@ -218,7 +218,7 @@ export interface Slab extends IBase {
   value: string;
 }
 export interface ExprMethod extends IBase {
-  method: Expression[];
+  method: Expression;
   params: Expression[];
 }
 
