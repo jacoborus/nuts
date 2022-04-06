@@ -11,7 +11,7 @@ import {
 
 import { voidElements } from './common';
 
-class Reader {
+export class Reader {
   index: number;
   tokens: IToken[];
   section: Section;
@@ -31,26 +31,23 @@ class Reader {
   current(): IToken {
     return this.tokens[this.index];
   }
-  push(node: ElemSchema): void {
-    this.schemas.push(node);
-  }
 }
 
-export function parse(tokens: IToken[]): ElemSchema[] {
-  const reader = new Reader(tokens);
-  while (reader.current()) {
+export function parse(reader: Reader): ElemSchema[] {
+  const schemas = [];
+  while (reader.current() && reader.current().type !== TokenKind.CloseTag) {
     switch (reader.current().type) {
       case TokenKind.Literal:
-        reader.push(parseText(reader));
+        schemas.push(parseText(reader));
         break;
       case TokenKind.OpenTag:
-        reader.push(parseTag(reader));
+        schemas.push(parseTag(reader));
         break;
       default:
         throw new Error('Unexpected token:' + reader.current().type);
     }
   }
-  return reader.schemas;
+  return schemas;
 }
 
 function parseText(reader: Reader): IText {
@@ -101,23 +98,25 @@ function parseTag(reader: Reader): ITag {
       end,
     };
   }
+  reader.next();
+  const body = parse(reader);
   return {
     type: NodeType.Tag,
     name: name, // lower case tag name, div
     rawName: tagName, // original case tag name, Div
     attributes,
-    isVoid: true,
+    isVoid: false,
     events: [],
     isSubComp: false,
-    body: undefined, // isVoid
+    body, // isVoid
     // original close tag, </DIV >
     close: undefined, // isVoid
     start: openTag.start,
-    end: reader.index - 1,
+    end: reader.current().end,
   };
 }
 
-function parseAttributes(reader: Reader): [IAttr[], boolean?] {
+export function parseAttributes(reader: Reader): [IAttr[], boolean?] {
   if (reader.current().type === TokenKind.WhiteSpace) reader.next();
   return [[]];
 }
