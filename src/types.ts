@@ -46,7 +46,6 @@ export enum TokenKind {
   OpenTagEnd, // '>',
   VoidTagEnd, // '/>'
   CloseTag, // leading '</'
-  CloseTagEnd, // tailing '>'
   Comment,
   Script,
   AttrPrefix, // '@', ':' or '::'

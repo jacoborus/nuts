@@ -33,9 +33,7 @@ test('tokenize html: tag with no attribs', () => {
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.OpenTagEnd, value: '>' },
     { start: 6, end: 9, type: TokenKind.Literal, value: 'hola' },
-    { start: 10, end: 11, type: TokenKind.CloseTag, value: '</' },
-    { start: 12, end: 15, type: TokenKind.TagName, value: 'span' },
-    { start: 16, end: 16, type: TokenKind.CloseTagEnd, value: '>' },
+    { start: 10, end: 16, type: TokenKind.CloseTag, value: '</span>' },
   ]);
 });
 
@@ -53,9 +51,7 @@ test('tokenize html: tag with attribs', () => {
     { start: 14, end: 14, type: TokenKind.DQuote, value: '"' },
     { start: 15, end: 15, type: TokenKind.OpenTagEnd, value: '>' },
     { start: 16, end: 19, type: TokenKind.Literal, value: 'hola' },
-    { start: 20, end: 21, type: TokenKind.CloseTag, value: '</' },
-    { start: 22, end: 25, type: TokenKind.TagName, value: 'span' },
-    { start: 26, end: 26, type: TokenKind.CloseTagEnd, value: '>' },
+    { start: 20, end: 26, type: TokenKind.CloseTag, value: '</span>' },
   ]);
 });
 
@@ -81,9 +77,7 @@ test('tokenize html: script', () => {
       value: `;
     console.log('hola');`,
     },
-    { start: 46, end: 47, type: TokenKind.CloseTag, value: '</' },
-    { start: 48, end: 53, type: TokenKind.TagName, value: 'script' },
-    { start: 54, end: 54, type: TokenKind.CloseTagEnd, value: '>' },
+    { start: 46, end: 54, type: TokenKind.CloseTag, value: '</script>' },
   ]);
 });
 
@@ -109,9 +103,7 @@ test('tokenize html: style', () => {
       value: `
     body{color:#fff;}`,
     },
-    { start: 43, end: 44, type: TokenKind.CloseTag, value: '</' },
-    { start: 45, end: 49, type: TokenKind.TagName, value: 'style' },
-    { start: 50, end: 50, type: TokenKind.CloseTagEnd, value: '>' },
+    { start: 43, end: 50, type: TokenKind.CloseTag, value: '</style>' },
   ]);
 });
 
@@ -127,9 +119,7 @@ test('tokenize html: tag with unquoted attribs', () => {
     { start: 9, end: 12, type: TokenKind.AttrValue, value: 'myid' },
     { start: 13, end: 13, type: TokenKind.OpenTagEnd, value: '>' },
     { start: 14, end: 17, type: TokenKind.Literal, value: 'hola' },
-    { start: 18, end: 19, type: TokenKind.CloseTag, value: '</' },
-    { start: 20, end: 23, type: TokenKind.TagName, value: 'span' },
-    { start: 24, end: 24, type: TokenKind.CloseTagEnd, value: '>' },
+    { start: 18, end: 24, type: TokenKind.CloseTag, value: '</span>' },
   ]);
 });
 

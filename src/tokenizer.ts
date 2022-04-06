@@ -258,16 +258,17 @@ function tokenizeSquoted(reader: Reader): void {
 }
 
 function tokenizeCloseTag(reader: Reader): void {
+  // TODO: unexpected?
   if (reader.isWhiteSpace()) {
     reader.emitToken(TokenKind.WhiteSpace);
     reader.section = Section.Literal;
     return;
   }
   while (reader.notFinished() && reader.charCode() !== Chars.Gt) {
-    reader.emitToken(TokenKind.TagName);
+    reader.emitToken(TokenKind.CloseTag);
   }
   if (reader.notFinished()) {
-    reader.emitToken(TokenKind.CloseTagEnd);
+    reader.emitToken(TokenKind.CloseTag);
     reader.section = Section.Literal;
   }
 }
