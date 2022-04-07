@@ -11,6 +11,8 @@ export function tokenizeHtml(reader: Reader): void {
           break;
         }
         tokenizeLiteral(reader);
+        // if (reader.char()) tokenizeLiteral(reader);
+        // else reader.next();
         break;
       case Section.OpenTag:
         tokenizeTagName(reader);

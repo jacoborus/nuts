@@ -6,7 +6,7 @@ import { Chars } from '../src/common';
 test('tokenize html: simple void element', () => {
   const reader = new Reader('  <br>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
     { start: 3, end: 4, type: TokenKind.TagName, value: 'br' },
@@ -17,18 +17,19 @@ test('tokenize html: simple void element', () => {
 test('tokenize html: comment', () => {
   const reader = new Reader('  <!-- hola --> ');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 5, type: TokenKind.OpenComment, value: '<!--' },
     { start: 6, end: 11, type: TokenKind.Comment, value: ' hola ' },
     { start: 12, end: 14, type: TokenKind.CloseComment, value: '-->' },
+    { start: 15, end: 15, type: TokenKind.Literal, value: ' ' },
   ]);
 });
 
 test('tokenize html: tag with no attribs', () => {
   const reader = new Reader('<span>hola</span>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.OpenTagEnd, value: '>' },
@@ -40,7 +41,7 @@ test('tokenize html: tag with no attribs', () => {
 test('tokenize html: tag with attribs', () => {
   const reader = new Reader('<span id="myid">hola</span>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
@@ -59,7 +60,7 @@ test('tokenize html: script', () => {
   const reader = new Reader(`  <script lang="ts">;
     console.log('hola');</script> `);
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
     { start: 3, end: 8, type: TokenKind.TagName, value: 'script' },
@@ -78,6 +79,7 @@ test('tokenize html: script', () => {
     console.log('hola');`,
     },
     { start: 46, end: 54, type: TokenKind.CloseTag, value: '</script>' },
+    { start: 55, end: 55, type: TokenKind.Literal, value: ' ' },
   ]);
 });
 
@@ -85,7 +87,7 @@ test('tokenize html: style', () => {
   const reader = new Reader(`  <style lang="scss">
     body{color:#fff;}</style> `);
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 1, type: TokenKind.Literal, value: '  ' },
     { start: 2, end: 2, type: TokenKind.OpenTag, value: '<' },
     { start: 3, end: 7, type: TokenKind.TagName, value: 'style' },
@@ -104,13 +106,14 @@ test('tokenize html: style', () => {
     body{color:#fff;}`,
     },
     { start: 43, end: 50, type: TokenKind.CloseTag, value: '</style>' },
+    { start: 51, end: 51, type: TokenKind.Literal, value: ' ' },
   ]);
 });
 
 test('tokenize html: tag with unquoted attribs', () => {
   const reader = new Reader('<span id=myid>hola</span>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
@@ -126,7 +129,7 @@ test('tokenize html: tag with unquoted attribs', () => {
 test('tokenize html tag with prefixed attrib name', () => {
   const reader = new Reader('<span :id="@user.id"/>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
@@ -146,7 +149,7 @@ test('tokenize html tag with prefixed attrib name', () => {
 test('tokenize html tag with (if) directive', () => {
   const reader = new Reader('<span (if)="data.users"/>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
@@ -166,7 +169,7 @@ test('tokenize html tag with (if) directive', () => {
 test('tokenize html tag with (loop) directive', () => {
   const reader = new Reader('<span (loop)="data.users as user, i"/>');
   tokenizeHtml(reader);
-  expect(reader.tokens).toEqual([
+  expect(reader.getTokens()).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
@@ -289,5 +292,31 @@ test('tokenize expression: quoted', () => {
     { start: 6, end: 6, type: TokenKind.SQuote, value: "'" },
     { start: 7, end: 16, type: TokenKind.Identifier, value: 'first name' },
     { start: 17, end: 17, type: TokenKind.SQuote, value: "'" },
+  ]);
+});
+
+test('tokenize hmtl: 2 sequential void tags', () => {
+  const reader = new Reader('<input type="text" id="myid"><br>');
+  tokenizeHtml(reader);
+  const tokens = reader.tokens.concat(reader.lastToken as IToken);
+  expect(tokens).toEqual([
+    { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
+    { start: 1, end: 5, type: TokenKind.TagName, value: 'input' },
+    { start: 6, end: 6, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 7, end: 10, type: TokenKind.AttrName, value: 'type' },
+    { start: 11, end: 11, type: TokenKind.AttrEq, value: '=' },
+    { start: 12, end: 12, type: TokenKind.DQuote, value: '"' },
+    { start: 13, end: 16, type: TokenKind.AttrValue, value: 'text' },
+    { start: 17, end: 17, type: TokenKind.DQuote, value: '"' },
+    { start: 18, end: 18, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 19, end: 20, type: TokenKind.AttrName, value: 'id' },
+    { start: 21, end: 21, type: TokenKind.AttrEq, value: '=' },
+    { start: 22, end: 22, type: TokenKind.DQuote, value: '"' },
+    { start: 23, end: 26, type: TokenKind.AttrValue, value: 'myid' },
+    { start: 27, end: 27, type: TokenKind.DQuote, value: '"' },
+    { start: 28, end: 28, type: TokenKind.OpenTagEnd, value: '>' },
+    { start: 29, end: 29, type: TokenKind.OpenTag, value: '<' },
+    { start: 30, end: 31, type: TokenKind.TagName, value: 'br' },
+    { start: 32, end: 32, type: TokenKind.OpenTagEnd, value: '>' },
   ]);
 });

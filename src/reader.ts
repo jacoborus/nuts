@@ -51,7 +51,7 @@ export class Reader {
       : this.source.slice(this.index + start);
   }
   notFinished(): boolean {
-    return this.index <= this.source.length;
+    return this.index < this.source.length;
   }
   isCloser(charCode?: number): boolean {
     return charCode ? this.charCode() === charCode : this.isWhiteSpace();
@@ -114,5 +114,8 @@ export class Reader {
     }
     this.next();
     if (--times) this.emitToken(kind, times);
+  }
+  getTokens(): IToken[] {
+    return this.lastToken ? this.tokens.concat(this.lastToken) : this.tokens;
   }
 }
