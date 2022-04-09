@@ -172,20 +172,59 @@ function parseAttribute(reader: Reader): IAllAttribs | undefined {
 function parseAttrValue(reader: Reader, name: IToken): IAttr {
   const opener = reader.current();
   if (opener.type === TokenKind.DQuote || opener.type === TokenKind.SQuote) {
-    reader.next();
-    const value = reader.current();
-    reader.next();
-    reader.next();
+    return parseQuotedAttrValue(reader, name);
+  }
+  return parseNoQuotedAttrValue(reader, name);
+}
+
+function parseQuotedAttrValue(reader: Reader, name: IToken): IAttr {
+  reader.next();
+  if (!reader.hasTokens() || reader.current().type !== TokenKind.AttrValue) {
+    return {
+      type: NodeType.Attr,
+      name,
+      isBoolean: false,
+      start: name.start,
+      end: name.end + 2,
+      err: 'Attribute missing value: ' + name,
+    };
+  }
+  const value = reader.current();
+  reader.next();
+  if (!reader.hasTokens()) {
     return {
       type: NodeType.Attr,
       name,
       value,
       isBoolean: false,
       start: name.start,
-      end: value.end + 1,
+      end: value.end,
+      err: 'Attribute not closed: ' + name,
     };
   }
+  reader.next();
+  return {
+    type: NodeType.Attr,
+    name,
+    value,
+    isBoolean: false,
+    start: name.start,
+    end: value.end + 1,
+  };
+}
+
+function parseNoQuotedAttrValue(reader: Reader, name: IToken): IAttr {
   const value = reader.current();
+  if (value.type !== TokenKind.AttrValue) {
+    return {
+      type: NodeType.Attr,
+      name,
+      isBoolean: false,
+      start: name.start,
+      end: name.end + 1,
+      err: 'Attribute missing value: ' + name,
+    };
+  }
   return {
     type: NodeType.Attr,
     name,
