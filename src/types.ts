@@ -37,38 +37,38 @@ export interface IToken extends IBase {
 }
 
 export enum TokenKind {
-  Beginning,
-  WhiteSpace,
+  Beginning = 'Beginning',
+  WhiteSpace = 'WhiteSpace',
   // html
-  Literal,
-  OpenTag, // '<'
-  TagName, // '<' or '</'
-  OpenTagEnd, // '>',
-  VoidTagEnd, // '/>'
-  CloseTag, // leading '</'
-  Comment,
-  Script,
-  AttrPrefix, // '@', ':' or '::'
-  AttrName,
-  AttrEq,
-  AttrQuote,
-  AttrValue,
-  Directive,
-  OpenComment,
-  CloseComment,
+  Literal = 'Literal',
+  OpenTag = 'OpenTag', // '<'
+  TagName = 'TagName', // '<' or '</'
+  OpenTagEnd = 'OpenTagEnd', // '>',
+  VoidTagEnd = 'VoidTagEnd', // '/>'
+  CloseTag = 'CloseTag', // leading '</'
+  Comment = 'Comment',
+  Script = 'Script',
+  AttrPrefix = 'AttrPrefix', // '@', ':' or '::'
+  AttrName = 'AttrName',
+  AttrEq = 'AttrEq',
+  AttrQuote = 'AttrQuote',
+  AttrValue = 'AttrValue',
+  Directive = 'Directive',
+  OpenComment = 'OpenComment',
+  CloseComment = 'CloseComment',
   // Expression
-  Identifier,
-  CtxPrefix, // $
-  FuncPrefix, // @
-  Dot, // .
-  Comma, // ,
-  OpenBracket, // [
-  CloseBracket, // ]
-  OpenParens, // (
-  CloseParens, // )
-  SQuote, // '
-  DQuote, // "
-  Unexpected,
+  Identifier = 'Identifier',
+  CtxPrefix = 'CtxPrefix', // $
+  FuncPrefix = 'FuncPrefix', // @
+  Dot = 'Dot', // .
+  Comma = 'Comma', // ,
+  OpenBracket = 'OpenBracket', // [
+  CloseBracket = 'CloseBracket', // ]
+  OpenParens = 'OpenParens', // (
+  CloseParens = 'CloseParens', // )
+  SQuote = 'SQuote', // '
+  DQuote = 'DQuote', // "
+  Unexpected = 'Unexpected',
 }
 
 export const enum NodeType {
@@ -107,11 +107,14 @@ export interface ITextDyn extends IBase {
   reactive: boolean;
 }
 
+export type IAllAttribs = IAttr | IAttrDyn | IEvent;
+
 export interface IAttr extends IBase {
   type: NodeType.Attr;
   name: IToken;
   value?: IToken;
   isBoolean: boolean;
+  err?: string;
 }
 
 export interface IAttrDyn extends IBase {

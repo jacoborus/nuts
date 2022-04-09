@@ -7,9 +7,10 @@ import {
   Section,
   TokenKind,
   NodeType,
+  IAllAttribs,
 } from '../src/types';
 
-import { voidElements } from './common';
+import { booleanAttributes, voidElements } from './common';
 
 export class Reader {
   index: number;
@@ -63,9 +64,12 @@ function parseTag(reader: Reader): ITag {
   const name = tagName.value.toLowerCase();
   const isVoid = voidElements.includes(name);
   reader.next();
-  const [attributes, fail] = parseAttributes(reader);
+  const preAttribs = parseAttributes(reader);
+  const attributes = preAttribs.filter(
+    (att) => att.type === NodeType.Attr
+  ) as IAttr[];
   if (reader.current().type === TokenKind.WhiteSpace) reader.next();
-  if (fail || !reader.hasTokens()) {
+  if (!reader.hasTokens()) {
     return {
       type: NodeType.Tag,
       name: name, // lower case tag name, div
@@ -116,7 +120,78 @@ function parseTag(reader: Reader): ITag {
   };
 }
 
-export function parseAttributes(reader: Reader): [IAttr[], boolean?] {
-  if (reader.current().type === TokenKind.WhiteSpace) reader.next();
-  return [[]];
+export function parseAttributes(reader: Reader): IAllAttribs[] {
+  const attributes: IAllAttribs[] = [];
+  while (reader.hasTokens()) {
+    const token = reader.current();
+    const kind = token.type;
+    if (kind === TokenKind.WhiteSpace) {
+      reader.next();
+      continue;
+    }
+    if (kind === TokenKind.AttrName) {
+      const attrib = parseAttribute(reader);
+      if (attrib) attributes.push(attrib);
+      continue;
+    }
+    if (kind === TokenKind.OpenTagEnd || kind === TokenKind.VoidTagEnd) {
+      break;
+    }
+    throw new Error('Unexpected token parsing attributes: ' + token.type);
+  }
+  return attributes;
+}
+
+function parseAttribute(reader: Reader): IAllAttribs | undefined {
+  const name = reader.current();
+  const isBoolean = booleanAttributes.includes(name.value);
+  reader.next();
+  if (isBoolean) {
+    return {
+      type: NodeType.Attr,
+      name,
+      isBoolean,
+      start: name.start,
+      end: name.end,
+    };
+  }
+  if (reader.current().type !== TokenKind.AttrEq) {
+    return {
+      type: NodeType.Attr,
+      name,
+      isBoolean: false,
+      start: name.start,
+      end: name.end,
+      err: 'incomplete attribute',
+    };
+  }
+  reader.next();
+  return parseAttrValue(reader, name);
+}
+
+function parseAttrValue(reader: Reader, name: IToken): IAttr {
+  const opener = reader.current();
+  if (opener.type === TokenKind.DQuote || opener.type === TokenKind.SQuote) {
+    reader.next();
+    const value = reader.current();
+    reader.next();
+    reader.next();
+    return {
+      type: NodeType.Attr,
+      name,
+      value,
+      isBoolean: false,
+      start: name.start,
+      end: value.end + 1,
+    };
+  }
+  const value = reader.current();
+  return {
+    type: NodeType.Attr,
+    name,
+    value,
+    isBoolean: false,
+    start: name.start,
+    end: value.end,
+  };
 }
