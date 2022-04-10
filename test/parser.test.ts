@@ -1,5 +1,5 @@
 import { parse, Reader } from '../src/parser';
-import { TokenKind, NodeType } from '../src/types';
+import { TokenKind, NodeType, ExprScope } from '../src/types';
 
 test('parser: simple text node element', () => {
   // '  hola'
@@ -160,6 +160,56 @@ test('parser: void tag with regular attributes + void tag', () => {
       body: null,
       start: 29,
       end: 32,
+    },
+  ];
+  const result = parse(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test('parser: void tag with dynamic attributes', () => {
+  // '<input :id="myid">'
+  const tokens = [
+    { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
+    { start: 1, end: 5, type: TokenKind.TagName, value: 'input' },
+    { start: 6, end: 6, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 7, end: 7, type: TokenKind.AttrPrefix, value: ':' },
+    { start: 8, end: 9, type: TokenKind.AttrName, value: 'id' },
+    { start: 10, end: 10, type: TokenKind.AttrEq, value: '=' },
+    { start: 11, end: 11, type: TokenKind.DQuote, value: '"' },
+    { start: 12, end: 15, type: TokenKind.Identifier, value: 'myid' },
+    { start: 16, end: 16, type: TokenKind.DQuote, value: '"' },
+    { start: 17, end: 17, type: TokenKind.OpenTagEnd, value: '>' },
+  ];
+  const schema = [
+    {
+      type: NodeType.Tag,
+      name: 'input',
+      rawName: { start: 1, end: 5, type: TokenKind.TagName, value: 'input' },
+      attributes: [
+        {
+          type: NodeType.AttrDyn,
+          name: { start: 8, end: 9, type: TokenKind.AttrName, value: 'id' },
+          expr: {
+            start: 12,
+            end: 16,
+            scope: ExprScope.Scope,
+            slabs: [
+              { start: 12, end: 15, type: TokenKind.Identifier, value: 'myid' },
+            ],
+          },
+          isBoolean: false,
+          isReactive: false,
+          start: 7,
+          end: 16,
+        },
+      ],
+      isVoid: true,
+      events: [],
+      isSubComp: false,
+      body: null,
+      close: null,
+      start: 0,
+      end: 17,
     },
   ];
   const result = parse(new Reader(tokens));

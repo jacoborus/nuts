@@ -123,6 +123,7 @@ export interface IAttrDyn extends IBase {
   expr: Expression;
   isBoolean: boolean;
   isReactive: boolean;
+  err?: string;
 }
 
 export interface IEvent extends IBase {
@@ -213,12 +214,9 @@ export const enum ExprScope {
 }
 export interface Expression extends IBase {
   scope: ExprScope;
-  slabs: (Slab | Expression | ExprMethod)[];
+  slabs: (IToken | Expression | ExprMethod)[];
 }
 
-export interface Slab extends IBase {
-  value: string;
-}
 export interface ExprMethod extends IBase {
   method: Expression;
   params: Expression[];

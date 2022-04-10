@@ -1,13 +1,18 @@
 import {
   ElemSchema,
+  Expression,
+  ExprScope,
+  ExprMethod,
+  IAllAttribs,
   IAttr,
+  IAttrDyn,
   ITag,
   IText,
   IToken,
-  Section,
-  TokenKind,
   NodeType,
-  IAllAttribs,
+  Section,
+  Slab,
+  TokenKind,
 } from '../src/types';
 
 import { booleanAttributes, voidElements } from './common';
@@ -66,7 +71,7 @@ function parseTag(reader: Reader): ITag {
   reader.next();
   const preAttribs = parseAttributes(reader);
   const attributes = preAttribs.filter(
-    (att) => att.type === NodeType.Attr
+    (att) => att.type === NodeType.Attr || NodeType.AttrDyn
   ) as IAttr[];
   if (reader.current().type === TokenKind.WhiteSpace) reader.next();
   if (!reader.hasTokens()) {
@@ -137,12 +142,17 @@ export function parseAttributes(reader: Reader): IAllAttribs[] {
     if (kind === TokenKind.OpenTagEnd || kind === TokenKind.VoidTagEnd) {
       break;
     }
+    if (kind === TokenKind.AttrPrefix) {
+      const attrib = parseDynamicAttribute(reader);
+      if (attrib) attributes.push(attrib);
+      continue;
+    }
     throw new Error('Unexpected token parsing attributes: ' + token.type);
   }
   return attributes;
 }
 
-function parseAttribute(reader: Reader): IAllAttribs | undefined {
+function parseAttribute(reader: Reader): IAttr {
   const name = reader.current();
   const isBoolean = booleanAttributes.includes(name.value);
   reader.next();
@@ -233,4 +243,106 @@ function parseNoQuotedAttrValue(reader: Reader, name: IToken): IAttr {
     start: name.start,
     end: value.end,
   };
+}
+
+function parseDynamicAttribute(reader: Reader): IAttrDyn {
+  const start = reader.current().start;
+  reader.next();
+  const name = reader.current();
+  const isBoolean = booleanAttributes.includes(name.value);
+  reader.next();
+  if (reader.current().type !== TokenKind.AttrEq) {
+    return {
+      type: NodeType.AttrDyn,
+      name,
+      expr: { start, end: name.end, scope: 0, slabs: [] },
+      isBoolean,
+      isReactive: false,
+      start,
+      end: name.end,
+      err: 'incomplete attribute',
+    };
+  }
+  reader.next();
+  return parseDynAttrValue(reader, name);
+}
+
+function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
+  const opener = reader.current();
+  const isBoolean = booleanAttributes.includes(name.value);
+  if (!reader.hasTokens()) {
+    const pos = opener.start;
+    return {
+      type: NodeType.AttrDyn,
+      name,
+      expr: { start: pos, end: pos, scope: 0, slabs: [] },
+      isBoolean,
+      isReactive: false,
+      start: name.start - 1,
+      end: name.end + 2,
+      err: 'incomplete attribute',
+    };
+  }
+  const expr = parseExpression(reader);
+  return {
+    type: NodeType.AttrDyn,
+    name,
+    expr,
+    isBoolean,
+    isReactive: false,
+    start: name.start - 1,
+    end: reader.current().start - 1,
+  };
+}
+
+function parseExpression(reader: Reader): Expression {
+  const first = reader.current();
+  if (
+    first.type === TokenKind.WhiteSpace ||
+    first.type === TokenKind.DQuote ||
+    first.type === TokenKind.SQuote
+  ) {
+    reader.next();
+    return parseExpression(reader);
+  }
+  let scope;
+  switch (first.type) {
+    case TokenKind.FuncPrefix:
+      scope = ExprScope.Func;
+      reader.next();
+      break;
+    case TokenKind.CtxPrefix:
+      scope = ExprScope.Ctx;
+      reader.next();
+      break;
+    case TokenKind.Identifier:
+      scope = ExprScope.Scope;
+      break;
+    default:
+      throw new Error('Wrong identifier in expression: ' + first.type);
+  }
+  const slabs = parseIdentifier(reader);
+  const end = reader.current().end;
+  if (
+    reader.current().type === TokenKind.DQuote ||
+    reader.current().type === TokenKind.SQuote
+  ) {
+    reader.next();
+  }
+  return {
+    start: first.start,
+    end,
+    scope,
+    slabs,
+  };
+}
+
+function parseIdentifier(reader: Reader): (Slab | Expression | ExprMethod)[] {
+  const first = reader.current();
+  if (!first || first.type !== TokenKind.Identifier) {
+    throw new Error('Unexpected token parsing identifier');
+  }
+  reader.next();
+  const slabs: Slab[] = [first];
+  return slabs;
 }
