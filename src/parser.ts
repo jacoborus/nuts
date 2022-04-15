@@ -295,7 +295,7 @@ function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
   };
 }
 
-function parseExpression(reader: Reader): Expression {
+export function parseExpression(reader: Reader): Expression {
   const first = reader.current();
   if (
     first.type === TokenKind.WhiteSpace ||
@@ -322,6 +322,14 @@ function parseExpression(reader: Reader): Expression {
       throw new Error('Wrong identifier in expression: ' + first.type);
   }
   const slabs = parseIdentifier(reader);
+  if (!reader.hasTokens()) {
+    return {
+      start: first.start,
+      end: slabs[slabs.length - 1].end,
+      scope,
+      slabs,
+    };
+  }
   const end = reader.current().end;
   if (
     reader.current().type === TokenKind.DQuote ||
@@ -337,12 +345,19 @@ function parseExpression(reader: Reader): Expression {
   };
 }
 
-function parseIdentifier(reader: Reader): (Slab | Expression | ExprMethod)[] {
+function parseIdentifier(
+  reader: Reader,
+  slabs = [] as Slab[]
+): (Slab | Expression | ExprMethod)[] {
   const first = reader.current();
   if (!first || first.type !== TokenKind.Identifier) {
     throw new Error('Unexpected token parsing identifier');
   }
+  slabs.push(first);
   reader.next();
-  const slabs: Slab[] = [first];
+  if (reader.hasTokens() && reader.current().type === TokenKind.Dot) {
+    reader.next();
+    return parseIdentifier(reader, slabs);
+  }
   return slabs;
 }

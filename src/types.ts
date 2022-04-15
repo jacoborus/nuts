@@ -214,8 +214,9 @@ export const enum ExprScope {
 }
 export interface Expression extends IBase {
   scope: ExprScope;
-  slabs: (IToken | Expression | ExprMethod)[];
+  slabs: Slab[];
 }
+export type Slab = IToken | Expression | ExprMethod;
 
 export interface ExprMethod extends IBase {
   method: Expression;

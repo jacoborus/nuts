@@ -1,4 +1,4 @@
-import { parse, Reader } from '../src/parser';
+import { parse, parseExpression, Reader } from '../src/parser';
 import { TokenKind, NodeType, ExprScope } from '../src/types';
 
 test('parser: simple text node element', () => {
@@ -213,5 +213,150 @@ test('parser: void tag with dynamic attributes', () => {
     },
   ];
   const result = parse(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test('parse expression: simple expression', () => {
+  // '   uno.dos'
+  const tokens = [
+    { start: 0, end: 2, type: TokenKind.WhiteSpace, value: '   ' },
+    { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
+    { start: 6, end: 6, type: TokenKind.Dot, value: '.' },
+    { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+  ];
+  const schema = {
+    scope: ExprScope.Scope,
+    start: 3,
+    end: 9,
+    slabs: [
+      { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
+      { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test('tokenize expression: func prefix', () => {
+  //'@uno.dos '
+  const tokens = [
+    { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
+    { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+    { start: 4, end: 4, type: TokenKind.Dot, value: '.' },
+    { start: 5, end: 7, type: TokenKind.Identifier, value: 'dos' },
+  ];
+  const schema = {
+    scope: ExprScope.Func,
+    start: 0,
+    end: 7,
+    slabs: [
+      { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+      { start: 5, end: 7, type: TokenKind.Identifier, value: 'dos' },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test('tokenize expression: ctx prefix', () => {
+  // '$uno.dos '
+  const tokens = [
+    { start: 0, end: 0, type: TokenKind.CtxPrefix, value: '$' },
+    { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+    { start: 4, end: 4, type: TokenKind.Dot, value: '.' },
+    { start: 5, end: 7, type: TokenKind.Identifier, value: 'dos' },
+  ];
+  const schema = {
+    scope: ExprScope.Ctx,
+    start: 0,
+    end: 7,
+    slabs: [
+      { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+      { start: 5, end: 7, type: TokenKind.Identifier, value: 'dos' },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test.skip('tokenize expression: subexpression', () => {
+  // 'uno.2.[ dos.tres] '
+  const tokens = [
+    { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
+    { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
+    { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
+    { start: 5, end: 5, type: TokenKind.Dot, value: '.' },
+    { start: 6, end: 6, type: TokenKind.OpenBracket, value: '[' },
+    { start: 7, end: 7, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 8, end: 10, type: TokenKind.Identifier, value: 'dos' },
+    { start: 11, end: 11, type: TokenKind.Dot, value: '.' },
+    { start: 12, end: 15, type: TokenKind.Identifier, value: 'tres' },
+    { start: 16, end: 16, type: TokenKind.CloseBracket, value: ']' },
+    { start: 17, end: 17, type: TokenKind.WhiteSpace, value: ' ' },
+  ];
+  const schema = {
+    scope: 0,
+    start: 3,
+    end: 9,
+    slabs: [
+      { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
+      { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test.skip('tokenize expression: call function', () => {
+  // '@uno(dos.a,  dos.b) }'
+  const tokens = [
+    { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
+    { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+    { start: 4, end: 4, type: TokenKind.OpenParens, value: '(' },
+    { start: 5, end: 7, type: TokenKind.Identifier, value: 'dos' },
+    { start: 8, end: 8, type: TokenKind.Dot, value: '.' },
+    { start: 9, end: 9, type: TokenKind.Identifier, value: 'a' },
+    { start: 10, end: 10, type: TokenKind.Comma, value: ',' },
+    { start: 11, end: 12, type: TokenKind.WhiteSpace, value: '  ' },
+    { start: 13, end: 15, type: TokenKind.Identifier, value: 'dos' },
+    { start: 16, end: 16, type: TokenKind.Dot, value: '.' },
+    { start: 17, end: 17, type: TokenKind.Identifier, value: 'b' },
+    { start: 18, end: 18, type: TokenKind.CloseParens, value: ')' },
+    { start: 19, end: 19, type: TokenKind.WhiteSpace, value: ' ' },
+  ];
+  const schema = {
+    scope: 0,
+    start: 3,
+    end: 9,
+    slabs: [
+      { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
+      { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test.skip('tokenize expression: quoted', () => {
+  // "uno.2.'first name'"
+  const tokens = [
+    { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
+    { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
+    { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
+    { start: 5, end: 5, type: TokenKind.Dot, value: '.' },
+    { start: 6, end: 6, type: TokenKind.SQuote, value: "'" },
+    { start: 7, end: 16, type: TokenKind.Identifier, value: 'first name' },
+    { start: 17, end: 17, type: TokenKind.SQuote, value: "'" },
+  ];
+  const schema = {
+    scope: 0,
+    start: 3,
+    end: 9,
+    slabs: [
+      { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
+      { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
   expect(result).toEqual(schema);
 });
