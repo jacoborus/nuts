@@ -1,29 +1,29 @@
 import { SourceFile } from 'typescript';
 
 export const enum Section {
-  Literal,
-  OpenTag,
-  Script,
-  Style,
-  Doctype,
-  TagName,
-  Attribs,
-  BeginAttribute,
-  ClosingTag,
-  Expression,
-  Comment,
-  AfterOpenTag,
-  AttribName,
-  DirectiveName,
-  AfterAttribName,
-  AttribValue,
-  DQuoted,
-  SQuoted,
-  AttribExpression,
-  BeginExpression,
-  Identifier,
-  ExprMethod,
-  ExprQuoted,
+  Literal = 'Literal',
+  OpenTag = 'OpenTag',
+  Script = 'Script',
+  Style = 'Style',
+  Doctype = 'Doctype',
+  TagName = 'TagName',
+  Attribs = 'Attribs',
+  BeginAttribute = 'BeginAttribute',
+  ClosingTag = 'ClosingTag',
+  Expression = 'Expression',
+  Comment = 'Comment',
+  AfterOpenTag = 'AfterOpenTag',
+  AttribName = 'AttribName',
+  DirectiveName = 'DirectiveName',
+  AfterAttribName = 'AfterAttribName',
+  AttribValue = 'AttribValue',
+  DQuoted = 'DQuoted',
+  SQuoted = 'SQuoted',
+  AttribExpression = 'AttribExpression',
+  BeginExpression = 'BeginExpression',
+  Identifier = 'Identifier',
+  ExprMethod = 'ExprMethod',
+  ExprQuoted = 'ExprQuoted',
 }
 
 interface IBase {
@@ -215,6 +215,7 @@ export const enum ExprScope {
 export interface Expression extends IBase {
   scope: ExprScope;
   slabs: Slab[];
+  err?: string;
 }
 export type Slab = IToken | Expression | ExprMethod;
 

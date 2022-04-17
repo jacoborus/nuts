@@ -279,8 +279,8 @@ test('tokenize expression: ctx prefix', () => {
   expect(result).toEqual(schema);
 });
 
-test.skip('tokenize expression: subexpression', () => {
-  // 'uno.2.[ dos.tres] '
+test('tokenize expression: subexpression', () => {
+  // 'uno.2.[ $dos.tres] '
   const tokens = [
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
     { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
@@ -288,19 +288,29 @@ test.skip('tokenize expression: subexpression', () => {
     { start: 5, end: 5, type: TokenKind.Dot, value: '.' },
     { start: 6, end: 6, type: TokenKind.OpenBracket, value: '[' },
     { start: 7, end: 7, type: TokenKind.WhiteSpace, value: ' ' },
-    { start: 8, end: 10, type: TokenKind.Identifier, value: 'dos' },
-    { start: 11, end: 11, type: TokenKind.Dot, value: '.' },
-    { start: 12, end: 15, type: TokenKind.Identifier, value: 'tres' },
-    { start: 16, end: 16, type: TokenKind.CloseBracket, value: ']' },
-    { start: 17, end: 17, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 8, end: 8, type: TokenKind.CtxPrefix, value: '$' },
+    { start: 9, end: 11, type: TokenKind.Identifier, value: 'dos' },
+    { start: 12, end: 12, type: TokenKind.Dot, value: '.' },
+    { start: 13, end: 16, type: TokenKind.Identifier, value: 'tres' },
+    { start: 17, end: 17, type: TokenKind.CloseBracket, value: ']' },
+    // { start: 18, end: 18, type: TokenKind.WhiteSpace, value: ' ' },
   ];
   const schema = {
-    scope: 0,
-    start: 3,
-    end: 9,
+    scope: ExprScope.Scope,
+    start: 0,
+    end: 17,
     slabs: [
-      { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
-      { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+      { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
+      { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
+      {
+        scope: ExprScope.Ctx,
+        start: 8,
+        end: 17,
+        slabs: [
+          { start: 9, end: 11, type: TokenKind.Identifier, value: 'dos' },
+          { start: 13, end: 16, type: TokenKind.Identifier, value: 'tres' },
+        ],
+      },
     ],
   };
   const result = parseExpression(new Reader(tokens));

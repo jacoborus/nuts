@@ -283,7 +283,9 @@ function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
       err: 'incomplete attribute',
     };
   }
-  const expr = parseExpression(reader);
+  const closer = reader.current().type;
+  reader.next();
+  const expr = parseExpression(reader, closer);
   return {
     type: NodeType.AttrDyn,
     name,
@@ -295,18 +297,21 @@ function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
   };
 }
 
-export function parseExpression(reader: Reader): Expression {
+export function parseExpression(
+  reader: Reader,
+  closer?: TokenKind
+): Expression {
   const first = reader.current();
-  if (
-    first.type === TokenKind.WhiteSpace ||
-    first.type === TokenKind.DQuote ||
-    first.type === TokenKind.SQuote
-  ) {
+  if (first.type === TokenKind.WhiteSpace) {
     reader.next();
-    return parseExpression(reader);
+    return parseExpression(reader, closer);
   }
+
   let scope;
   switch (first.type) {
+    case TokenKind.OpenBracket:
+      reader.next();
+      return parseExpression(reader, TokenKind.CloseBracket);
     case TokenKind.FuncPrefix:
       scope = ExprScope.Func;
       reader.next();
@@ -321,22 +326,38 @@ export function parseExpression(reader: Reader): Expression {
     default:
       throw new Error('Wrong identifier in expression: ' + first.type);
   }
-  const slabs = parseIdentifier(reader);
+  const slabs = parseIdentifiers(reader);
+  if (!closer) {
+    return {
+      scope,
+      slabs,
+      start: first.start,
+      end: slabs[slabs.length - 1].end,
+    };
+  }
+  if (reader.hasTokens() && reader.current().type === TokenKind.WhiteSpace) {
+    reader.next();
+  }
   if (!reader.hasTokens()) {
     return {
       start: first.start,
       end: slabs[slabs.length - 1].end,
       scope,
       slabs,
+      err: 'unfinished',
+    };
+  }
+  if (reader.current().type !== closer) {
+    return {
+      start: first.start,
+      end: slabs[slabs.length - 1].end,
+      scope,
+      slabs,
+      err: 'unfinished',
     };
   }
   const end = reader.current().end;
-  if (
-    reader.current().type === TokenKind.DQuote ||
-    reader.current().type === TokenKind.SQuote
-  ) {
-    reader.next();
-  }
+  reader.next();
   return {
     start: first.start,
     end,
@@ -345,19 +366,36 @@ export function parseExpression(reader: Reader): Expression {
   };
 }
 
-function parseIdentifier(
+function parseIdentifiers(
   reader: Reader,
   slabs = [] as Slab[]
-): (Slab | Expression | ExprMethod)[] {
-  const first = reader.current();
-  if (!first || first.type !== TokenKind.Identifier) {
-    throw new Error('Unexpected token parsing identifier');
-  }
-  slabs.push(first);
+): (Slab | Expression)[] {
+  slabs.push(reader.current());
   reader.next();
-  if (reader.hasTokens() && reader.current().type === TokenKind.Dot) {
+  if (!reader.hasTokens()) {
+    return slabs;
+  }
+  const current = reader.current();
+  if (current.type === TokenKind.Dot) {
     reader.next();
-    return parseIdentifier(reader, slabs);
+    if (reader.current().type === TokenKind.Identifier) {
+      return parseIdentifiers(reader, slabs);
+    }
+    if (reader.current().type === TokenKind.OpenBracket) {
+      reader.next();
+      const slab = parseExpression(reader, TokenKind.CloseBracket);
+      slabs.push(slab);
+      if (!reader.hasTokens()) return slabs;
+      if (reader.current().type === TokenKind.Dot) {
+        reader.next();
+        return parseIdentifiers(reader, slabs.concat(slab));
+      }
+      return parseIdentifiers(reader);
+    }
+    // TODO: add here parseQuoted
+    else {
+      throw new Error('Unfinished expression');
+    }
   }
   return slabs;
 }
