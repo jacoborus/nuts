@@ -24,6 +24,7 @@ export const enum Section {
   Identifier = 'Identifier',
   ExprMethod = 'ExprMethod',
   ExprQuoted = 'ExprQuoted',
+  AfterExpression = 'AfterExpression',
 }
 
 interface IBase {
@@ -64,6 +65,8 @@ export enum TokenKind {
   Comma = 'Comma', // ,
   OpenBracket = 'OpenBracket', // [
   CloseBracket = 'CloseBracket', // ]
+  OpenCurly = 'OpenCurly', // {
+  CloseCurly = 'CloseCurly', // }
   OpenParens = 'OpenParens', // (
   CloseParens = 'CloseParens', // )
   SQuote = 'SQuote', // '

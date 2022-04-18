@@ -279,7 +279,7 @@ test('tokenize expression: ctx prefix', () => {
   expect(result).toEqual(schema);
 });
 
-test('tokenize expression: subexpression', () => {
+test('tokenize expression: single subexpression', () => {
   // 'uno.2.[ $dos.tres] '
   const tokens = [
     { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
@@ -314,6 +314,57 @@ test('tokenize expression: subexpression', () => {
     ],
   };
   const result = parseExpression(new Reader(tokens));
+  expect(result).toEqual(schema);
+});
+
+test.skip('tokenize expression: multiple subexpression', () => {
+  // '{uno.2.{ $dos.tres}.{foo}} '
+  const tokens = [
+    { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
+    { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
+    { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
+    { start: 5, end: 5, type: TokenKind.Dot, value: '.' },
+    { start: 6, end: 6, type: TokenKind.OpenBracket, value: '[' },
+    { start: 7, end: 7, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 8, end: 8, type: TokenKind.CtxPrefix, value: '$' },
+    { start: 9, end: 11, type: TokenKind.Identifier, value: 'dos' },
+    { start: 12, end: 12, type: TokenKind.Dot, value: '.' },
+    { start: 13, end: 16, type: TokenKind.Identifier, value: 'tres' },
+    { start: 17, end: 17, type: TokenKind.CloseBracket, value: ']' },
+    { start: 18, end: 18, type: TokenKind.Dot, value: '.' },
+    { start: 19, end: 19, type: TokenKind.OpenBracket, value: '[' },
+    { start: 20, end: 22, type: TokenKind.Identifier, value: 'foo' },
+    { start: 23, end: 23, type: TokenKind.CloseBracket, value: ']' },
+    // { start: 18, end: 18, type: TokenKind.WhiteSpace, value: ' ' },
+  ];
+  const schema = {
+    scope: ExprScope.Scope,
+    start: 0,
+    end: 23,
+    slabs: [
+      { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
+      { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
+      {
+        scope: ExprScope.Ctx,
+        start: 8,
+        end: 17,
+        slabs: [
+          { start: 9, end: 11, type: TokenKind.Identifier, value: 'dos' },
+          { start: 13, end: 16, type: TokenKind.Identifier, value: 'tres' },
+        ],
+      },
+      {
+        scope: ExprScope.Scope,
+        start: 19,
+        end: 23,
+        slabs: [
+          { start: 20, end: 22, type: TokenKind.Identifier, value: 'foo' },
+        ],
+      },
+    ],
+  };
+  const result = parseExpression(new Reader(tokens));
+  // console.log(result);
   expect(result).toEqual(schema);
 });
 

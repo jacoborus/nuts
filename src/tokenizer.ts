@@ -195,27 +195,13 @@ function tokenizeAttribValue(reader: Reader): void {
   }
   const charCode = reader.charCode();
   if (reader.hasExpression) {
-    if (charCode === Chars.Dq) {
-      reader.emitToken(TokenKind.DQuote);
-      reader.section = Section.AfterOpenTag;
-      tokenizeExpression(reader, Chars.Dq);
-      if (reader.notFinished()) {
-        reader.emitToken(TokenKind.DQuote);
-      }
-    } else if (charCode === Chars.Sq) {
-      reader.emitToken(TokenKind.SQuote);
-      reader.section = Section.AfterOpenTag;
-      tokenizeExpression(reader, Chars.Sq);
-      if (reader.notFinished()) {
-        reader.emitToken(TokenKind.SQuote);
-      }
-    } else {
+    if ([Chars.Sq, Chars.Dq, Chars.Ox].includes(charCode)) {
       reader.section = Section.AfterOpenTag;
       tokenizeExpression(reader);
+    } else {
+      throw new Error('Wrong expression start');
     }
-    if (reader.notFinished()) {
-      reader.section = Section.AfterOpenTag;
-    }
+    reader.section = Section.AfterOpenTag;
   } else {
     if (charCode === Chars.Dq) {
       reader.emitToken(TokenKind.DQuote);
@@ -273,7 +259,19 @@ function tokenizeCloseTag(reader: Reader): void {
   }
 }
 
-export function tokenizeExpression(reader: Reader, closer?: number): void {
+export function tokenizeExpression(reader: Reader): void {
+  const charCode = reader.charCode();
+  let closer;
+  if (charCode === Chars.Dq) {
+    reader.emitToken(TokenKind.DQuote);
+    closer = charCode;
+  } else if (charCode === Chars.Sq) {
+    reader.emitToken(TokenKind.SQuote);
+    closer = charCode;
+  } else if (charCode === Chars.Ox) {
+    reader.emitToken(TokenKind.OpenCurly);
+    closer = Chars.Cx;
+  }
   const presection = reader.section;
   while (reader.notFinished() && !reader.isCloser(closer)) {
     switch (reader.section) {
@@ -281,7 +279,7 @@ export function tokenizeExpression(reader: Reader, closer?: number): void {
         tokenizeBeginExpression(reader);
         break;
       case Section.Identifier:
-        tokenizeIdenfitier(reader);
+        tokenizeIdenfitier(reader, closer);
         break;
       case Section.ExprQuoted:
         tokenizeQuoted(reader);
@@ -290,7 +288,18 @@ export function tokenizeExpression(reader: Reader, closer?: number): void {
         reader.section = Section.BeginExpression;
     }
   }
-  if (reader.notFinished()) reader.section = presection;
+  if (closer) {
+    if (charCode === Chars.Dq) {
+      reader.emitToken(TokenKind.DQuote);
+    } else if (charCode === Chars.Sq) {
+      reader.emitToken(TokenKind.SQuote);
+    } else if (charCode === Chars.Ox) {
+      reader.emitToken(TokenKind.CloseCurly);
+    }
+  }
+  if (reader.notFinished()) {
+    reader.section = presection;
+  }
 }
 
 function tokenizeBeginExpression(reader: Reader): void {
@@ -316,7 +325,14 @@ function tokenizeBeginExpression(reader: Reader): void {
   reader.section = Section.Identifier;
 }
 
-function tokenizeIdenfitier(reader: Reader): void {
+function tokenizeIdenfitier(reader: Reader, closer?: Chars): void {
+  if (!closer) {
+    if (reader.isWhiteSpace()) {
+      return;
+    }
+  } else if (reader.charCode() === closer) {
+    return;
+  }
   if (reader.charCode() === Chars.Do) {
     reader.emitToken(TokenKind.Dot);
     return;
@@ -336,13 +352,14 @@ function tokenizeIdenfitier(reader: Reader): void {
     reader.section = Section.BeginExpression;
     return;
   }
-  if (reader.charCode() === Chars.Ob) {
-    reader.emitToken(TokenKind.OpenBracket);
-    reader.section = Section.BeginExpression;
+  if (reader.charCode() === Chars.Ox) {
+    reader.emitToken(TokenKind.OpenCurly);
+    reader.section = Section.AfterExpression;
+    tokenizeExpression(reader);
     return;
   }
-  if (reader.charCode() === Chars.Cb) {
-    reader.emitToken(TokenKind.CloseBracket);
+  if (reader.charCode() === Chars.Cx) {
+    reader.emitToken(TokenKind.CloseCurly);
     reader.section = Section.BeginExpression;
     return;
   }

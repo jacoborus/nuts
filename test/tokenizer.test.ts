@@ -129,7 +129,8 @@ test('tokenize html: tag with unquoted attribs', () => {
 test('tokenize html tag with prefixed attrib name', () => {
   const reader = new Reader('<span :id="@user.id"/>');
   tokenizeHtml(reader);
-  expect(reader.getTokens()).toEqual([
+  const result = reader.getTokens();
+  expect(result).toEqual([
     { start: 0, end: 0, type: TokenKind.OpenTag, value: '<' },
     { start: 1, end: 4, type: TokenKind.TagName, value: 'span' },
     { start: 5, end: 5, type: TokenKind.WhiteSpace, value: ' ' },
@@ -194,14 +195,17 @@ test('tokenize html tag with (loop) directive', () => {
 });
 
 test('tokenize expression: simple expression', () => {
-  const reader = new Reader('   uno.dos}');
-  tokenizeExpression(reader, Chars.Cx);
+  const reader = new Reader('{   uno.dos}');
+  tokenizeExpression(reader);
   const tokens = reader.tokens.concat(reader.lastToken as IToken);
+  console.log(tokens);
   expect(tokens).toEqual([
-    { start: 0, end: 2, type: TokenKind.WhiteSpace, value: '   ' },
-    { start: 3, end: 5, type: TokenKind.Identifier, value: 'uno' },
-    { start: 6, end: 6, type: TokenKind.Dot, value: '.' },
-    { start: 7, end: 9, type: TokenKind.Identifier, value: 'dos' },
+    { start: 0, end: 0, type: TokenKind.OpenCurly, value: '{' },
+    { start: 1, end: 3, type: TokenKind.WhiteSpace, value: '   ' },
+    { start: 4, end: 6, type: TokenKind.Identifier, value: 'uno' },
+    { start: 7, end: 7, type: TokenKind.Dot, value: '.' },
+    { start: 8, end: 10, type: TokenKind.Identifier, value: 'dos' },
+    { start: 11, end: 11, type: TokenKind.CloseCurly, value: '}' },
   ]);
 });
 
@@ -241,57 +245,65 @@ test('tokenize expression: ctx prefix', () => {
 });
 
 test('tokenize expression: call function', () => {
-  const reader = new Reader('@uno(dos.a,  dos.b) }');
-  tokenizeExpression(reader, Chars.Cx);
+  const reader = new Reader('{@uno(dos.a,  dos.b) }');
+  tokenizeExpression(reader);
   const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
-    { start: 0, end: 0, type: TokenKind.FuncPrefix, value: '@' },
-    { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
-    { start: 4, end: 4, type: TokenKind.OpenParens, value: '(' },
-    { start: 5, end: 7, type: TokenKind.Identifier, value: 'dos' },
-    { start: 8, end: 8, type: TokenKind.Dot, value: '.' },
-    { start: 9, end: 9, type: TokenKind.Identifier, value: 'a' },
-    { start: 10, end: 10, type: TokenKind.Comma, value: ',' },
-    { start: 11, end: 12, type: TokenKind.WhiteSpace, value: '  ' },
-    { start: 13, end: 15, type: TokenKind.Identifier, value: 'dos' },
-    { start: 16, end: 16, type: TokenKind.Dot, value: '.' },
-    { start: 17, end: 17, type: TokenKind.Identifier, value: 'b' },
-    { start: 18, end: 18, type: TokenKind.CloseParens, value: ')' },
-    { start: 19, end: 19, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 0, end: 0, type: TokenKind.OpenCurly, value: '{' },
+    { start: 1, end: 1, type: TokenKind.FuncPrefix, value: '@' },
+    { start: 2, end: 4, type: TokenKind.Identifier, value: 'uno' },
+    { start: 5, end: 5, type: TokenKind.OpenParens, value: '(' },
+    { start: 6, end: 8, type: TokenKind.Identifier, value: 'dos' },
+    { start: 9, end: 9, type: TokenKind.Dot, value: '.' },
+    { start: 10, end: 10, type: TokenKind.Identifier, value: 'a' },
+    { start: 11, end: 11, type: TokenKind.Comma, value: ',' },
+    { start: 12, end: 13, type: TokenKind.WhiteSpace, value: '  ' },
+    { start: 14, end: 16, type: TokenKind.Identifier, value: 'dos' },
+    { start: 17, end: 17, type: TokenKind.Dot, value: '.' },
+    { start: 18, end: 18, type: TokenKind.Identifier, value: 'b' },
+    { start: 19, end: 19, type: TokenKind.CloseParens, value: ')' },
+    { start: 20, end: 20, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 21, end: 21, type: TokenKind.CloseCurly, value: '}' },
   ]);
 });
 
 test('tokenize expression: subexpression', () => {
-  const reader = new Reader('uno.2.[ dos.tres] }');
-  tokenizeExpression(reader, Chars.Cx);
+  const reader = new Reader('{uno.2.{ dos.tres}.foo }');
+  tokenizeExpression(reader);
   const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
-    { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
-    { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
-    { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
-    { start: 5, end: 5, type: TokenKind.Dot, value: '.' },
-    { start: 6, end: 6, type: TokenKind.OpenBracket, value: '[' },
-    { start: 7, end: 7, type: TokenKind.WhiteSpace, value: ' ' },
-    { start: 8, end: 10, type: TokenKind.Identifier, value: 'dos' },
-    { start: 11, end: 11, type: TokenKind.Dot, value: '.' },
-    { start: 12, end: 15, type: TokenKind.Identifier, value: 'tres' },
-    { start: 16, end: 16, type: TokenKind.CloseBracket, value: ']' },
-    { start: 17, end: 17, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 0, end: 0, type: TokenKind.OpenCurly, value: '{' },
+    { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+    { start: 4, end: 4, type: TokenKind.Dot, value: '.' },
+    { start: 5, end: 5, type: TokenKind.Identifier, value: '2' },
+    { start: 6, end: 6, type: TokenKind.Dot, value: '.' },
+    { start: 7, end: 7, type: TokenKind.OpenCurly, value: '{' },
+    { start: 8, end: 8, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 9, end: 11, type: TokenKind.Identifier, value: 'dos' },
+    { start: 12, end: 12, type: TokenKind.Dot, value: '.' },
+    { start: 13, end: 16, type: TokenKind.Identifier, value: 'tres' },
+    { start: 17, end: 17, type: TokenKind.CloseCurly, value: '}' },
+    { start: 18, end: 18, type: TokenKind.Dot, value: '.' },
+    { start: 19, end: 21, type: TokenKind.Identifier, value: 'foo' },
+    { start: 22, end: 22, type: TokenKind.WhiteSpace, value: ' ' },
+    { start: 23, end: 23, type: TokenKind.CloseCurly, value: '}' },
   ]);
 });
 
 test('tokenize expression: quoted', () => {
-  const reader = new Reader("uno.2.'first name'}");
-  tokenizeExpression(reader, Chars.Cx);
+  const reader = new Reader("{uno.2.'first name'}");
+  tokenizeExpression(reader);
   const tokens = reader.tokens.concat(reader.lastToken as IToken);
   expect(tokens).toEqual([
-    { start: 0, end: 2, type: TokenKind.Identifier, value: 'uno' },
-    { start: 3, end: 3, type: TokenKind.Dot, value: '.' },
-    { start: 4, end: 4, type: TokenKind.Identifier, value: '2' },
-    { start: 5, end: 5, type: TokenKind.Dot, value: '.' },
-    { start: 6, end: 6, type: TokenKind.SQuote, value: "'" },
-    { start: 7, end: 16, type: TokenKind.Identifier, value: 'first name' },
-    { start: 17, end: 17, type: TokenKind.SQuote, value: "'" },
+    { start: 0, end: 0, type: TokenKind.OpenCurly, value: '{' },
+    { start: 1, end: 3, type: TokenKind.Identifier, value: 'uno' },
+    { start: 4, end: 4, type: TokenKind.Dot, value: '.' },
+    { start: 5, end: 5, type: TokenKind.Identifier, value: '2' },
+    { start: 6, end: 6, type: TokenKind.Dot, value: '.' },
+    { start: 7, end: 7, type: TokenKind.SQuote, value: "'" },
+    { start: 8, end: 17, type: TokenKind.Identifier, value: 'first name' },
+    { start: 18, end: 18, type: TokenKind.SQuote, value: "'" },
+    { start: 19, end: 19, type: TokenKind.CloseCurly, value: '}' },
   ]);
 });
 

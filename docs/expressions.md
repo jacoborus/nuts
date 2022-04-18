@@ -28,8 +28,9 @@ users.1.name
 Accept subexpressions wrapped by brackets
 
 ```
-users.[client.id].name
+users.{client.id}.name
 ```
+
 
 Values returned from the setup function need the `@` prefix, they can be invoked
 with parens (like in js), and accept arguments separated by commas
