@@ -1,6 +1,6 @@
-import { Reader } from './reader';
-import { TokenKind, Section } from './types';
-import { Chars } from './common';
+import { Reader } from "./reader.ts";
+import { Section, TokenKind } from "./types.ts";
+import { Chars } from "./common.ts";
 
 export function tokenizeHtml(reader: Reader): void {
   while (reader.notFinished()) {
@@ -199,7 +199,7 @@ function tokenizeAttribValue(reader: Reader): void {
       reader.section = Section.AfterOpenTag;
       tokenizeExpression(reader);
     } else {
-      throw new Error('Wrong expression start');
+      throw new Error("Wrong expression start");
     }
     reader.section = Section.AfterOpenTag;
   } else {

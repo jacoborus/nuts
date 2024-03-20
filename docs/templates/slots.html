@@ -1,0 +1,35 @@
+// Card.nut
+
+<div class="card">
+  <!-- only render the slot if header is placed -->
+  <div (if-slot)="header" class="card-header">
+    <slot name="header" />
+  </div>
+  <h1 (else)>Default header</h1>
+
+  <!-- use this image if NOT thumbnail placed -->
+  <img (slot)="thumbnail" src="image.png" alt="whatever">
+
+  <div class="card-content">
+    <slot />
+  </div>
+
+  <div (if-slot)="footer" class="card-footer">
+    <slot name="footer">
+      <p>Default footer</p>
+    </slot>
+  </div>
+</div>
+
+// Usage
+
+<Card import="./card.nut">
+  <!-- directive-tag -->
+  <place #header>
+    <h1>This is the header</h1>
+  </place>
+  <!-- default slot -->
+  <p>This is the content</p>
+  <!-- shorthand -->
+  <em (place)="footer">This is the footer</em>
+</Card>

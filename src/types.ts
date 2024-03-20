@@ -1,30 +1,30 @@
-import { SourceFile } from 'typescript';
+import { SourceFile } from "npm:typescript";
 
 export const enum Section {
-  Literal = 'Literal',
-  OpenTag = 'OpenTag',
-  Script = 'Script',
-  Style = 'Style',
-  Doctype = 'Doctype',
-  TagName = 'TagName',
-  Attribs = 'Attribs',
-  BeginAttribute = 'BeginAttribute',
-  ClosingTag = 'ClosingTag',
-  Expression = 'Expression',
-  Comment = 'Comment',
-  AfterOpenTag = 'AfterOpenTag',
-  AttribName = 'AttribName',
-  DirectiveName = 'DirectiveName',
-  AfterAttribName = 'AfterAttribName',
-  AttribValue = 'AttribValue',
-  DQuoted = 'DQuoted',
-  SQuoted = 'SQuoted',
-  AttribExpression = 'AttribExpression',
-  BeginExpression = 'BeginExpression',
-  Identifier = 'Identifier',
-  ExprMethod = 'ExprMethod',
-  ExprQuoted = 'ExprQuoted',
-  AfterExpression = 'AfterExpression',
+  Literal = "Literal",
+  OpenTag = "OpenTag",
+  Script = "Script",
+  Style = "Style",
+  Doctype = "Doctype",
+  TagName = "TagName",
+  Attribs = "Attribs",
+  BeginAttribute = "BeginAttribute",
+  ClosingTag = "ClosingTag",
+  Expression = "Expression",
+  Comment = "Comment",
+  AfterOpenTag = "AfterOpenTag",
+  AttribName = "AttribName",
+  DirectiveName = "DirectiveName",
+  AfterAttribName = "AfterAttribName",
+  AttribValue = "AttribValue",
+  DQuoted = "DQuoted",
+  SQuoted = "SQuoted",
+  AttribExpression = "AttribExpression",
+  BeginExpression = "BeginExpression",
+  Identifier = "Identifier",
+  ExprMethod = "ExprMethod",
+  ExprQuoted = "ExprQuoted",
+  AfterExpression = "AfterExpression",
 }
 
 interface IBase {
@@ -38,40 +38,40 @@ export interface IToken extends IBase {
 }
 
 export enum TokenKind {
-  Beginning = 'Beginning',
-  WhiteSpace = 'WhiteSpace',
+  Beginning = "Beginning",
+  WhiteSpace = "WhiteSpace",
   // html
-  Literal = 'Literal',
-  OpenTag = 'OpenTag', // '<'
-  TagName = 'TagName', // '<' or '</'
-  OpenTagEnd = 'OpenTagEnd', // '>',
-  VoidTagEnd = 'VoidTagEnd', // '/>'
-  CloseTag = 'CloseTag', // leading '</'
-  Comment = 'Comment',
-  Script = 'Script',
-  AttrPrefix = 'AttrPrefix', // '@', ':' or '::'
-  AttrName = 'AttrName',
-  AttrEq = 'AttrEq',
-  AttrQuote = 'AttrQuote',
-  AttrValue = 'AttrValue',
-  Directive = 'Directive',
-  OpenComment = 'OpenComment',
-  CloseComment = 'CloseComment',
+  Literal = "Literal",
+  OpenTag = "OpenTag", // '<'
+  TagName = "TagName", // '<' or '</'
+  OpenTagEnd = "OpenTagEnd", // '>',
+  VoidTagEnd = "VoidTagEnd", // '/>'
+  CloseTag = "CloseTag", // leading '</'
+  Comment = "Comment",
+  Script = "Script",
+  AttrPrefix = "AttrPrefix", // '@', ':' or '::'
+  AttrName = "AttrName",
+  AttrEq = "AttrEq",
+  AttrQuote = "AttrQuote",
+  AttrValue = "AttrValue",
+  Directive = "Directive",
+  OpenComment = "OpenComment",
+  CloseComment = "CloseComment",
   // Expression
-  Identifier = 'Identifier',
-  CtxPrefix = 'CtxPrefix', // $
-  FuncPrefix = 'FuncPrefix', // @
-  Dot = 'Dot', // .
-  Comma = 'Comma', // ,
-  OpenBracket = 'OpenBracket', // [
-  CloseBracket = 'CloseBracket', // ]
-  OpenCurly = 'OpenCurly', // {
-  CloseCurly = 'CloseCurly', // }
-  OpenParens = 'OpenParens', // (
-  CloseParens = 'CloseParens', // )
-  SQuote = 'SQuote', // '
-  DQuote = 'DQuote', // "
-  Unexpected = 'Unexpected',
+  Identifier = "Identifier",
+  CtxPrefix = "CtxPrefix", // $
+  FuncPrefix = "FuncPrefix", // @
+  Dot = "Dot", // .
+  Comma = "Comma", // ,
+  OpenBracket = "OpenBracket", // [
+  CloseBracket = "CloseBracket", // ]
+  OpenCurly = "OpenCurly", // {
+  CloseCurly = "CloseCurly", // }
+  OpenParens = "OpenParens", // (
+  CloseParens = "CloseParens", // )
+  SQuote = "SQuote", // '
+  DQuote = "DQuote", // "
+  Unexpected = "Unexpected",
 }
 
 export const enum NodeType {
@@ -88,15 +88,15 @@ export const enum NodeType {
   Template,
 }
 
-export const directiveTags = ['if', 'else', 'elseif', 'loop'];
+export const directiveTags = ["if", "else", "elseif", "loop"];
 export const directiveNames = [
-  'if',
-  'else',
-  'elseif',
-  'loop',
-  'ref',
-  'index',
-  'pos',
+  "if",
+  "else",
+  "elseif",
+  "loop",
+  "ref",
+  "index",
+  "pos",
 ];
 
 export interface IText extends IBase {
@@ -161,13 +161,13 @@ export interface IComment extends IBase {
 }
 
 export type DirectiveName =
-  | 'if'
-  | 'else'
-  | 'elseif'
-  | 'ref'
-  | 'loop'
-  | 'index'
-  | 'pos';
+  | "if"
+  | "else"
+  | "elseif"
+  | "ref"
+  | "loop"
+  | "index"
+  | "pos";
 
 export interface LoopSchema extends IBase {
   type: NodeType.Loop;
@@ -178,7 +178,7 @@ export interface LoopSchema extends IBase {
   body: ElemSchema[];
 }
 
-export type TreeKind = 'if' | 'elseif' | 'else';
+export type TreeKind = "if" | "elseif" | "else";
 export interface TreeSchema extends IBase {
   type: NodeType.Tree;
   kind: TreeKind;
@@ -189,15 +189,15 @@ export interface TreeSchema extends IBase {
 }
 
 export interface ITemplate extends ITag {
-  name: 'template';
+  name: "template";
 }
 
-export interface IScript extends Omit<ITag, 'type' | 'body'> {
+export interface IScript extends Omit<ITag, "type" | "body"> {
   type: NodeType.Script;
   body: IText;
 }
 
-export interface CodeSchema extends Omit<ITag, 'type'> {
+export interface CodeSchema extends Omit<ITag, "type"> {
   type: NodeType.Script;
   ast: SourceFile;
 }

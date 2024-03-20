@@ -1,0 +1,25 @@
+<!-- simple -->
+<template>
+  <p (if)="age === 0">You are a baby</p>
+  <p (elseif)="age < 18">You are a child</p>
+  <p (else)>You are an adult</p>
+</template>
+
+<!-- nested -->
+<template>
+  <if if="age === 0">
+    <p>You are a baby</p>
+  </if>
+  <elseif if="age < 18">
+    <p>You are a child</p>
+  </elseif>
+  <else>
+    <p>You are an adult</p>
+  </else>
+</template>
+
+<template>
+  <p (if)="food == 'fruits'">Apples and oranges</p>
+  <p (elseif)="food == 'meat'">Chicken and pork</p>
+  <p (else)>Cake</p>
+</template>

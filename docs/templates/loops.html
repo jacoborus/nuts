@@ -1,0 +1,13 @@
+<!-- simple directives -->
+<ul>
+  <li (for)="person in persons" (key)="person.name">
+    {person.name}
+  </li>
+</ul>
+
+<!-- directive tags -->
+<ul>
+  <Loop (for)="person in persons" (key)="person.name">
+    <li>{person.name}</li>
+  </Loop>
+</ul>

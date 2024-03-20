@@ -2,7 +2,6 @@ import {
   ElemSchema,
   Expression,
   ExprScope,
-  ExprMethod,
   IAllAttribs,
   IAttr,
   IAttrDyn,
@@ -13,9 +12,9 @@ import {
   Section,
   Slab,
   TokenKind,
-} from '../src/types';
+} from "../src/types.ts";
 
-import { booleanAttributes, voidElements } from './common';
+import { booleanAttributes, voidElements } from "./common.ts";
 
 export class Reader {
   index: number;
@@ -40,7 +39,7 @@ export class Reader {
 }
 
 export function parse(reader: Reader): ElemSchema[] {
-  const schemas = [];
+  const schemas: (IText | ITag)[] = [];
   while (reader.current() && reader.current().type !== TokenKind.CloseTag) {
     switch (reader.current().type) {
       case TokenKind.Literal:
@@ -50,7 +49,7 @@ export function parse(reader: Reader): ElemSchema[] {
         schemas.push(parseTag(reader));
         break;
       default:
-        throw new Error('Unexpected token:' + reader.current().type);
+        throw new Error("Unexpected token:" + reader.current().type);
     }
   }
   return schemas;
@@ -71,7 +70,7 @@ function parseTag(reader: Reader): ITag {
   reader.next();
   const preAttribs = parseAttributes(reader);
   const attributes = preAttribs.filter(
-    (att) => att.type === NodeType.Attr || NodeType.AttrDyn
+    (att) => att.type === NodeType.Attr || NodeType.AttrDyn,
   ) as IAttr[];
   if (reader.current().type === TokenKind.WhiteSpace) reader.next();
   if (!reader.hasTokens()) {
@@ -147,7 +146,7 @@ export function parseAttributes(reader: Reader): IAllAttribs[] {
       if (attrib) attributes.push(attrib);
       continue;
     }
-    throw new Error('Unexpected token parsing attributes: ' + token.type);
+    throw new Error("Unexpected token parsing attributes: " + token.type);
   }
   return attributes;
 }
@@ -172,7 +171,7 @@ function parseAttribute(reader: Reader): IAttr {
       isBoolean: false,
       start: name.start,
       end: name.end,
-      err: 'incomplete attribute',
+      err: "incomplete attribute",
     };
   }
   reader.next();
@@ -196,7 +195,7 @@ function parseQuotedAttrValue(reader: Reader, name: IToken): IAttr {
       isBoolean: false,
       start: name.start,
       end: name.end + 2,
-      err: 'Attribute missing value: ' + name,
+      err: "Attribute missing value: " + name,
     };
   }
   const value = reader.current();
@@ -209,7 +208,7 @@ function parseQuotedAttrValue(reader: Reader, name: IToken): IAttr {
       isBoolean: false,
       start: name.start,
       end: value.end,
-      err: 'Attribute not closed: ' + name,
+      err: "Attribute not closed: " + name,
     };
   }
   reader.next();
@@ -232,7 +231,7 @@ function parseNoQuotedAttrValue(reader: Reader, name: IToken): IAttr {
       isBoolean: false,
       start: name.start,
       end: name.end + 1,
-      err: 'Attribute missing value: ' + name,
+      err: "Attribute missing value: " + name,
     };
   }
   return {
@@ -260,7 +259,7 @@ function parseDynamicAttribute(reader: Reader): IAttrDyn {
       isReactive: false,
       start,
       end: name.end,
-      err: 'incomplete attribute',
+      err: "incomplete attribute",
     };
   }
   reader.next();
@@ -280,7 +279,7 @@ function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
       isReactive: false,
       start: name.start - 1,
       end: name.end + 2,
-      err: 'incomplete attribute',
+      err: "incomplete attribute",
     };
   }
   const closer = reader.current().type;
@@ -299,7 +298,7 @@ function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
 
 export function parseExpression(
   reader: Reader,
-  closer?: TokenKind
+  closer?: TokenKind,
 ): Expression {
   const first = reader.current();
   if (first.type === TokenKind.WhiteSpace) {
@@ -324,7 +323,7 @@ export function parseExpression(
       scope = ExprScope.Scope;
       break;
     default:
-      throw new Error('Wrong identifier in expression: ' + first.type);
+      throw new Error("Wrong identifier in expression: " + first.type);
   }
   const slabs = parseIdentifiers(reader);
   if (!closer) {
@@ -344,7 +343,7 @@ export function parseExpression(
       end: slabs[slabs.length - 1].end,
       scope,
       slabs,
-      err: 'unfinished',
+      err: "unfinished",
     };
   }
   if (reader.current().type !== closer) {
@@ -353,7 +352,7 @@ export function parseExpression(
       end: slabs[slabs.length - 1].end,
       scope,
       slabs,
-      err: 'unfinished',
+      err: "unfinished",
     };
   }
   const end = reader.current().end;
@@ -368,7 +367,7 @@ export function parseExpression(
 
 function parseIdentifiers(
   reader: Reader,
-  slabs = [] as Slab[]
+  slabs = [] as Slab[],
 ): (Slab | Expression)[] {
   slabs.push(reader.current());
   reader.next();
@@ -391,10 +390,9 @@ function parseIdentifiers(
         return parseIdentifiers(reader, slabs.concat(slab));
       }
       return parseIdentifiers(reader);
-    }
-    // TODO: add here parseQuoted
+    } // TODO: add here parseQuoted
     else {
-      throw new Error('Unfinished expression');
+      throw new Error("Unfinished expression");
     }
   }
   return slabs;

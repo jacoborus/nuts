@@ -1,5 +1,5 @@
-import { IToken, TokenKind, Section } from './types';
-import { Chars } from './common';
+import { IToken, Section, TokenKind } from "./types.ts";
+import { Chars } from "./common.ts";
 
 const whiteSpaces = [
   Chars._S,
@@ -34,10 +34,10 @@ export class Reader {
     this.index = this.index + amount;
   }
   char(pos?: number): string {
-    return this.source[typeof pos === 'number' ? pos : this.index];
+    return this.source[typeof pos === "number" ? pos : this.index];
   }
   charCode(pos?: number): number {
-    return this.source.charCodeAt(typeof pos === 'number' ? pos : this.index);
+    return this.source.charCodeAt(typeof pos === "number" ? pos : this.index);
   }
   nextChar(): string {
     return this.source[this.index + 1];
@@ -64,13 +64,13 @@ export class Reader {
     return ["'", '"'].includes(this.char());
   }
   isOpenComment(): boolean {
-    return this.slice(0, 4) == '<!--';
+    return this.slice(0, 4) == "<!--";
   }
   isCommentEnd(): boolean {
-    return this.slice(0, 3) == '-->';
+    return this.slice(0, 3) == "-->";
   }
   isScriptEnd(): boolean {
-    return this.slice(0, 9) == '</script>';
+    return this.slice(0, 9) == "</script>";
   }
   toNext(char: string): string {
     const value = [];
@@ -78,7 +78,7 @@ export class Reader {
       value.push(this.char());
       this.next();
     }
-    return value.join('');
+    return value.join("");
   }
   isOpenTagEnd(): boolean {
     if (this.charCode() === Chars.Gt) return true;
