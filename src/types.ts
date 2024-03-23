@@ -1,22 +1,26 @@
 import { SourceFile } from "npm:typescript";
 
 export const enum Section {
+  WhiteSpace = "WhiteSpace",
+  Normal = "Normal",
   Literal = "Literal",
+  Interpolation = "Interpolation",
+  AfterInterpolation = "AfterInterpolation",
+  OpeningTag = "OpeningTag",
   OpenTag = "OpenTag",
   Script = "Script",
   Style = "Style",
   Doctype = "Doctype",
   TagName = "TagName",
   Attribs = "Attribs",
-  BeginAttribute = "BeginAttribute",
   ClosingTag = "ClosingTag",
   Expression = "Expression",
   Comment = "Comment",
   AfterOpenTag = "AfterOpenTag",
   AttribName = "AttribName",
   DirectiveName = "DirectiveName",
-  AfterAttribName = "AfterAttribName",
-  AttribValue = "AttribValue",
+  AfterAttribEqual = "AfterAttribEqual",
+  NQuoted = "NQuoted",
   DQuoted = "DQuoted",
   SQuoted = "SQuoted",
   AttribExpression = "AttribExpression",
@@ -32,41 +36,39 @@ interface IBase {
   end: number;
 }
 
-export interface IToken extends IBase {
+export interface Token extends IBase {
   type: TokenKind;
   value: string;
 }
 
 export enum TokenKind {
-  Beginning = "Beginning",
   WhiteSpace = "WhiteSpace",
   // html
   Literal = "Literal",
-  OpenTag = "OpenTag", // '<'
-  TagName = "TagName", // '<' or '</'
-  OpenTagEnd = "OpenTagEnd", // '>',
-  VoidTagEnd = "VoidTagEnd", // '/>'
+  OpenTag = "OpenTag", // leading '<'
+  OpenTagEnd = "OpenTagEnd", // tailing '>',
+  TagName = "TagName",
+  VoidTagEnd = "VoidTagEnd", // tailing '/>'
   CloseTag = "CloseTag", // leading '</'
+  CloseTagEnd = "CloseTagEnd", // tailing '>'
   Comment = "Comment",
+  OpenComment = "OpenComment",
+  CloseComment = "CloseComment",
   Script = "Script",
   AttrPrefix = "AttrPrefix", // '@', ':' or '::'
   AttrName = "AttrName",
   AttrEq = "AttrEq",
   AttrQuote = "AttrQuote",
   AttrValue = "AttrValue",
-  Directive = "Directive",
-  OpenComment = "OpenComment",
-  CloseComment = "CloseComment",
+  OpenCurly = "OpenCurly", // {
+  CloseCurly = "CloseCurly", // }
+  Expression = "Expression",
   // Expression
   Identifier = "Identifier",
-  CtxPrefix = "CtxPrefix", // $
-  FuncPrefix = "FuncPrefix", // @
   Dot = "Dot", // .
   Comma = "Comma", // ,
   OpenBracket = "OpenBracket", // [
   CloseBracket = "CloseBracket", // ]
-  OpenCurly = "OpenCurly", // {
-  CloseCurly = "CloseCurly", // }
   OpenParens = "OpenParens", // (
   CloseParens = "CloseParens", // )
   SQuote = "SQuote", // '
@@ -75,28 +77,30 @@ export enum TokenKind {
 }
 
 export const enum NodeType {
-  Comment,
-  Text,
-  TextDyn,
-  Tag,
   Attr,
-  AttrDyn, // Dynamic attribute
+  Comment,
   Event,
+  Interpolated,
   Loop,
-  Tree,
+  Prop, // Dynamic attribute
   Script,
+  Tag,
   Template,
+  Text,
+  Tree,
 }
 
-export const directiveTags = ["if", "else", "elseif", "loop"];
+export const directiveTags = ["if", "else", "elseif", "loop", "slot", "place"];
+
 export const directiveNames = [
   "if",
   "else",
   "elseif",
   "loop",
   "ref",
-  "index",
-  "pos",
+  "key",
+  "slot",
+  "place",
 ];
 
 export interface IText extends IBase {
@@ -104,8 +108,8 @@ export interface IText extends IBase {
   value: string;
 }
 
-export interface ITextDyn extends IBase {
-  type: NodeType.TextDyn;
+export interface IInterpolated extends IBase {
+  type: NodeType.Interpolated;
   expr: Expression;
   reactive: boolean;
 }
@@ -114,15 +118,15 @@ export type IAllAttribs = IAttr | IAttrDyn | IEvent;
 
 export interface IAttr extends IBase {
   type: NodeType.Attr;
-  name: IToken;
-  value?: IToken;
+  name: Token;
+  value?: Token;
   isBoolean: boolean;
   err?: string;
 }
 
 export interface IAttrDyn extends IBase {
-  type: NodeType.AttrDyn;
-  name: IToken;
+  type: NodeType.Interpolated;
+  name: Token;
   expr: Expression;
   isBoolean: boolean;
   isReactive: boolean;
@@ -138,7 +142,7 @@ export interface IEvent extends IBase {
 export interface ITag extends IBase {
   type: NodeType.Tag;
   name: string; // lower case tag name, div
-  rawName: IToken; // original case tag name, Div
+  rawName: Token; // original case tag name, Div
   attributes: (IAttr | IAttrDyn)[];
   events: IEvent[];
   ref?: string;
@@ -172,9 +176,9 @@ export type DirectiveName =
 export interface LoopSchema extends IBase {
   type: NodeType.Loop;
   loop: Expression;
-  target: IToken;
-  index?: IToken;
-  pos?: IToken; // index + 1
+  target: Token;
+  index?: Token;
+  pos?: Token; // index + 1
   body: ElemSchema[];
 }
 
@@ -220,7 +224,7 @@ export interface Expression extends IBase {
   slabs: Slab[];
   err?: string;
 }
-export type Slab = IToken | Expression | ExprMethod;
+export type Slab = Token | Expression | ExprMethod;
 
 export interface ExprMethod extends IBase {
   method: Expression;
@@ -229,7 +233,7 @@ export interface ExprMethod extends IBase {
 
 export type ElemSchema =
   | IText
-  | ITextDyn
+  | IInterpolated
   | ITag
   | IComment
   | LoopSchema

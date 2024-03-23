@@ -1,388 +1,359 @@
-import { Reader } from "./reader.ts";
-import { Section, TokenKind } from "./types.ts";
+import { Section, Token, TokenKind } from "./types.ts";
 import { Chars } from "./common.ts";
 
-export function tokenizeHtml(reader: Reader): void {
-  while (reader.notFinished()) {
-    switch (reader.section) {
-      case Section.Literal:
-        if (reader.scriptOn) {
-          tokenizeScriptTail(reader);
-          break;
-        }
-        tokenizeLiteral(reader);
+let buffer = "";
+let index = 0;
+const tokens: Token[] = [];
+let section: Section = Section.Normal;
+let char: number;
+let sectionStart = 0;
+let preSection: Section.Literal | Section.Attribs | Section.OpenTag =
+  Section.Literal;
+let size = buffer.length;
+
+function next() {
+  if (index + 1 >= size) return false;
+  index++;
+  char = buffer.charCodeAt(index);
+  return true;
+}
+
+function isWhiteSpace() {
+  return char === Chars._S ||
+    char === Chars._N ||
+    char === Chars._T ||
+    char === Chars._T ||
+    char === Chars._R ||
+    char === Chars._F;
+}
+
+const options = {
+  normal: {
+    "{": { emit: TokenKind.OpenCurly, section: Section.Expression },
+    "<": { section: "openingTag" },
+    default: { section: Section.Literal },
+  },
+  expression: {
+    "}": ["emit closeCurly", "normal"],
+    default: { plusIndex: 1 },
+  },
+  literal: {
+    "{": {
+      emit: [TokenKind.Literal, TokenKind.OpenCurly],
+      section: Section.Expression,
+    },
+    "<": { section: Section.OpeningTag },
+    default: { plusIndex: 1 },
+  },
+  openingTag: {
+    tagname: ["emit openTag", "tagname"],
+  },
+  tagname: {
+    whitespace: ["emit tagname", "attribs"],
+    gt: ["emit openTagEnd", "normal"],
+  },
+  attribs: {
+    attribname: ["emit whitespace", "attribname"],
+  },
+};
+
+function emitToken(kind: TokenKind, newSection = section) {
+  tokens.push({
+    type: kind,
+    value: buffer.slice(sectionStart, index + 1),
+    start: sectionStart,
+    end: index,
+  });
+  ++index;
+  sectionStart = index;
+  section = newSection;
+}
+
+export function tokenizeHtml(input: string): Token[] {
+  init(input);
+  while (index < size) {
+    char = buffer.charCodeAt(index);
+    switch (section) {
+      case Section.Normal:
+        tokenizeNormal();
         break;
-      case Section.OpenTag:
-        tokenizeTagName(reader);
+      case Section.Literal:
+        tokenizeLiteral();
+        break;
+      case Section.Interpolation:
+        tokenizeInterpolation();
+        break;
+      case Section.OpeningTag:
+        tokenizeOpeningTag();
+        break;
+      case Section.TagName:
+        tokenizeTagName();
         break;
       case Section.AfterOpenTag:
-        tokenizeAfterOpenTag(reader);
+        tokenizeAfterOpenTag();
         break;
-      case Section.BeginAttribute:
-        tokenizeBeginAttribute(reader);
+      case Section.WhiteSpace:
+        tokenizeWhitespace();
         break;
       case Section.AttribName:
-        tokenizeAttribName(reader);
+        tokenizeAttribName();
         break;
-      case Section.DirectiveName:
-        tokenizeDirectiveName(reader);
+      case Section.AfterAttribEqual:
+        tokenizeAfterAttribEqual();
         break;
-      case Section.AfterAttribName:
-        tokenizeAfterAttribName(reader);
-        break;
-      case Section.AttribValue:
-        tokenizeAttribValue(reader);
+      case Section.NQuoted:
+        tokenizeAttribNQuoted();
         break;
       case Section.DQuoted:
-        tokenizeDquoted(reader);
+        tokenizeDquoted();
         break;
       case Section.SQuoted:
-        tokenizeSquoted(reader);
+        tokenizeSquoted();
+        break;
+      case Section.ClosingTag:
+        tokenizeClosingTag();
         break;
       case Section.Comment:
-        tokenizeComment(reader);
+        tokenizeComment();
         break;
-      case Section.Script:
-        tokenizeScriptHead(reader);
+        // case Section.Script:
+        //   tokenizeScriptHead();
+        //   break;
+    }
+    index++;
+  }
+  if (sectionStart < size) {
+    switch (section) {
+      case Section.Literal:
+        index--;
+        emitToken(TokenKind.Literal);
         break;
     }
   }
+  return tokens;
 }
 
-function tokenizeLiteral(reader: Reader): void {
-  if (reader.charCode() !== Chars.Lt) {
-    reader.emitToken(TokenKind.Literal);
+function tokenizeNormal() {
+  console.log("tokenize normal", buffer[index]);
+  if (char === Chars.Oc) {
+    emitToken(TokenKind.OpenCurly, Section.Expression);
+    tokenizeInterpolation();
     return;
   }
-  const nextChar = reader.nextCharCode();
+  if (char === Chars.Lt) {
+    section = Section.OpeningTag;
+    index--;
+    return;
+  }
+  section = Section.Literal;
+}
+
+function tokenizeLiteral(): void {
+  console.log("tokenize literal", buffer[index]);
+  if (char === Chars.Lt) {
+    index--;
+    emitToken(TokenKind.Literal, Section.OpeningTag);
+    index--;
+    return;
+  }
+  if (char === Chars.Oc) {
+    index--;
+    emitToken(TokenKind.Literal, Section.Interpolation);
+    emitToken(TokenKind.OpenCurly, Section.Interpolation);
+    return;
+  }
+}
+
+function tokenizeInterpolation(): void {
+  console.log("tokenize interpolation", buffer[index]);
+  emitToken(TokenKind.OpenCurly);
+  while (char !== Chars.Cc) {
+    ++index;
+  }
+  emitToken(TokenKind.Expression);
+  ++index;
+  emitToken(TokenKind.CloseCurly, preSection);
+}
+
+function tokenizeOpeningTag(): void {
+  console.log("tokenize opening tag", buffer[index]);
+  const nextChar = buffer.charCodeAt(index + 1);
   if (
     (nextChar >= Chars.La && nextChar <= Chars.Lz) ||
     (nextChar >= Chars.Ua && nextChar <= Chars.Uz)
   ) {
     // <d
-    reader.emitToken(TokenKind.OpenTag);
-    reader.section = Section.OpenTag;
+    emitToken(TokenKind.OpenTag, Section.TagName);
+    index--;
   } else if (nextChar === Chars.Sl) {
     // </
-    reader.emitToken(TokenKind.CloseTag, 2);
-    tokenizeCloseTag(reader);
-  } else if (nextChar === Chars.Lt) {
-    // <<
-    reader.emitToken(TokenKind.Literal);
-  } else if (reader.isOpenComment()) {
+    section = Section.ClosingTag;
+    next();
+  } else if (
+    nextChar === Chars.Ep &&
+    buffer.charCodeAt(index + 2) === Chars.Cl &&
+    buffer.charCodeAt(index + 3) === Chars.Cl
+  ) {
     // <!--
-    reader.emitToken(TokenKind.OpenComment, 4);
-    reader.section = Section.Comment;
+    index += 3;
+    emitToken(TokenKind.OpenComment, Section.Comment);
+    index--;
   } else {
-    // <>
-    // any other chars covert to normal state
-    reader.emitToken(TokenKind.Literal);
+    // any other chars convert to normal state
+    section = Section.Literal;
   }
 }
 
-function tokenizeComment(reader: Reader): void {
-  while (reader.notFinished() && !reader.isCommentEnd()) {
-    reader.emitToken(TokenKind.Comment);
-  }
-  if (reader.isCommentEnd()) {
-    reader.emitToken(TokenKind.CloseComment, 3);
-    reader.section = Section.Literal;
-  }
-}
-
-function tokenizeScriptHead(reader: Reader): void {
-  reader.emitToken(TokenKind.OpenTag);
-  reader.emitToken(TokenKind.TagName, 6);
-  reader.scriptOn = true;
-  reader.section = Section.AfterOpenTag;
-}
-
-function tokenizeScriptTail(reader: Reader): void {
-  while (reader.notFinished() && !reader.isScriptEnd()) {
-    reader.emitToken(TokenKind.Script);
-  }
-  if (reader.isScriptEnd()) {
-    reader.emitToken(TokenKind.CloseTag, 2);
-    reader.emitToken(TokenKind.TagName, 6);
-    reader.emitToken(TokenKind.CloseTag);
-    reader.section = Section.Literal;
-    reader.scriptOn = false;
-  }
-}
-
-function tokenizeTagName(reader: Reader): void {
+function tokenizeComment(): void {
+  console.log("tokenize comment", buffer[index]);
   while (
-    reader.notFinished() &&
-    !reader.isWhiteSpace() &&
-    !reader.isOpenTagEnd()
+    index < size && buffer.charCodeAt(index) !== Chars.Cl &&
+    buffer.charCodeAt(index + 1) !== Chars.Cl &&
+    buffer.charCodeAt(index + 2) !== Chars.Gt
   ) {
-    reader.emitToken(TokenKind.TagName);
+    index++;
   }
-  reader.section = Section.AfterOpenTag;
+  emitToken(TokenKind.Comment);
+  index += 2;
+  emitToken(TokenKind.CloseComment, Section.Normal);
+  index--;
 }
 
-export function tokenizeAfterOpenTag(reader: Reader): void {
-  if (reader.isWhiteSpace()) {
-    reader.emitToken(TokenKind.WhiteSpace);
+function tokenizeTagName(): void {
+  console.log("tokenize tag name", buffer[index]);
+  if (isWhiteSpace()) {
+    index--;
+    emitToken(TokenKind.TagName, Section.WhiteSpace);
+    index--;
     return;
   }
-  if (reader.charCode() === Chars.Gt) {
-    reader.emitToken(TokenKind.OpenTagEnd);
-    reader.section = Section.Literal;
-    return;
-  }
-  if (reader.isVoidTagEnd()) {
-    reader.emitToken(TokenKind.VoidTagEnd, 2);
-    reader.section = Section.Literal;
-    return;
-  }
-  if (reader.charCode() === Chars.Op) {
-    reader.hasExpression = true;
-    reader.emitToken(TokenKind.OpenParens);
-    reader.section = Section.DirectiveName;
-    return;
-  }
-  reader.section = Section.BeginAttribute;
-}
-
-function tokenizeBeginAttribute(reader: Reader): void {
-  const charCode = reader.charCode();
-  const nextCharCode = reader.nextCharCode();
-  reader.hasExpression = false;
-  if (charCode === Chars.C_) {
-    reader.hasExpression = true;
-    reader.emitToken(TokenKind.AttrPrefix);
-    if (nextCharCode === Chars.C_) reader.emitToken(TokenKind.AttrPrefix);
-  }
-  reader.section = Section.AttribName;
-}
-
-function tokenizeAttribName(reader: Reader): void {
-  while (
-    reader.charCode() !== Chars.Eq &&
-    reader.notFinished() &&
-    !reader.isWhiteSpace() &&
-    !reader.isOpenTagEnd()
-  ) {
-    reader.emitToken(TokenKind.AttrName);
-  }
-  if (reader.notFinished()) reader.section = Section.AfterAttribName;
-}
-
-function tokenizeDirectiveName(reader: Reader): void {
-  while (reader.charCode() !== Chars.Cp && reader.notFinished()) {
-    reader.emitToken(TokenKind.Directive);
-  }
-  if (reader.notFinished()) {
-    reader.emitToken(TokenKind.CloseParens);
-    reader.section = Section.AfterAttribName;
+  if (char === Chars.Gt) {
+    index--;
+    emitToken(TokenKind.TagName);
+    emitToken(TokenKind.OpenTagEnd, Section.Normal);
   }
 }
 
-function tokenizeAfterAttribName(reader: Reader): void {
-  if (reader.charCode() !== Chars.Eq) {
-    reader.section = Section.AfterOpenTag;
+function tokenizeAfterOpenTag() {
+  console.log("tokenize open tag", buffer[index]);
+  if (isWhiteSpace()) {
+    section = Section.WhiteSpace;
+    index--;
     return;
   }
-  reader.emitToken(TokenKind.AttrEq);
-  reader.section = Section.AttribValue;
-}
-
-function tokenizeAttribValue(reader: Reader): void {
-  if (reader.isWhiteSpace()) {
-    reader.section = Section.AfterOpenTag;
+  if (char === Chars.Gt) {
+    emitToken(TokenKind.OpenTagEnd, preSection);
     return;
   }
-  const charCode = reader.charCode();
-  if (reader.hasExpression) {
-    if ([Chars.Sq, Chars.Dq, Chars.Ox].includes(charCode)) {
-      reader.section = Section.AfterOpenTag;
-      tokenizeExpression(reader);
-    } else {
-      throw new Error("Wrong expression start");
-    }
-    reader.section = Section.AfterOpenTag;
-  } else {
-    if (charCode === Chars.Dq) {
-      reader.emitToken(TokenKind.DQuote);
-      reader.section = Section.DQuoted;
-    } else if (charCode === Chars.Sq) {
-      reader.emitToken(TokenKind.SQuote);
-      reader.section = Section.SQuoted;
-    } else {
-      while (
-        reader.notFinished() &&
-        !reader.isWhiteSpace() &&
-        !reader.isOpenTagEnd()
-      ) {
-        reader.emitToken(TokenKind.AttrValue);
-      }
-      if (reader.notFinished()) {
-        reader.section = Section.AfterOpenTag;
-      }
-    }
+  if (char === Chars.Sl && buffer.charCodeAt(index + 1) === Chars.Gt) {
+    index++;
+    emitToken(TokenKind.VoidTagEnd, Section.Normal);
+    return;
   }
+  section = Section.AttribName;
+  index--;
 }
 
-function tokenizeDquoted(reader: Reader): void {
-  while (reader.notFinished() && reader.charCode() !== Chars.Dq) {
-    reader.emitToken(TokenKind.AttrValue);
-  }
-  if (reader.charCode() === Chars.Dq) {
-    reader.emitToken(TokenKind.DQuote);
-    reader.section = Section.AfterOpenTag;
-  }
+function tokenizeWhitespace(): void {
+  console.log("tokenize whitespace", buffer[index]);
+  if (isWhiteSpace()) return;
+  index--;
+  emitToken(TokenKind.WhiteSpace, Section.AfterOpenTag);
 }
-function tokenizeSquoted(reader: Reader): void {
-  while (reader.notFinished() && reader.charCode() !== Chars.Sq) {
-    reader.emitToken(TokenKind.AttrValue);
+
+function tokenizeAttribName(): void {
+  console.log("tokenize attrib name", buffer[index]);
+  if (char === Chars.Eq) {
+    index--;
+    emitToken(TokenKind.AttrName);
+    emitToken(TokenKind.AttrEq, Section.AfterAttribEqual);
+    index--;
+    return;
   }
-  if (reader.charCode() === Chars.Sq) {
-    reader.emitToken(TokenKind.SQuote);
-    reader.section = Section.AfterOpenTag;
+  if (isWhiteSpace()) {
+    index--;
+    emitToken(TokenKind.AttrName, Section.WhiteSpace);
+    tokenizeWhitespace();
+    return;
+  }
+  if (char === Chars.Gt || isWhiteSpace()) {
+    emitToken(TokenKind.AttrName, Section.AfterOpenTag);
+    return;
   }
 }
 
-function tokenizeCloseTag(reader: Reader): void {
-  // TODO: unexpected?
-  if (reader.isWhiteSpace()) {
-    reader.emitToken(TokenKind.WhiteSpace);
-    reader.section = Section.Literal;
+function tokenizeAfterAttribEqual(): void {
+  console.log("tokenize after attrib equal", buffer[index]);
+  if (isWhiteSpace()) {
+    section = Section.WhiteSpace;
+    index--;
     return;
   }
-  while (reader.notFinished() && reader.charCode() !== Chars.Gt) {
-    reader.emitToken(TokenKind.CloseTag);
+  if (char === Chars.Dq) {
+    emitToken(TokenKind.DQuote, Section.DQuoted);
+    index--;
+    return;
   }
-  if (reader.notFinished()) {
-    reader.emitToken(TokenKind.CloseTag);
-    reader.section = Section.Literal;
+  if (char === Chars.Sq) {
+    emitToken(TokenKind.SQuote, Section.SQuoted);
+    index--;
+    return;
+  }
+  section = Section.NQuoted;
+  index--;
+}
+
+function tokenizeAttribNQuoted(): void {
+  console.log("tokenize attrib value", buffer[index]);
+  if (char === Chars.Gt) {
+    index--;
+    emitToken(TokenKind.AttrValue);
+    emitToken(TokenKind.OpenTagEnd, Section.Normal);
+    index--;
+    return;
+  }
+  if (isWhiteSpace()) {
+    index--;
+    emitToken(TokenKind.AttrValue, Section.WhiteSpace);
+    index--;
+    return;
   }
 }
 
-export function tokenizeExpression(reader: Reader): void {
-  const charCode = reader.charCode();
-  let closer;
-  if (charCode === Chars.Dq) {
-    reader.emitToken(TokenKind.DQuote);
-    closer = charCode;
-  } else if (charCode === Chars.Sq) {
-    reader.emitToken(TokenKind.SQuote);
-    closer = charCode;
-  } else if (charCode === Chars.Ox) {
-    reader.emitToken(TokenKind.OpenCurly);
-    closer = Chars.Cx;
-  }
-  const presection = reader.section;
-  while (reader.notFinished() && !reader.isCloser(closer)) {
-    switch (reader.section) {
-      case Section.BeginExpression:
-        tokenizeBeginExpression(reader);
-        break;
-      case Section.Identifier:
-        tokenizeIdenfitier(reader, closer);
-        break;
-      case Section.ExprQuoted:
-        tokenizeQuoted(reader);
-        break;
-      default:
-        reader.section = Section.BeginExpression;
-    }
-  }
-  if (closer) {
-    if (charCode === Chars.Dq) {
-      reader.emitToken(TokenKind.DQuote);
-    } else if (charCode === Chars.Sq) {
-      reader.emitToken(TokenKind.SQuote);
-    } else if (charCode === Chars.Ox) {
-      reader.emitToken(TokenKind.CloseCurly);
-    }
-  }
-  if (reader.notFinished()) {
-    reader.section = presection;
+function tokenizeDquoted(): void {
+  console.log("tokenize double quoted", buffer[index]);
+  if (char === Chars.Dq) {
+    index--;
+    emitToken(TokenKind.AttrValue);
+    emitToken(TokenKind.DQuote, Section.AfterOpenTag);
+    index--;
   }
 }
 
-function tokenizeBeginExpression(reader: Reader): void {
-  if (reader.isWhiteSpace()) {
-    reader.emitToken(TokenKind.WhiteSpace);
-    return;
+function tokenizeSquoted(): void {
+  console.log("tokenize single quoted", buffer[index]);
+  if (char === Chars.Sq) {
+    index--;
+    emitToken(TokenKind.AttrValue);
+    emitToken(TokenKind.SQuote, Section.AfterOpenTag);
+    index--;
   }
-  if (reader.charCode() === Chars.At) {
-    reader.emitToken(TokenKind.FuncPrefix);
-    reader.section = Section.Identifier;
-    return;
-  }
-  if (reader.charCode() === Chars.D$) {
-    reader.emitToken(TokenKind.CtxPrefix);
-    reader.section = Section.Identifier;
-    return;
-  }
-  if (reader.isQuote()) {
-    reader.section = Section.ExprQuoted;
-    return;
-  }
-  reader.emitToken(TokenKind.Identifier);
-  reader.section = Section.Identifier;
 }
 
-function tokenizeIdenfitier(reader: Reader, closer?: Chars): void {
-  if (!closer) {
-    if (reader.isWhiteSpace()) {
-      return;
-    }
-  } else if (reader.charCode() === closer) {
-    return;
+function tokenizeClosingTag(): void {
+  console.log("tokenize closing tag", buffer[index]);
+  if (char === Chars.Gt) {
+    emitToken(TokenKind.CloseTag, Section.Normal);
   }
-  if (reader.charCode() === Chars.Do) {
-    reader.emitToken(TokenKind.Dot);
-    return;
-  }
-  if (reader.isWhiteSpace()) {
-    reader.emitToken(TokenKind.WhiteSpace);
-    reader.section = Section.BeginExpression;
-    return;
-  }
-  if (reader.charCode() === Chars.Op) {
-    reader.emitToken(TokenKind.OpenParens);
-    reader.section = Section.BeginExpression;
-    return;
-  }
-  if (reader.charCode() === Chars.Cp) {
-    reader.emitToken(TokenKind.CloseParens);
-    reader.section = Section.BeginExpression;
-    return;
-  }
-  if (reader.charCode() === Chars.Ox) {
-    reader.emitToken(TokenKind.OpenCurly);
-    reader.section = Section.AfterExpression;
-    tokenizeExpression(reader);
-    return;
-  }
-  if (reader.charCode() === Chars.Cx) {
-    reader.emitToken(TokenKind.CloseCurly);
-    reader.section = Section.BeginExpression;
-    return;
-  }
-  if (reader.charCode() === Chars.Co) {
-    reader.emitToken(TokenKind.Comma);
-    reader.section = Section.BeginExpression;
-    return;
-  }
-  if (reader.isQuote()) {
-    reader.section = Section.ExprQuoted;
-    return;
-  }
-  reader.emitToken(TokenKind.Identifier);
 }
 
-export function tokenizeQuoted(reader: Reader): void {
-  const quoteCode = reader.charCode();
-  const kind = quoteCode === Chars.Sq ? TokenKind.SQuote : TokenKind.DQuote;
-  reader.emitToken(kind);
-  while (reader.notFinished() && reader.charCode() !== quoteCode) {
-    reader.emitToken(TokenKind.Identifier);
-  }
-  if (reader.notFinished()) {
-    reader.emitToken(kind);
-  }
+function init(input: string) {
+  buffer = input;
+  index = 0;
+  tokens.length = 0;
+  char = buffer.charCodeAt(0);
+  section = Section.Normal;
+  sectionStart = 0;
+  preSection = Section.Literal;
+  size = buffer.length;
 }
