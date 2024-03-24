@@ -8,6 +8,7 @@ let section: Section = Section.Normal;
 let char: number;
 let sectionStart = 0;
 let size = buffer.length;
+let inScript = false;
 
 function init(input: string) {
   buffer = input;
@@ -90,9 +91,9 @@ export function tokenizeHtml(input: string): Token[] {
       case Section.Comment:
         tokenizeComment();
         break;
-        // case Section.Script:
-        //   tokenizeScriptHead();
-        //   break;
+      case Section.Script:
+        tokenizeScript();
+        break;
     }
   }
   if (sectionStart < size) {
@@ -107,6 +108,10 @@ export function tokenizeHtml(input: string): Token[] {
 }
 
 function tokenizeNormal() {
+  if (inScript) {
+    section = Section.Script;
+    return;
+  }
   if (char === Chars.Oc) {
     emitToken(TokenKind.OpenCurly, Section.Expression);
     tokenizeInterpolation();
@@ -146,7 +151,19 @@ function tokenizeInterpolation(): void {
 
 function tokenizeOpeningTag(): void {
   const nextChar = buffer.charCodeAt(index + 1);
+
   if (
+    nextChar === 115 && // s
+    buffer.charCodeAt(index + 2) === 99 && // c
+    buffer.charCodeAt(index + 3) === 114 && // r
+    buffer.charCodeAt(index + 4) === 105 && // i
+    buffer.charCodeAt(index + 5) === 112 && // p
+    buffer.charCodeAt(index + 6) === 116 // t
+  ) {
+    // <script
+    emitToken(TokenKind.OpenTag, Section.TagName);
+    inScript = true;
+  } else if (
     (nextChar >= Chars.La && nextChar <= Chars.Lz) ||
     (nextChar >= Chars.Ua && nextChar <= Chars.Uz)
   ) {
@@ -154,7 +171,6 @@ function tokenizeOpeningTag(): void {
     emitToken(TokenKind.OpenTag, Section.TagName);
   } else if (nextChar === Chars.Sl) {
     // </
-    // TODO: check
     section = Section.ClosingTag;
     index += 2;
   } else if (
@@ -306,7 +322,33 @@ function tokenizeSquoted(): void {
 
 function tokenizeClosingTag(): void {
   if (char === Chars.Gt) {
+    if (inScript) {
+      emitToken(TokenKind.CloseTag, Section.Script);
+    } else {
+      emitToken(TokenKind.CloseTag, Section.Normal);
+    }
+    return;
+  }
+  ++index;
+}
+
+function tokenizeScript(): void {
+  if (
+    char === Chars.Lt &&
+    buffer.charCodeAt(index + 1) === Chars.Sl &&
+    buffer.charCodeAt(index + 2) === 115 && // s
+    buffer.charCodeAt(index + 3) === 99 && // c
+    buffer.charCodeAt(index + 4) === 114 && // r
+    buffer.charCodeAt(index + 5) === 105 && // i
+    buffer.charCodeAt(index + 6) === 112 && // p
+    buffer.charCodeAt(index + 7) === 116 && // t
+    buffer.charCodeAt(index + 8) === Chars.Gt // >
+  ) {
+    index--;
+    emitToken(TokenKind.Literal);
+    index += 8;
     emitToken(TokenKind.CloseTag, Section.Normal);
+    inScript = false;
     return;
   }
   ++index;

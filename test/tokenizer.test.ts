@@ -144,8 +144,7 @@ let tests: {
   {
     name: "tokenize html: script",
     input: `  <script lang="ts">;
-    console.log('hola');</script> `,
-    ignore: true,
+    console.log('</div>');</script> `,
     result: [
       { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
       { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
@@ -159,13 +158,13 @@ let tests: {
       { start: 19, end: 19, type: TokenKind.OpenTagEnd, value: ">" },
       {
         start: 20,
-        end: 45,
+        end: 47,
         type: TokenKind.Literal,
         value: `;
-    console.log('hola');`,
+    console.log('</div>');`,
       },
-      { start: 46, end: 54, type: TokenKind.CloseTag, value: "</script>" },
-      { start: 55, end: 55, type: TokenKind.Literal, value: " " },
+      { start: 48, end: 56, type: TokenKind.CloseTag, value: "</script>" },
+      { start: 57, end: 57, type: TokenKind.Literal, value: " " },
     ],
   },
   {
