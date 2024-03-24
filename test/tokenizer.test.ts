@@ -84,6 +84,19 @@ let tests: {
     ],
   },
   {
+    name: "tokenize html: tag with attrib then close tag",
+    input: "<span mark>hola</span>",
+    result: [
+      { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
+      { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
+      { start: 5, end: 5, type: TokenKind.WhiteSpace, value: " " },
+      { start: 6, end: 9, type: TokenKind.AttrName, value: "mark" },
+      { start: 10, end: 10, type: TokenKind.OpenTagEnd, value: ">" },
+      { start: 11, end: 14, type: TokenKind.Literal, value: "hola" },
+      { start: 15, end: 21, type: TokenKind.CloseTag, value: "</span>" },
+    ],
+  },
+  {
     name: "tokenize html tag with attribs and self closing",
     input: '<span :id="userid" class="hola"/>',
     result: [

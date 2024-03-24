@@ -166,8 +166,7 @@ function tokenizeOpeningTag(): void {
     index += 3;
     emitToken(TokenKind.OpenComment, Section.Comment);
   } else {
-    // TODO: check
-    // any other chars convert to normal state
+    // any other chars convert to literal state
     section = Section.Literal;
     ++index;
   }
@@ -198,6 +197,7 @@ function tokenizeTagName(): void {
     index--;
     emitToken(TokenKind.TagName);
     emitToken(TokenKind.OpenTagEnd, Section.Normal);
+    return;
   }
   ++index;
 }
