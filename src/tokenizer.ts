@@ -123,8 +123,7 @@ function tokenizeNormal() {
     return;
   }
   if (char === Chars.Oc) {
-    emitToken(TokenKind.OpenCurly, Section.Expression);
-    tokenizeInterpolation();
+    emitToken(TokenKind.OpenCurly, Section.Interpolation);
     return;
   }
   if (char === Chars.Lt) {
@@ -150,13 +149,15 @@ function tokenizeLiteral(): void {
 }
 
 function tokenizeInterpolation(): void {
-  emitToken(TokenKind.OpenCurly);
-  while (char !== Chars.Cc) {
-    ++index;
+  if (char === Chars.Cc) {
+    index--;
+    section = Section.BeginExpression;
+    tokenizeExpression();
+    index--;
+    emitToken(TokenKind.CloseCurly, Section.Normal);
+    return;
   }
-  index--;
-  emitToken(TokenKind.Expression);
-  emitToken(TokenKind.CloseCurly, Section.Normal);
+  ++index;
 }
 
 function tokenizeOpeningTag(): void {
@@ -389,6 +390,51 @@ function tokenizeStyle(): void {
     inStyle = false;
     section = Section.ClosingTag;
     index--;
+    return;
+  }
+  ++index;
+}
+
+function tokenizeExpression(): void {
+  const end = index + 1;
+  index = sectionStart;
+  while (index <= end) {
+    char = buffer.charCodeAt(index);
+    switch (section) {
+      case Section.BeginExpression:
+        tokenizeBeginExpression();
+        break;
+      case Section.Identifier:
+        tokenizeIdentifier();
+        break;
+      case Section.WhiteSpace:
+        tokenizeInExprWhitespace();
+        break;
+    }
+  }
+}
+
+function tokenizeBeginExpression(): void {
+  if (isWhiteSpace()) {
+    section = Section.WhiteSpace;
+    return;
+  }
+  section = Section.Identifier;
+}
+
+function tokenizeIdentifier(): void {
+  if (isWhiteSpace()) {
+    index--;
+    emitToken(TokenKind.Identifier, Section.WhiteSpace);
+    return;
+  }
+  ++index;
+}
+
+function tokenizeInExprWhitespace(): void {
+  if (!isWhiteSpace()) {
+    index--;
+    emitToken(TokenKind.WhiteSpace, Section.Identifier);
     return;
   }
   ++index;

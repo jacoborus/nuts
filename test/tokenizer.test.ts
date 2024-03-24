@@ -220,6 +220,17 @@ let tests: {
     ],
   },
   {
+    name: "tokenize html: simple interpolation from first char",
+    input: "{ name }",
+    result: [
+      { start: 0, end: 0, type: TokenKind.OpenCurly, value: "{" },
+      { start: 1, end: 1, type: TokenKind.WhiteSpace, value: " " },
+      { start: 2, end: 5, type: TokenKind.Identifier, value: "name" },
+      { start: 6, end: 6, type: TokenKind.WhiteSpace, value: " " },
+      { start: 7, end: 7, type: TokenKind.CloseCurly, value: "}" },
+    ],
+  },
+  {
     ignore: true,
     name: "tokenize html tag with prefixed attrib name",
     input: '<span :id="user.id"/>',
