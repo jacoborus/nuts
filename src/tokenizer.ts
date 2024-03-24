@@ -7,8 +7,6 @@ const tokens: Token[] = [];
 let section: Section = Section.Normal;
 let char: number;
 let sectionStart = 0;
-let preSection: Section.Literal | Section.Attribs | Section.OpenTag =
-  Section.Literal;
 let size = buffer.length;
 
 function init(input: string) {
@@ -18,7 +16,6 @@ function init(input: string) {
   char = buffer.charCodeAt(0);
   section = Section.Normal;
   sectionStart = 0;
-  preSection = Section.Literal;
   size = buffer.length;
 }
 
