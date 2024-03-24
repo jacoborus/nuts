@@ -144,7 +144,6 @@ let tests: {
   {
     name: "tokenize html tag with attribs and self closing",
     input: '<span :id="userid" class="hola"/>',
-    only: true,
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
       { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
@@ -161,6 +160,31 @@ let tests: {
       { start: 26, end: 29, type: TokenKind.AttrValue, value: "hola" },
       { start: 30, end: 30, type: TokenKind.DQuote, value: '"' },
       { start: 31, end: 32, type: TokenKind.VoidTagEnd, value: "/>" },
+    ],
+  },
+  {
+    name: "tokenize hmtl: 2 sequential void tags",
+    input: '<input type="text" id="myid"><br>',
+    only: true,
+    result: [
+      { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
+      { start: 1, end: 5, type: TokenKind.TagName, value: "input" },
+      { start: 6, end: 6, type: TokenKind.WhiteSpace, value: " " },
+      { start: 7, end: 10, type: TokenKind.AttrName, value: "type" },
+      { start: 11, end: 11, type: TokenKind.AttrEq, value: "=" },
+      { start: 12, end: 12, type: TokenKind.DQuote, value: '"' },
+      { start: 13, end: 16, type: TokenKind.AttrValue, value: "text" },
+      { start: 17, end: 17, type: TokenKind.DQuote, value: '"' },
+      { start: 18, end: 18, type: TokenKind.WhiteSpace, value: " " },
+      { start: 19, end: 20, type: TokenKind.AttrName, value: "id" },
+      { start: 21, end: 21, type: TokenKind.AttrEq, value: "=" },
+      { start: 22, end: 22, type: TokenKind.DQuote, value: '"' },
+      { start: 23, end: 26, type: TokenKind.AttrValue, value: "myid" },
+      { start: 27, end: 27, type: TokenKind.DQuote, value: '"' },
+      { start: 28, end: 28, type: TokenKind.OpenTagEnd, value: ">" },
+      { start: 29, end: 29, type: TokenKind.OpenTag, value: "<" },
+      { start: 30, end: 31, type: TokenKind.TagName, value: "br" },
+      { start: 32, end: 32, type: TokenKind.OpenTagEnd, value: ">" },
     ],
   },
   {
@@ -260,30 +284,6 @@ let tests: {
       { start: 19, end: 19, type: TokenKind.CloseCurly, value: "}" },
     ],
   },
-  {
-    name: "tokenize hmtl: 2 sequential void tags",
-    input: '<input type="text" id="myid"><br>',
-    result: [
-      { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
-      { start: 1, end: 5, type: TokenKind.TagName, value: "input" },
-      { start: 6, end: 6, type: TokenKind.WhiteSpace, value: " " },
-      { start: 7, end: 10, type: TokenKind.AttrName, value: "type" },
-      { start: 11, end: 11, type: TokenKind.AttrEq, value: "=" },
-      { start: 12, end: 12, type: TokenKind.DQuote, value: '"' },
-      { start: 13, end: 16, type: TokenKind.AttrValue, value: "text" },
-      { start: 17, end: 17, type: TokenKind.DQuote, value: '"' },
-      { start: 18, end: 18, type: TokenKind.WhiteSpace, value: " " },
-      { start: 19, end: 20, type: TokenKind.AttrName, value: "id" },
-      { start: 21, end: 21, type: TokenKind.AttrEq, value: "=" },
-      { start: 22, end: 22, type: TokenKind.DQuote, value: '"' },
-      { start: 23, end: 26, type: TokenKind.AttrValue, value: "myid" },
-      { start: 27, end: 27, type: TokenKind.DQuote, value: '"' },
-      { start: 28, end: 28, type: TokenKind.OpenTagEnd, value: ">" },
-      { start: 29, end: 29, type: TokenKind.OpenTag, value: "<" },
-      { start: 30, end: 31, type: TokenKind.TagName, value: "br" },
-      { start: 32, end: 32, type: TokenKind.OpenTagEnd, value: ">" },
-    ],
-  },
 ];
 
 const onlyTests = tests.filter((test) => test.only);
@@ -294,9 +294,9 @@ tests.forEach((test) => {
     // if (test.expression) tokenizeExpression(reader);
     if (test.expression) return;
     const tokens = tokenizeHtml(test.input);
-    // if (test.only) {
-    //   console.log({ results: test.result, tokens, input: test.input });
-    // }
+    if (test.only) {
+      console.log({ results: test.result, tokens, input: test.input });
+    }
     assertEquals(tokens, test.result);
   });
 });
