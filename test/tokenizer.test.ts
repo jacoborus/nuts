@@ -168,6 +168,32 @@ let tests: {
     ],
   },
   {
+    name: "tokenize html: script with whitespace in closer",
+    input: `  <script lang="ts">;
+    console.log('</div>');</script   > `,
+    result: [
+      { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
+      { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
+      { start: 3, end: 8, type: TokenKind.TagName, value: "script" },
+      { start: 9, end: 9, type: TokenKind.WhiteSpace, value: " " },
+      { start: 10, end: 13, type: TokenKind.AttrName, value: "lang" },
+      { start: 14, end: 14, type: TokenKind.AttrEq, value: "=" },
+      { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
+      { start: 16, end: 17, type: TokenKind.AttrValue, value: "ts" },
+      { start: 18, end: 18, type: TokenKind.DQuote, value: '"' },
+      { start: 19, end: 19, type: TokenKind.OpenTagEnd, value: ">" },
+      {
+        start: 20,
+        end: 47,
+        type: TokenKind.Literal,
+        value: `;
+    console.log('</div>');`,
+      },
+      { start: 48, end: 59, type: TokenKind.CloseTag, value: "</script   >" },
+      { start: 60, end: 60, type: TokenKind.Literal, value: " " },
+    ],
+  },
+  {
     name: "tokenize html: style",
     input: `  <style lang="scss">
     body{colo</div>;}</style> `,

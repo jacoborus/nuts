@@ -362,14 +362,13 @@ function tokenizeScript(): void {
     buffer.charCodeAt(index + 4) === 114 && // r
     buffer.charCodeAt(index + 5) === 105 && // i
     buffer.charCodeAt(index + 6) === 112 && // p
-    buffer.charCodeAt(index + 7) === 116 && // t
-    buffer.charCodeAt(index + 8) === Chars.Gt // >
+    buffer.charCodeAt(index + 7) === 116 // t
   ) {
     index--;
     emitToken(TokenKind.Literal);
-    index += 8;
-    emitToken(TokenKind.CloseTag, Section.Normal);
     inScript = false;
+    section = Section.ClosingTag;
+    index--;
     return;
   }
   ++index;
@@ -383,14 +382,13 @@ function tokenizeStyle(): void {
     buffer.charCodeAt(index + 3) === 116 && // t
     buffer.charCodeAt(index + 4) === 121 && // y
     buffer.charCodeAt(index + 5) === 108 && // l
-    buffer.charCodeAt(index + 6) === 101 && // e
-    buffer.charCodeAt(index + 7) === Chars.Gt // >
+    buffer.charCodeAt(index + 6) === 101 // e
   ) {
     index--;
     emitToken(TokenKind.Literal);
-    index += 7;
-    emitToken(TokenKind.CloseTag, Section.Normal);
     inStyle = false;
+    section = Section.ClosingTag;
+    index--;
     return;
   }
   ++index;
