@@ -94,7 +94,6 @@ export function tokenizeHtml(input: string): Token[] {
         //   tokenizeScriptHead();
         //   break;
     }
-    index++;
   }
   if (sectionStart < size) {
     switch (section) {
@@ -115,27 +114,24 @@ function tokenizeNormal() {
   }
   if (char === Chars.Lt) {
     section = Section.OpeningTag;
-    index--;
     return;
   }
   section = Section.Literal;
-  index--;
 }
 
 function tokenizeLiteral(): void {
   if (char === Chars.Lt) {
     index--;
     emitToken(TokenKind.Literal, Section.OpeningTag);
-    index--;
     return;
   }
   if (char === Chars.Oc) {
     index--;
     emitToken(TokenKind.Literal);
     emitToken(TokenKind.OpenCurly, Section.Interpolation);
-    index--;
     return;
   }
+  ++index;
 }
 
 function tokenizeInterpolation(): void {
@@ -146,7 +142,6 @@ function tokenizeInterpolation(): void {
   index--;
   emitToken(TokenKind.Expression);
   emitToken(TokenKind.CloseCurly, Section.Normal);
-  index--;
 }
 
 function tokenizeOpeningTag(): void {
@@ -157,12 +152,11 @@ function tokenizeOpeningTag(): void {
   ) {
     // <d
     emitToken(TokenKind.OpenTag, Section.TagName);
-    index--;
   } else if (nextChar === Chars.Sl) {
     // </
     // TODO: check
     section = Section.ClosingTag;
-    ++index;
+    index += 2;
   } else if (
     nextChar === Chars.Ep &&
     buffer.charCodeAt(index + 2) === Chars.Cl &&
@@ -171,11 +165,11 @@ function tokenizeOpeningTag(): void {
     // <!--
     index += 3;
     emitToken(TokenKind.OpenComment, Section.Comment);
-    index--;
   } else {
     // TODO: check
     // any other chars convert to normal state
     section = Section.Literal;
+    ++index;
   }
 }
 
@@ -185,56 +179,53 @@ function tokenizeComment(): void {
     buffer.charCodeAt(index + 1) !== Chars.Cl ||
     buffer.charCodeAt(index + 2) !== Chars.Gt
   ) {
+    ++index;
     return;
   }
   index--;
   emitToken(TokenKind.Comment);
   index += 2;
   emitToken(TokenKind.CloseComment, Section.Normal);
-  index--;
 }
 
 function tokenizeTagName(): void {
   if (isWhiteSpace()) {
     index--;
     emitToken(TokenKind.TagName, Section.WhiteSpace);
-    index--;
     return;
   }
   if (char === Chars.Gt) {
     index--;
     emitToken(TokenKind.TagName);
     emitToken(TokenKind.OpenTagEnd, Section.Normal);
-    index--;
   }
+  ++index;
 }
 
 function tokenizeAfterOpenTag() {
   if (isWhiteSpace()) {
     section = Section.WhiteSpace;
-    index--;
     return;
   }
   if (char === Chars.Gt) {
     emitToken(TokenKind.OpenTagEnd, Section.Normal);
-    index--;
     return;
   }
   if (char === Chars.Sl && buffer.charCodeAt(index + 1) === Chars.Gt) {
     index++;
     emitToken(TokenKind.VoidTagEnd, Section.Normal);
-    index--;
     return;
   }
   section = Section.AttribName;
-  index--;
 }
 
 function tokenizeWhitespace(): void {
-  if (isWhiteSpace()) return;
+  if (isWhiteSpace()) {
+    ++index;
+    return;
+  }
   index--;
   emitToken(TokenKind.WhiteSpace, Section.AfterOpenTag);
-  index--;
 }
 
 function tokenizeAttribName(): void {
@@ -242,47 +233,40 @@ function tokenizeAttribName(): void {
     index--;
     emitToken(TokenKind.AttrName);
     emitToken(TokenKind.AttrEq, Section.AfterAttribEqual);
-    index--;
     return;
   }
   if (isWhiteSpace()) {
     index--;
     emitToken(TokenKind.AttrName, Section.WhiteSpace);
-    index--;
     return;
   }
   if (char === Chars.Gt) {
     index--;
     emitToken(TokenKind.AttrName, Section.AfterOpenTag);
-    index--;
     return;
   }
   if (isWhiteSpace()) {
     index--;
     emitToken(TokenKind.AttrName, Section.WhiteSpace);
-    index--;
     return;
   }
+  ++index;
 }
 
 function tokenizeAfterAttribEqual(): void {
   if (isWhiteSpace()) {
     section = Section.WhiteSpace;
-    index--;
     return;
   }
   if (char === Chars.Dq) {
     emitToken(TokenKind.DQuote, Section.DQuoted);
-    index--;
     return;
   }
   if (char === Chars.Sq) {
     emitToken(TokenKind.SQuote, Section.SQuoted);
-    index--;
     return;
   }
   section = Section.NQuoted;
-  index--;
 }
 
 function tokenizeAttribNQuoted(): void {
@@ -290,15 +274,14 @@ function tokenizeAttribNQuoted(): void {
     index--;
     emitToken(TokenKind.AttrValue);
     emitToken(TokenKind.OpenTagEnd, Section.Normal);
-    index--;
     return;
   }
   if (isWhiteSpace()) {
     index--;
     emitToken(TokenKind.AttrValue, Section.WhiteSpace);
-    index--;
     return;
   }
+  ++index;
 }
 
 function tokenizeDquoted(): void {
@@ -306,8 +289,9 @@ function tokenizeDquoted(): void {
     index--;
     emitToken(TokenKind.AttrValue);
     emitToken(TokenKind.DQuote, Section.AfterOpenTag);
-    index--;
+    return;
   }
+  ++index;
 }
 
 function tokenizeSquoted(): void {
@@ -315,13 +299,15 @@ function tokenizeSquoted(): void {
     index--;
     emitToken(TokenKind.AttrValue);
     emitToken(TokenKind.SQuote, Section.AfterOpenTag);
-    index--;
+    return;
   }
+  ++index;
 }
 
 function tokenizeClosingTag(): void {
   if (char === Chars.Gt) {
     emitToken(TokenKind.CloseTag, Section.Normal);
-    index--;
+    return;
   }
+  ++index;
 }
