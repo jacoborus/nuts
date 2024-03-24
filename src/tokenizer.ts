@@ -9,6 +9,7 @@ let char: number;
 let sectionStart = 0;
 let size = buffer.length;
 let inScript = false;
+let inStyle = false;
 
 function init(input: string) {
   buffer = input;
@@ -18,6 +19,8 @@ function init(input: string) {
   section = Section.Normal;
   sectionStart = 0;
   size = buffer.length;
+  inScript = false;
+  inStyle = false;
 }
 
 function isWhiteSpace() {
@@ -94,6 +97,9 @@ export function tokenizeHtml(input: string): Token[] {
       case Section.Script:
         tokenizeScript();
         break;
+      case Section.Style:
+        tokenizeStyle();
+        break;
     }
   }
   if (sectionStart < size) {
@@ -110,6 +116,10 @@ export function tokenizeHtml(input: string): Token[] {
 function tokenizeNormal() {
   if (inScript) {
     section = Section.Script;
+    return;
+  }
+  if (inStyle) {
+    section = Section.Style;
     return;
   }
   if (char === Chars.Oc) {
@@ -151,7 +161,6 @@ function tokenizeInterpolation(): void {
 
 function tokenizeOpeningTag(): void {
   const nextChar = buffer.charCodeAt(index + 1);
-
   if (
     nextChar === 115 && // s
     buffer.charCodeAt(index + 2) === 99 && // c
@@ -163,6 +172,16 @@ function tokenizeOpeningTag(): void {
     // <script
     emitToken(TokenKind.OpenTag, Section.TagName);
     inScript = true;
+  } else if (
+    nextChar === 115 && // s
+    buffer.charCodeAt(index + 2) === 116 && // c
+    buffer.charCodeAt(index + 3) === 121 && // r
+    buffer.charCodeAt(index + 4) === 108 && // i
+    buffer.charCodeAt(index + 5) === 101 // e
+  ) {
+    // <script
+    emitToken(TokenKind.OpenTag, Section.TagName);
+    inStyle = true;
   } else if (
     (nextChar >= Chars.La && nextChar <= Chars.Lz) ||
     (nextChar >= Chars.Ua && nextChar <= Chars.Uz)
@@ -324,6 +343,8 @@ function tokenizeClosingTag(): void {
   if (char === Chars.Gt) {
     if (inScript) {
       emitToken(TokenKind.CloseTag, Section.Script);
+    } else if (inStyle) {
+      emitToken(TokenKind.CloseTag, Section.Style);
     } else {
       emitToken(TokenKind.CloseTag, Section.Normal);
     }
@@ -349,6 +370,27 @@ function tokenizeScript(): void {
     index += 8;
     emitToken(TokenKind.CloseTag, Section.Normal);
     inScript = false;
+    return;
+  }
+  ++index;
+}
+
+function tokenizeStyle(): void {
+  if (
+    char === Chars.Lt &&
+    buffer.charCodeAt(index + 1) === Chars.Sl &&
+    buffer.charCodeAt(index + 2) === 115 && // s
+    buffer.charCodeAt(index + 3) === 116 && // t
+    buffer.charCodeAt(index + 4) === 121 && // y
+    buffer.charCodeAt(index + 5) === 108 && // l
+    buffer.charCodeAt(index + 6) === 101 && // e
+    buffer.charCodeAt(index + 7) === Chars.Gt // >
+  ) {
+    index--;
+    emitToken(TokenKind.Literal);
+    index += 7;
+    emitToken(TokenKind.CloseTag, Section.Normal);
+    inStyle = false;
     return;
   }
   ++index;

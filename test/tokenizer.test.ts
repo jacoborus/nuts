@@ -168,10 +168,9 @@ let tests: {
     ],
   },
   {
-    ignore: true,
     name: "tokenize html: style",
     input: `  <style lang="scss">
-    body{color:#fff;}</style> `,
+    body{colo</div>;}</style> `,
     result: [
       { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
       { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
@@ -188,7 +187,7 @@ let tests: {
         end: 42,
         type: TokenKind.Literal,
         value: `
-    body{color:#fff;}`,
+    body{colo</div>;}`,
       },
       { start: 43, end: 50, type: TokenKind.CloseTag, value: "</style>" },
       { start: 51, end: 51, type: TokenKind.Literal, value: " " },
