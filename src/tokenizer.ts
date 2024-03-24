@@ -11,11 +11,15 @@ let preSection: Section.Literal | Section.Attribs | Section.OpenTag =
   Section.Literal;
 let size = buffer.length;
 
-function next() {
-  if (index + 1 >= size) return false;
-  index++;
-  char = buffer.charCodeAt(index);
-  return true;
+function init(input: string) {
+  buffer = input;
+  index = 0;
+  tokens.length = 0;
+  char = buffer.charCodeAt(0);
+  section = Section.Normal;
+  sectionStart = 0;
+  preSection = Section.Literal;
+  size = buffer.length;
 }
 
 function isWhiteSpace() {
@@ -26,36 +30,6 @@ function isWhiteSpace() {
     char === Chars._R ||
     char === Chars._F;
 }
-
-const options = {
-  normal: {
-    "{": { emit: TokenKind.OpenCurly, section: Section.Expression },
-    "<": { section: "openingTag" },
-    default: { section: Section.Literal },
-  },
-  expression: {
-    "}": ["emit closeCurly", "normal"],
-    default: { plusIndex: 1 },
-  },
-  literal: {
-    "{": {
-      emit: [TokenKind.Literal, TokenKind.OpenCurly],
-      section: Section.Expression,
-    },
-    "<": { section: Section.OpeningTag },
-    default: { plusIndex: 1 },
-  },
-  openingTag: {
-    tagname: ["emit openTag", "tagname"],
-  },
-  tagname: {
-    whitespace: ["emit tagname", "attribs"],
-    gt: ["emit openTagEnd", "normal"],
-  },
-  attribs: {
-    attribname: ["emit whitespace", "attribname"],
-  },
-};
 
 function emitToken(kind: TokenKind, newSection = section) {
   tokens.push({
@@ -134,7 +108,6 @@ export function tokenizeHtml(input: string): Token[] {
 }
 
 function tokenizeNormal() {
-  console.log("tokenize normal", buffer[index]);
   if (char === Chars.Oc) {
     emitToken(TokenKind.OpenCurly, Section.Expression);
     tokenizeInterpolation();
@@ -149,7 +122,6 @@ function tokenizeNormal() {
 }
 
 function tokenizeLiteral(): void {
-  console.log("tokenize literal", buffer[index]);
   if (char === Chars.Lt) {
     index--;
     emitToken(TokenKind.Literal, Section.OpeningTag);
@@ -165,18 +137,17 @@ function tokenizeLiteral(): void {
 }
 
 function tokenizeInterpolation(): void {
-  console.log("tokenize interpolation", buffer[index]);
   emitToken(TokenKind.OpenCurly);
   while (char !== Chars.Cc) {
     ++index;
   }
+  index--;
   emitToken(TokenKind.Expression);
-  ++index;
-  emitToken(TokenKind.CloseCurly, preSection);
+  emitToken(TokenKind.CloseCurly, Section.Normal);
+  index--;
 }
 
 function tokenizeOpeningTag(): void {
-  console.log("tokenize opening tag", buffer[index]);
   const nextChar = buffer.charCodeAt(index + 1);
   if (
     (nextChar >= Chars.La && nextChar <= Chars.Lz) ||
@@ -188,7 +159,7 @@ function tokenizeOpeningTag(): void {
   } else if (nextChar === Chars.Sl) {
     // </
     section = Section.ClosingTag;
-    next();
+    ++index;
   } else if (
     nextChar === Chars.Ep &&
     buffer.charCodeAt(index + 2) === Chars.Cl &&
@@ -205,7 +176,6 @@ function tokenizeOpeningTag(): void {
 }
 
 function tokenizeComment(): void {
-  console.log("tokenize comment", buffer[index]);
   while (
     index < size && buffer.charCodeAt(index) !== Chars.Cl &&
     buffer.charCodeAt(index + 1) !== Chars.Cl &&
@@ -220,7 +190,6 @@ function tokenizeComment(): void {
 }
 
 function tokenizeTagName(): void {
-  console.log("tokenize tag name", buffer[index]);
   if (isWhiteSpace()) {
     index--;
     emitToken(TokenKind.TagName, Section.WhiteSpace);
@@ -235,7 +204,6 @@ function tokenizeTagName(): void {
 }
 
 function tokenizeAfterOpenTag() {
-  console.log("tokenize open tag", buffer[index]);
   if (isWhiteSpace()) {
     section = Section.WhiteSpace;
     index--;
@@ -255,14 +223,12 @@ function tokenizeAfterOpenTag() {
 }
 
 function tokenizeWhitespace(): void {
-  console.log("tokenize whitespace", buffer[index]);
   if (isWhiteSpace()) return;
   index--;
   emitToken(TokenKind.WhiteSpace, Section.AfterOpenTag);
 }
 
 function tokenizeAttribName(): void {
-  console.log("tokenize attrib name", buffer[index]);
   if (char === Chars.Eq) {
     index--;
     emitToken(TokenKind.AttrName);
@@ -283,7 +249,6 @@ function tokenizeAttribName(): void {
 }
 
 function tokenizeAfterAttribEqual(): void {
-  console.log("tokenize after attrib equal", buffer[index]);
   if (isWhiteSpace()) {
     section = Section.WhiteSpace;
     index--;
@@ -304,7 +269,6 @@ function tokenizeAfterAttribEqual(): void {
 }
 
 function tokenizeAttribNQuoted(): void {
-  console.log("tokenize attrib value", buffer[index]);
   if (char === Chars.Gt) {
     index--;
     emitToken(TokenKind.AttrValue);
@@ -321,7 +285,6 @@ function tokenizeAttribNQuoted(): void {
 }
 
 function tokenizeDquoted(): void {
-  console.log("tokenize double quoted", buffer[index]);
   if (char === Chars.Dq) {
     index--;
     emitToken(TokenKind.AttrValue);
@@ -331,7 +294,6 @@ function tokenizeDquoted(): void {
 }
 
 function tokenizeSquoted(): void {
-  console.log("tokenize single quoted", buffer[index]);
   if (char === Chars.Sq) {
     index--;
     emitToken(TokenKind.AttrValue);
@@ -341,19 +303,7 @@ function tokenizeSquoted(): void {
 }
 
 function tokenizeClosingTag(): void {
-  console.log("tokenize closing tag", buffer[index]);
   if (char === Chars.Gt) {
     emitToken(TokenKind.CloseTag, Section.Normal);
   }
-}
-
-function init(input: string) {
-  buffer = input;
-  index = 0;
-  tokens.length = 0;
-  char = buffer.charCodeAt(0);
-  section = Section.Normal;
-  sectionStart = 0;
-  preSection = Section.Literal;
-  size = buffer.length;
 }

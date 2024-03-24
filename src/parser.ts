@@ -6,11 +6,11 @@ import {
   IAttr,
   IAttrDyn,
   ITag,
-  IText,
-  IToken,
   NodeType,
   Section,
   Slab,
+  Text,
+  Token,
   TokenKind,
 } from "../src/types.ts";
 
@@ -18,10 +18,10 @@ import { booleanAttributes, voidElements } from "./common.ts";
 
 export class Reader {
   index: number;
-  tokens: IToken[];
+  tokens: Token[];
   section: Section;
   schemas: ElemSchema[];
-  constructor(tokens: IToken[]) {
+  constructor(tokens: Token[]) {
     this.index = 0;
     this.tokens = tokens;
     this.section = Section.Literal;
@@ -33,13 +33,13 @@ export class Reader {
   next(): void {
     this.index += 1;
   }
-  current(): IToken {
+  current(): Token {
     return this.tokens[this.index];
   }
 }
 
 export function parse(reader: Reader): ElemSchema[] {
-  const schemas: (IText | ITag)[] = [];
+  const schemas: (Text | ITag)[] = [];
   while (reader.current() && reader.current().type !== TokenKind.CloseTag) {
     switch (reader.current().type) {
       case TokenKind.Literal:
@@ -55,7 +55,7 @@ export function parse(reader: Reader): ElemSchema[] {
   return schemas;
 }
 
-function parseText(reader: Reader): IText {
+function parseText(reader: Reader): Text {
   const token = reader.current();
   reader.next();
   return Object.assign({}, token, { type: NodeType.Text });
@@ -178,7 +178,7 @@ function parseAttribute(reader: Reader): IAttr {
   return parseAttrValue(reader, name);
 }
 
-function parseAttrValue(reader: Reader, name: IToken): IAttr {
+function parseAttrValue(reader: Reader, name: Token): IAttr {
   const opener = reader.current();
   if (opener.type === TokenKind.DQuote || opener.type === TokenKind.SQuote) {
     return parseQuotedAttrValue(reader, name);
@@ -186,7 +186,7 @@ function parseAttrValue(reader: Reader, name: IToken): IAttr {
   return parseNoQuotedAttrValue(reader, name);
 }
 
-function parseQuotedAttrValue(reader: Reader, name: IToken): IAttr {
+function parseQuotedAttrValue(reader: Reader, name: Token): IAttr {
   reader.next();
   if (!reader.hasTokens() || reader.current().type !== TokenKind.AttrValue) {
     return {
@@ -222,7 +222,7 @@ function parseQuotedAttrValue(reader: Reader, name: IToken): IAttr {
   };
 }
 
-function parseNoQuotedAttrValue(reader: Reader, name: IToken): IAttr {
+function parseNoQuotedAttrValue(reader: Reader, name: Token): IAttr {
   const value = reader.current();
   if (value.type !== TokenKind.AttrValue) {
     return {
@@ -266,7 +266,7 @@ function parseDynamicAttribute(reader: Reader): IAttrDyn {
   return parseDynAttrValue(reader, name);
 }
 
-function parseDynAttrValue(reader: Reader, name: IToken): IAttrDyn {
+function parseDynAttrValue(reader: Reader, name: Token): IAttrDyn {
   const opener = reader.current();
   const isBoolean = booleanAttributes.includes(name.value);
   if (!reader.hasTokens()) {

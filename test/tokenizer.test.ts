@@ -294,9 +294,9 @@ tests.forEach((test) => {
     // if (test.expression) tokenizeExpression(reader);
     if (test.expression) return;
     const tokens = tokenizeHtml(test.input);
-    if (test.only) {
-      console.log({ results: test.result, tokens, input: test.input });
-    }
+    // if (test.only) {
+    //   console.log({ results: test.result, tokens, input: test.input });
+    // }
     assertEquals(tokens, test.result);
   });
 });

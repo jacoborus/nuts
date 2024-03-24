@@ -31,12 +31,12 @@ export const enum Section {
   AfterExpression = "AfterExpression",
 }
 
-interface IBase {
+interface Base {
   start: number;
   end: number;
 }
 
-export interface Token extends IBase {
+export interface Token extends Base {
   type: TokenKind;
   value: string;
 }
@@ -103,12 +103,12 @@ export const directiveNames = [
   "place",
 ];
 
-export interface IText extends IBase {
+export interface Text extends Base {
   type: NodeType.Text;
   value: string;
 }
 
-export interface IInterpolated extends IBase {
+export interface Interpolated extends Base {
   type: NodeType.Interpolated;
   expr: Expression;
   reactive: boolean;
@@ -116,7 +116,7 @@ export interface IInterpolated extends IBase {
 
 export type IAllAttribs = IAttr | IAttrDyn | IEvent;
 
-export interface IAttr extends IBase {
+export interface IAttr extends Base {
   type: NodeType.Attr;
   name: Token;
   value?: Token;
@@ -124,7 +124,7 @@ export interface IAttr extends IBase {
   err?: string;
 }
 
-export interface IAttrDyn extends IBase {
+export interface IAttrDyn extends Base {
   type: NodeType.Interpolated;
   name: Token;
   expr: Expression;
@@ -133,13 +133,13 @@ export interface IAttrDyn extends IBase {
   err?: string;
 }
 
-export interface IEvent extends IBase {
+export interface IEvent extends Base {
   type: NodeType.Event;
   name: string;
   expr: Expression;
 }
 
-export interface ITag extends IBase {
+export interface ITag extends Base {
   type: NodeType.Tag;
   name: string; // lower case tag name, div
   rawName: Token; // original case tag name, Div
@@ -154,12 +154,12 @@ export interface ITag extends IBase {
     | null; // EOF before open tag end
   // original close tag, </DIV >
   close:
-    | IText // with close tag
+    | Text // with close tag
     | undefined // isVoid
     | null; // EOF before end or without close tag
 }
 
-export interface IComment extends IBase {
+export interface IComment extends Base {
   type: NodeType.Comment;
   value: string;
 }
@@ -173,7 +173,7 @@ export type DirectiveName =
   | "index"
   | "pos";
 
-export interface LoopSchema extends IBase {
+export interface LoopSchema extends Base {
   type: NodeType.Loop;
   loop: Expression;
   target: Token;
@@ -183,7 +183,7 @@ export interface LoopSchema extends IBase {
 }
 
 export type TreeKind = "if" | "elseif" | "else";
-export interface TreeSchema extends IBase {
+export interface TreeSchema extends Base {
   type: NodeType.Tree;
   kind: TreeKind;
   condition: Expression;
@@ -198,7 +198,7 @@ export interface ITemplate extends ITag {
 
 export interface IScript extends Omit<ITag, "type" | "body"> {
   type: NodeType.Script;
-  body: IText;
+  body: Text;
 }
 
 export interface CodeSchema extends Omit<ITag, "type"> {
@@ -219,21 +219,21 @@ export const enum ExprScope {
   Func,
   Ctx,
 }
-export interface Expression extends IBase {
+export interface Expression extends Base {
   scope: ExprScope;
   slabs: Slab[];
   err?: string;
 }
 export type Slab = Token | Expression | ExprMethod;
 
-export interface ExprMethod extends IBase {
+export interface ExprMethod extends Base {
   method: Expression;
   params: Expression[];
 }
 
 export type ElemSchema =
-  | IText
-  | IInterpolated
+  | Text
+  | Interpolated
   | ITag
   | IComment
   | LoopSchema
