@@ -28,15 +28,18 @@ function isWhiteSpace() {
     char === Chars._F;
 }
 
-function emitToken(kind: TokenKind, newSection = section) {
-  tokens.push({
-    type: kind,
-    value: buffer.slice(sectionStart, index + 1),
-    start: sectionStart,
-    end: index,
-  });
+function emitToken(kind: null | TokenKind, newSection?: Section) {
+  if (kind) {
+    tokens.push({
+      type: kind,
+      value: buffer.slice(sectionStart, index + 1),
+      start: sectionStart,
+      end: index,
+    });
+  }
   ++index;
   sectionStart = index;
+  if (newSection === undefined) return;
   section = newSection;
 }
 
@@ -157,6 +160,7 @@ function tokenizeOpeningTag(): void {
     index--;
   } else if (nextChar === Chars.Sl) {
     // </
+    // TODO: check
     section = Section.ClosingTag;
     ++index;
   } else if (
@@ -169,6 +173,7 @@ function tokenizeOpeningTag(): void {
     emitToken(TokenKind.OpenComment, Section.Comment);
     index--;
   } else {
+    // TODO: check
     // any other chars convert to normal state
     section = Section.Literal;
   }
@@ -218,6 +223,7 @@ function tokenizeAfterOpenTag() {
   if (char === Chars.Sl && buffer.charCodeAt(index + 1) === Chars.Gt) {
     index++;
     emitToken(TokenKind.VoidTagEnd, Section.Normal);
+    index--;
     return;
   }
   section = Section.AttribName;
@@ -228,6 +234,7 @@ function tokenizeWhitespace(): void {
   if (isWhiteSpace()) return;
   index--;
   emitToken(TokenKind.WhiteSpace, Section.AfterOpenTag);
+  index--;
 }
 
 function tokenizeAttribName(): void {
@@ -241,11 +248,19 @@ function tokenizeAttribName(): void {
   if (isWhiteSpace()) {
     index--;
     emitToken(TokenKind.AttrName, Section.WhiteSpace);
-    tokenizeWhitespace();
+    index--;
     return;
   }
-  if (char === Chars.Gt || isWhiteSpace()) {
+  if (char === Chars.Gt) {
+    index--;
     emitToken(TokenKind.AttrName, Section.AfterOpenTag);
+    index--;
+    return;
+  }
+  if (isWhiteSpace()) {
+    index--;
+    emitToken(TokenKind.AttrName, Section.WhiteSpace);
+    index--;
     return;
   }
 }
@@ -307,5 +322,6 @@ function tokenizeSquoted(): void {
 function tokenizeClosingTag(): void {
   if (char === Chars.Gt) {
     emitToken(TokenKind.CloseTag, Section.Normal);
+    index--;
   }
 }
