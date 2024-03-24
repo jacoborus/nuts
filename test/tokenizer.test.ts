@@ -13,7 +13,6 @@ let tests: {
   {
     name: "tokenize html: simple void element",
     input: "<br>",
-    only: true,
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
       { start: 1, end: 2, type: TokenKind.TagName, value: "br" },
@@ -23,7 +22,6 @@ let tests: {
   {
     name: "tokenize html: simple void element preceeded by space",
     input: "  <br>",
-    only: true,
     result: [
       { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
       { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
@@ -34,7 +32,6 @@ let tests: {
   {
     name: "tokenize html: comment",
     input: "  <!-- hola --> ",
-    only: true,
     result: [
       { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
       { start: 2, end: 5, type: TokenKind.OpenComment, value: "<!--" },
@@ -46,7 +43,6 @@ let tests: {
   {
     name: "tokenize html: tag with no attribs",
     input: "<span>hola</span>",
-    only: true,
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
       { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
@@ -58,7 +54,6 @@ let tests: {
   {
     name: "tokenize html: tag with attribs",
     input: '<span id="myid">hola</span>',
-    only: true,
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
       { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
@@ -74,61 +69,8 @@ let tests: {
     ],
   },
   {
-    name: "tokenize html: script",
-    input: `  <script lang="ts">;
-    console.log('hola');</script> `,
-    result: [
-      { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
-      { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
-      { start: 3, end: 8, type: TokenKind.TagName, value: "script" },
-      { start: 9, end: 9, type: TokenKind.WhiteSpace, value: " " },
-      { start: 10, end: 13, type: TokenKind.AttrName, value: "lang" },
-      { start: 14, end: 14, type: TokenKind.AttrEq, value: "=" },
-      { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
-      { start: 16, end: 17, type: TokenKind.AttrValue, value: "ts" },
-      { start: 18, end: 18, type: TokenKind.DQuote, value: '"' },
-      { start: 19, end: 19, type: TokenKind.OpenTagEnd, value: ">" },
-      {
-        start: 20,
-        end: 45,
-        type: TokenKind.Literal,
-        value: `;
-    console.log('hola');`,
-      },
-      { start: 46, end: 54, type: TokenKind.CloseTag, value: "</script>" },
-      { start: 55, end: 55, type: TokenKind.Literal, value: " " },
-    ],
-  },
-  {
-    name: "tokenize html: style",
-    input: `  <style lang="scss">
-    body{color:#fff;}</style> `,
-    result: [
-      { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
-      { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
-      { start: 3, end: 7, type: TokenKind.TagName, value: "style" },
-      { start: 8, end: 8, type: TokenKind.WhiteSpace, value: " " },
-      { start: 9, end: 12, type: TokenKind.AttrName, value: "lang" },
-      { start: 13, end: 13, type: TokenKind.AttrEq, value: "=" },
-      { start: 14, end: 14, type: TokenKind.DQuote, value: '"' },
-      { start: 15, end: 18, type: TokenKind.AttrValue, value: "scss" },
-      { start: 19, end: 19, type: TokenKind.DQuote, value: '"' },
-      { start: 20, end: 20, type: TokenKind.OpenTagEnd, value: ">" },
-      {
-        start: 21,
-        end: 42,
-        type: TokenKind.Literal,
-        value: `
-    body{color:#fff;}`,
-      },
-      { start: 43, end: 50, type: TokenKind.CloseTag, value: "</style>" },
-      { start: 51, end: 51, type: TokenKind.Literal, value: " " },
-    ],
-  },
-  {
     name: "tokenize html: tag with unquoted attribs",
     input: "<span id=myid>hola</span>",
-    only: true,
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
       { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
@@ -165,7 +107,6 @@ let tests: {
   {
     name: "tokenize hmtl: 2 sequential void tags",
     input: '<input type="text" id="myid"><br>',
-    only: true,
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
       { start: 1, end: 5, type: TokenKind.TagName, value: "input" },
@@ -188,6 +129,61 @@ let tests: {
     ],
   },
   {
+    name: "tokenize html: script",
+    input: `  <script lang="ts">;
+    console.log('hola');</script> `,
+    ignore: true,
+    result: [
+      { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
+      { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
+      { start: 3, end: 8, type: TokenKind.TagName, value: "script" },
+      { start: 9, end: 9, type: TokenKind.WhiteSpace, value: " " },
+      { start: 10, end: 13, type: TokenKind.AttrName, value: "lang" },
+      { start: 14, end: 14, type: TokenKind.AttrEq, value: "=" },
+      { start: 15, end: 15, type: TokenKind.DQuote, value: '"' },
+      { start: 16, end: 17, type: TokenKind.AttrValue, value: "ts" },
+      { start: 18, end: 18, type: TokenKind.DQuote, value: '"' },
+      { start: 19, end: 19, type: TokenKind.OpenTagEnd, value: ">" },
+      {
+        start: 20,
+        end: 45,
+        type: TokenKind.Literal,
+        value: `;
+    console.log('hola');`,
+      },
+      { start: 46, end: 54, type: TokenKind.CloseTag, value: "</script>" },
+      { start: 55, end: 55, type: TokenKind.Literal, value: " " },
+    ],
+  },
+  {
+    ignore: true,
+    name: "tokenize html: style",
+    input: `  <style lang="scss">
+    body{color:#fff;}</style> `,
+    result: [
+      { start: 0, end: 1, type: TokenKind.Literal, value: "  " },
+      { start: 2, end: 2, type: TokenKind.OpenTag, value: "<" },
+      { start: 3, end: 7, type: TokenKind.TagName, value: "style" },
+      { start: 8, end: 8, type: TokenKind.WhiteSpace, value: " " },
+      { start: 9, end: 12, type: TokenKind.AttrName, value: "lang" },
+      { start: 13, end: 13, type: TokenKind.AttrEq, value: "=" },
+      { start: 14, end: 14, type: TokenKind.DQuote, value: '"' },
+      { start: 15, end: 18, type: TokenKind.AttrValue, value: "scss" },
+      { start: 19, end: 19, type: TokenKind.DQuote, value: '"' },
+      { start: 20, end: 20, type: TokenKind.OpenTagEnd, value: ">" },
+      {
+        start: 21,
+        end: 42,
+        type: TokenKind.Literal,
+        value: `
+    body{color:#fff;}`,
+      },
+      { start: 43, end: 50, type: TokenKind.CloseTag, value: "</style>" },
+      { start: 51, end: 51, type: TokenKind.Literal, value: " " },
+    ],
+  },
+  {
+    ignore: true,
     name: "tokenize html tag with prefixed attrib name",
     input: '<span :id="user.id"/>',
     result: [
@@ -205,6 +201,7 @@ let tests: {
     ],
   },
   {
+    ignore: true,
     name: "tokenize html tag with (if) directive",
     input: '<span (if)="data.users"/>',
     result: [
@@ -222,6 +219,7 @@ let tests: {
     ],
   },
   {
+    ignore: true,
     name: "tokenize html tag with (loop) directive",
     input: '<span (loop)="data.users as user, i"/>',
     result: [

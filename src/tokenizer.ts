@@ -108,8 +108,6 @@ export function tokenizeHtml(input: string): Token[] {
 }
 
 function tokenizeNormal() {
-  console.log("NORMAL:");
-  console.log({ char, letra: buffer[index], siguiente: buffer[index + 1] });
   if (char === Chars.Oc) {
     emitToken(TokenKind.OpenCurly, Section.Expression);
     tokenizeInterpolation();
@@ -133,8 +131,9 @@ function tokenizeLiteral(): void {
   }
   if (char === Chars.Oc) {
     index--;
-    emitToken(TokenKind.Literal, Section.Interpolation);
+    emitToken(TokenKind.Literal);
     emitToken(TokenKind.OpenCurly, Section.Interpolation);
+    index--;
     return;
   }
 }
@@ -151,8 +150,6 @@ function tokenizeInterpolation(): void {
 }
 
 function tokenizeOpeningTag(): void {
-  console.log("OPENING:");
-  console.log({ char, letra: buffer[index], siguiente: buffer[index + 1] });
   const nextChar = buffer.charCodeAt(index + 1);
   if (
     (nextChar >= Chars.La && nextChar <= Chars.Lz) ||
@@ -181,13 +178,14 @@ function tokenizeOpeningTag(): void {
 }
 
 function tokenizeComment(): void {
-  while (
-    index < size && buffer.charCodeAt(index) !== Chars.Cl &&
-    buffer.charCodeAt(index + 1) !== Chars.Cl &&
+  if (
+    char !== Chars.Cl ||
+    buffer.charCodeAt(index + 1) !== Chars.Cl ||
     buffer.charCodeAt(index + 2) !== Chars.Gt
   ) {
-    index++;
+    return;
   }
+  index--;
   emitToken(TokenKind.Comment);
   index += 2;
   emitToken(TokenKind.CloseComment, Section.Normal);
@@ -310,8 +308,6 @@ function tokenizeSquoted(): void {
 }
 
 function tokenizeClosingTag(): void {
-  console.log("CLOSING:");
-  console.log({ char, letra: buffer[index], siguiente: buffer[index + 1] });
   if (char === Chars.Gt) {
     emitToken(TokenKind.CloseTag, Section.Normal);
   }
