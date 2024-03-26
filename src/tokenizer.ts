@@ -32,15 +32,13 @@ function isWhiteSpace() {
     char === Chars._F;
 }
 
-function emitToken(kind: null | TokenKind, newSection?: Section) {
-  if (kind) {
-    tokens.push({
-      type: kind,
-      value: buffer.slice(sectionStart, index + 1),
-      start: sectionStart,
-      end: index,
-    });
-  }
+function emitToken(kind: TokenKind, newSection?: Section) {
+  tokens.push({
+    type: kind,
+    value: buffer.slice(sectionStart, index + 1),
+    start: sectionStart,
+    end: index,
+  });
   ++index;
   sectionStart = index;
   if (newSection === undefined) return;
