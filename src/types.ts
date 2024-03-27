@@ -29,6 +29,7 @@ export const enum Section {
   ExprMethod = "ExprMethod",
   ExprQuoted = "ExprQuoted",
   AfterExpression = "AfterExpression",
+  AfterIdentifier = "AfterIdentifier",
 }
 
 interface Base {
@@ -47,6 +48,7 @@ export enum TokenKind {
   Literal = "Literal",
   OpenTag = "OpenTag", // leading '<'
   OpenTagEnd = "OpenTagEnd", // tailing '>',
+  Interpolation = "Interpolation",
   TagName = "TagName",
   VoidTagEnd = "VoidTagEnd", // tailing '/>'
   CloseTag = "CloseTag", // leading '</'

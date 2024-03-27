@@ -151,9 +151,7 @@ function tokenizeLiteral(): void {
 function tokenizeInterpolation(): void {
   if (char === Chars.Cc) {
     --index;
-    section = Section.BeginExpression;
-    tokenizeExpression();
-    --index;
+    emitToken(TokenKind.Interpolation);
     emitToken(TokenKind.CloseCurly);
     section = Section.Normal;
     return;
@@ -414,55 +412,6 @@ function tokenizeStyle(): void {
     inStyle = false;
     section = Section.ClosingTag;
     --index;
-    return;
-  }
-  ++index;
-}
-
-/* Expression */
-
-function tokenizeExpression(): void {
-  const end = index + 1;
-  index = sectionStart;
-  while (index <= end) {
-    char = buffer.charCodeAt(index);
-    switch (section) {
-      case Section.BeginExpression:
-        tokenizeBeginExpression();
-        break;
-      case Section.Identifier:
-        tokenizeIdentifier();
-        break;
-      case Section.WhiteSpace:
-        tokenizeInExprWhitespace();
-        break;
-    }
-  }
-}
-
-function tokenizeBeginExpression(): void {
-  if (isWhiteSpace()) {
-    section = Section.WhiteSpace;
-    return;
-  }
-  section = Section.Identifier;
-}
-
-function tokenizeIdentifier(): void {
-  if (isWhiteSpace()) {
-    --index;
-    emitToken(TokenKind.Identifier);
-    section = Section.WhiteSpace;
-    return;
-  }
-  ++index;
-}
-
-function tokenizeInExprWhitespace(): void {
-  if (!isWhiteSpace()) {
-    --index;
-    emitToken(TokenKind.WhiteSpace);
-    section = Section.Identifier;
     return;
   }
   ++index;

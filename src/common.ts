@@ -28,6 +28,9 @@ export const enum Chars {
   Oc = 123, // { Open Curly brace
   Cc = 125, // } Close Curly
   Sl = 47, // / SLash
+  N0 = 48, // 0
+  N9 = 57, // 9
+  U_ = 95, // _
 }
 
 export const booleanAttributes = [

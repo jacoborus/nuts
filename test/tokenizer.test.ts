@@ -224,15 +224,47 @@ let tests: {
     input: "{ name }",
     result: [
       { start: 0, end: 0, type: TokenKind.OpenCurly, value: "{" },
-      { start: 1, end: 1, type: TokenKind.WhiteSpace, value: " " },
-      { start: 2, end: 5, type: TokenKind.Identifier, value: "name" },
-      { start: 6, end: 6, type: TokenKind.WhiteSpace, value: " " },
+      { start: 1, end: 6, type: TokenKind.Interpolation, value: " name " },
       { start: 7, end: 7, type: TokenKind.CloseCurly, value: "}" },
     ],
   },
   {
+    name: "tokenize html: tag with interpolated attrib",
+    input: '<span id="page-{page}"/>',
+    result: [
+      { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
+      { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
+      { start: 5, end: 5, type: TokenKind.WhiteSpace, value: " " },
+      { start: 6, end: 7, type: TokenKind.AttrName, value: "id" },
+      { start: 8, end: 8, type: TokenKind.AttrEq, value: "=" },
+      { start: 9, end: 9, type: TokenKind.DQuote, value: '"' },
+      { start: 10, end: 20, type: TokenKind.AttrValue, value: "page-{page}" },
+      { start: 21, end: 21, type: TokenKind.DQuote, value: '"' },
+      { start: 22, end: 23, type: TokenKind.VoidTagEnd, value: "/>" },
+    ],
+  },
+  {
+    name: "tokenize html: tag with interpolated attrib",
     ignore: true,
+    input: '<span id="page-{page}"/>',
+    result: [
+      { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
+      { start: 1, end: 4, type: TokenKind.TagName, value: "span" },
+      { start: 5, end: 5, type: TokenKind.WhiteSpace, value: " " },
+      { start: 6, end: 7, type: TokenKind.AttrName, value: "id" },
+      { start: 8, end: 8, type: TokenKind.AttrEq, value: "=" },
+      { start: 9, end: 9, type: TokenKind.DQuote, value: '"' },
+      { start: 10, end: 14, type: TokenKind.AttrValue, value: "page-" },
+      { start: 15, end: 15, type: TokenKind.OpenCurly, value: "{" },
+      { start: 16, end: 19, type: TokenKind.AttrValue, value: "page" },
+      { start: 20, end: 20, type: TokenKind.CloseCurly, value: "}" },
+      { start: 21, end: 21, type: TokenKind.DQuote, value: '"' },
+      { start: 22, end: 23, type: TokenKind.VoidTagEnd, value: "/>" },
+    ],
+  },
+  {
     name: "tokenize html tag with prefixed attrib name",
+    ignore: true,
     input: '<span :id="user.id"/>',
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
@@ -249,8 +281,8 @@ let tests: {
     ],
   },
   {
-    ignore: true,
     name: "tokenize html tag with (if) directive",
+    ignore: true,
     input: '<span (if)="data.users"/>',
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
@@ -267,8 +299,8 @@ let tests: {
     ],
   },
   {
-    ignore: true,
     name: "tokenize html tag with (loop) directive",
+    ignore: true,
     input: '<span (loop)="data.users as user, i"/>',
     result: [
       { start: 0, end: 0, type: TokenKind.OpenTag, value: "<" },
